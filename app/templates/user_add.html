@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+  <!--Start Main Page Content-->
+  <div class="row" id="form">
+    <div class="col-lg-12">
+      <form action="" class="form-horizontal" method="POST" role="form">
+        <fieldset>
+          <legend>Додати користувача системи</legend>
+
+          <div class="form-group {% if errors.lname %}has-error{% endif %}">
+            <label for="inputLname" class="col-lg-2 control-label">
+              Прізвище
+            </label>
+            <div class="col-lg-3">
+              <input type="text" class="form-control" id="inputLname"
+                placeholder="Прізвище" name="lname" value="{{ request.lname }}">
+              <span class="help-block"><!--Field for error message--></span>
+            </div>
+          </div>
+
+          <div class="form-group {% if errors %}has-error{% endif %}">
+            <label for="inputFname" class="col-lg-2 control-label">Ім’я</label>
+            <div class="col-lg-3">
+              <input type="text" class="form-control" id="inputFname"
+                placeholder="Ім’я" name="fname" value="">
+              <span class="help-block"><!--Field for error message--></span>
+            </div>
+          </div>
+
+          <div class="form-group {% if errors %}has-error{% endif %}">
+            <label for="inputLogin" class="col-lg-2 control-label">Логін</label>
+            <div class="col-lg-3">
+              <input type="text" class="form-control" id="inputLogin"
+                placeholder="Login" name="login" value="">
+              <span class="help-block"><!--Field for error message--></span>
+            </div>
+          </div>
+
+          <div class="form-group {% if errors %}has-error{% endif %}">
+            <label for="inputPassword" class="col-lg-2 control-label">Пароль</label>
+            <div class="col-lg-3">
+              <input type="password" class="form-control" id="inputPassword"
+                placeholder="Password" name="password" value="">
+              <span class="help-block"><!--Field for error message--></span>
+            </div>
+          </div>
+
+          <div class="form-group {% if errors %}has-error{% endif %}">
+            <label for="inputEmail" class="col-lg-2 control-label">Електронна скринька</label>
+            <div class="col-lg-3">
+              <input type="text" class="form-control" id="inputEmail"
+                placeholder="Email" name="email" value="">
+              <span class="help-block"><!--Field for error message--></span>
+            </div>
+          </div>
+
+          <div class="form-group {% if errors %}has-error{% endif %}">
+            <label for="user_role"
+                class="col-lg-2 control-label">
+              Посада
+            </label>
+            <div class="col-lg-3">
+              <select class="form-control" name="user_role" id="user_role">
+                <option value="">Виберіть права</option>
+
+                {% for role in roles %}
+                <option value="{{ role.id }}">{{ role.role_name }}</option>
+                {% endfor %}
+
+              </select>
+              <span class="help-block"><!--Field for error message--></span>
+            </div>
+          </div><!-- /.form-group -->
+
+          <div class="form-group">
+            <div class="col-lg-10 col-lg-offset-2">
+              <a href="{{ url_for('index') }}">
+                <button type="button" class="btn btn-default" name="cancel">
+                  Відмінити
+                </button>
+              </a>
+              <button type="submit" class="btn btn-primary" name="go">
+                Прийняти
+              </button>
+            </div><!-- /.col-lg-10 col-lg-offset-2 -->
+          </div><!-- /.form-group -->
+        </fieldset>
+      </form>
+    </div><!-- /.col-lg-12 -->
+  </div><!-- /.row -->
+  <!--End Main Page Content-->
+{% endblock %}
