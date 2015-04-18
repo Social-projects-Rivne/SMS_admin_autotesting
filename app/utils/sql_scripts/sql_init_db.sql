@@ -1,11 +1,15 @@
---create db. CHARACTER SET!!!
+-- create db. CHARACTER SET!!!
 CREATE DATABASE IF NOT EXISTS SMSDB CHARACTER SET utf8;
 
---switch to ur db
+-- switch to ur db
 USE SMSDB;
 
--- table Roles
+-- drop tables before create new
+DROP TABLE IF EXISTS `Teachers`;
 DROP TABLE IF EXISTS `Roles`;
+DROP TABLE IF EXISTS `Schools`;
+
+-- table Roles
 		
 CREATE TABLE `Roles` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -14,7 +18,6 @@ CREATE TABLE `Roles` (
 );
 
 -- table Schools
-DROP TABLE IF EXISTS `Schools`;
 		
 CREATE TABLE `Schools` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
@@ -23,7 +26,6 @@ CREATE TABLE `Schools` (
 );
 
 -- table Teachers
-DROP TABLE IF EXISTS `Teachers`;
 		
 CREATE TABLE `Teachers` (
   `school_id` INTEGER NULL DEFAULT NULL,
@@ -32,6 +34,7 @@ CREATE TABLE `Teachers` (
   `role_id` INTEGER NOT NULL,
   `login` VARCHAR(40) NOT NULL,
   `email` VARCHAR(100) NOT NULL,
+  `password` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`)
 );
 
