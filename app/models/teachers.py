@@ -1,0 +1,14 @@
+# -*- coding: utf-8 -*-
+import roles, schools
+
+class TeachersModel(object):
+	"""Class for Teachers Entity"""
+	def __init__(self, id, name, login, email, password, schools_model, roles_model):
+		'''schools_model - instance of Schools'''
+		self.id = id
+		self.name = name
+		self.login = login
+		self.email = email
+		self.password = password
+		self.school_id = schools_model.id
+		self.role_id = roles_model.role_id
