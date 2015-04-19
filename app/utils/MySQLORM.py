@@ -10,7 +10,7 @@ class MySQLORM(object):
     def connect(self, host, username, password, db):
         """Connect to database"""
         self.db = MySQLdb.connect(host, username, password, db)
-        self.cursor = self.db.cursor()
+        self.cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
 
     def mysql_do(self, sql):
         """Run MySQL operations"""
