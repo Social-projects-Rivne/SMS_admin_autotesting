@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
+import ModelToDB
 
-class RolesModel(object):
+class RolesModel(ModelToDB):
 	"""Class for Roles entity"""
 	def __init__(self, id, role_name):
 		self.id = id
