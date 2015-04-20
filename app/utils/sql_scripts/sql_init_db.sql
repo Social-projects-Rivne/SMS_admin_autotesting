@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS `Roles`;
 DROP TABLE IF EXISTS `Schools`;
 
 -- table Roles
-		
+
 CREATE TABLE `Roles` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `role_name` VARCHAR(20) NOT NULL,
@@ -18,7 +18,7 @@ CREATE TABLE `Roles` (
 );
 
 -- table Schools
-		
+
 CREATE TABLE `Schools` (
   `id` INTEGER NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(120) NOT NULL,
@@ -26,7 +26,7 @@ CREATE TABLE `Schools` (
 );
 
 -- table Teachers
-		
+
 CREATE TABLE `Teachers` (
   `school_id` INTEGER NULL DEFAULT NULL,
   `id` INTEGER NOT NULL AUTO_INCREMENT,

@@ -2,7 +2,10 @@
 
 from flask import Flask
 
+from utils.MySQLORM import MySQLORM
+
+
 app = Flask(__name__)
 app.config.from_object('config')
 
-from app.views import users
+from app import urls

@@ -1,3 +1,7 @@
+.inline_link {
+    display: inline;
+}
+
 span[class$="action"] {
     margin-right: 15px;
 }
