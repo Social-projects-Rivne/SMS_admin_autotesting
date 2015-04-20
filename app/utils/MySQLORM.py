@@ -19,17 +19,11 @@ class MySQLORM(object):
             self.cursor.execute(sql)
             # Commit changes in the database
             self.db.commit()
+            # Return fetched result
+            return self.cursor.fetchall()
         except:
             # Rollback in case there is any error
             self.db.rollback()
-
-    def create(self, table, columns):
-        """Create table"""
-        # Prepare SQL query to CREATE TABLE
-        _sql = """CREATE TABLE %s (
-                      id INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, %s
-                      )""" % (table, columns)
-        self.mysql_do(_sql)
 
     def insert(self, table, attrs, vals):
         """Run MySQL insert operations"""
@@ -79,9 +73,7 @@ if __name__ == '__main__':
 
     print('Executing any query')
     testdb.mysql_do('drop table if exists Test')
-
-    print('Creating table')
-    testdb.create('Test', 'Name text, Age int, Role text')
+    testdb.mysql_do('create table Test (Name text, Age int, Role text)')
 
     print('Inserting values')
     testdb.insert('Test', ('Name', 'Age', 'Role'), ('Dave', 22, 'Student'))
