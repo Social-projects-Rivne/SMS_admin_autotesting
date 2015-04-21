@@ -1,9 +1,12 @@
-import MySQLdb
-from MySQLORM import MySQLORM
+#import MySQLdb
+#from MySQLORM import MySQLORM
+
+from app.utils.MySQLORM import MySQLORM
+
 
 class Teacher(object):
-    def __init__(self, id_, name, login, password, email, 
-                 role_id, role_name, 
+    def __init__(self, id_, name, login, password, email,
+                 role_id, role_name,
                  school_id, school_name):
         self.id_=id_
         self.name=name
@@ -25,23 +28,23 @@ class ExtendedTeachersModel(object):
                                 ON t.role_id=r.id\
                             LEFT JOIN Schools s\
                                 ON t.school_id=s.id'
-    
+
     def __init__(self):
         pass
-        
+
     def initORM(self):
         host='localhost'
         username='root'
         db='SMSDB'
-        password='12345'
+        password='Lofa666'
         orm = MySQLORM()
-        orm.connect(host, username, password, db)  
-        return orm 
+        orm.connect(host, username, password, db)
+        return orm
 
     def _create_list_from_dbresult(self, results):
         teachers = []
         for row in results:
-            
+
             id_=row["id"]
             name=row["name"]
             login=row["login"]
@@ -51,13 +54,13 @@ class ExtendedTeachersModel(object):
             role_name=row["role_name"]
             school_id=row["school_id"]
             school_name=row["school_name"]
-            teacher = Teacher(id_, name, login, password, email, 
-                              role_id, role_name, 
+            teacher = Teacher(id_, name, login, password, email,
+                              role_id, role_name,
                               school_id, school_name)
             print teacher
             teachers.append(teacher)
         return teachers
-    
+
     def _get_teachers(self, condition=''):
         orm=self.initORM()
         #print self.select_teachers_query + ' ' + condition
@@ -66,50 +69,50 @@ class ExtendedTeachersModel(object):
         teachers = self._create_list_from_dbresult(results)
         orm.close()
         return teachers
-    
+
     def get_all_teachers(self):
         return self._get_teachers()
-    
+
     def get_teacher_by_id(self, id_):
         return self._get_teachers('WHERE t.id=%d'%(id_))
-    
+
     def get_all_teachers_by_role(self, role_id):
         return self._get_teachers('WHERE role_id=%d'%(role_id))
-        
+
     def get_all_teachers_by_school(self, school_id):
         return self._get_teachers('WHERE school_id=%d'%(school_id))
-        
+
     def update_teacher_by_id(self, teacher):
         orm=self.initORM()
         orm.update('Teachers', 'name="%s", login="%s", email="%s", password="%s", role_id=%d'%
                        (teacher.name, teacher.login, teacher.email, teacher.password, teacher.role_id),
                   'id=%d'%(teacher.id_))
         orm.close()
-    
+
     def delete_teacher_by_id(self, id_):
         orm=self.initORM()
         orm.delete('Teachers', 'id = %d'%(id_))
         orm.close()
-    
+
     def insert_teacher(self, teacher):
         orm=self.initORM()
-        orm.insert('Teachers', ('name', 'login', 'email', 'password', 'role_id'), 
+        orm.insert('Teachers', ('name', 'login', 'email', 'password', 'role_id'),
                                (teacher.name, teacher.login, teacher.email, teacher.password, teacher.role_id))
         orm.close()
-          
+
     def set_role_id_to_teacher_by_id(self, id_, role_id):
         orm=self.initORM()
         orm.update('Teachers', 'role_id=%d'%(role_id), 'id=%d'%(id_))
         orm.close()
-        
+
     def set_school_id_to_teacher_by_id(self, id_, school_id):
         orm=self.initORM()
         orm.update('Teachers', 'school_id=%d'%(school_id), 'id=%d'%(id_))
         orm.close()
-    
+
     def set_password_to_teacher_by_id(self, id_, password):
         orm=self.initORM()
         orm.update('Teachers', 'password=%d'%(password_id), 'id=%d'%(id_))
-        orm.close()    
-        
+        orm.close()
+
 

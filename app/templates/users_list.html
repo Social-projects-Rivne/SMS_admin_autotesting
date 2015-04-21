@@ -12,33 +12,33 @@
   <table class="table table-hover table-striped">
     <thead>
       <tr>
-        <th>#</th>
+        <!--<th>#</th>-->
         <th>№</th>
-        <th>Права доступу</th>
         <th>ПІБ</th>
         <th>Логін</th>
         <th>Електронна скринька</th>
+        <th>Права доступу</th>
         <th>Дії</th>
       </tr>
     </thead>
 
     <tbody>
-      {% for user in context %}
+      {% for user in users %}
       <tr>
-        <td><input type="checkbox" class="user-checkbox"></td>
+        <!--<td><input type="checkbox" class="user-checkbox"></td>-->
         <td>{{ loop.index }}</td>
-        <td>{% if user.role_id %}
-              {{ user.role_id }}
-            {% else %}Невизначено{% endif %}
-        </td>
         <td>{{ user.name }}</td>
         <td>{{ user.login }}</td>
         <td>{{ user.email }}</td>
+        <td>{% if user.role_id %}
+              {{ user.role_name }}
+            {% else %}Невизначено{% endif %}
+        </td>
         <td>
           <a href="#">
             <span class="glyphicon glyphicon-pencil action" aria-hidden="true"></span>
           </a>
-          <a href="#">
+          <a href="{{ url_for('user_remove')}}{{ user.id_ }}">
             <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
           </a>
         </td>

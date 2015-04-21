@@ -31,6 +31,14 @@ def user_add():
     return controller.get_view_add_get()
 
 
+@app.route('/user_remove/', methods=['GET', 'POST'])
+@app.route('/user_remove/<int:id_>', methods=['GET', 'POST'])
+def user_remove(id_):
+    """Render page with users list"""
+
+    return controller.remove_user(id_=id_)
+
+
 @app.errorhandler(404)
 def page_not_found(error):
     """Render 404 error page"""

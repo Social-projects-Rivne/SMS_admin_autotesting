@@ -7,18 +7,17 @@
 {% block content %}
     <!--Start Main Page Content-->
 
-    <div class="row" id="form">
-      <div class="col-lg-12">
+    <div class="page-header" id="form">
         <form action="" method="post" class="form-horizontal">
           <p>Ви дійсно хочете видалити користувача ""?&nbsp;
             <input type="submit" value="Так" name="delete_button"
               class="btn btn-danger">
-            <input type="submit" value="Ні" name="cancel_button"
-              class="btn btn-default">
+            <a href="{{ url_for('users_list') }}">
+              <input type="button" value="Ні" name="cancel_button"
+                class="btn btn-default">
+            </a>
           </p>
-          <br>
         </form>
-      </div>
     </div>
 
     <!--End Main Page Content-->

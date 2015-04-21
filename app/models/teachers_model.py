@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import MySQLdb
+
 from app.utils.MySQLORM import MySQLORM
 
 class TeachersModel(object):
 	"""Class for Teachers Entity"""
 	def __init__(self):
-		self.get_orm('localhost', 'root', 'Bolo78G', 'SMSDB')
+		self.get_orm('localhost', 'root', 'Lofa666', 'SMSDB')
 
 	def get_orm(self, host, username, password, db):
 		self.orm = MySQLORM()
