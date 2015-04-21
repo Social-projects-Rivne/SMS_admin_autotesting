@@ -15,7 +15,10 @@ class TeachersModel(object):
 
 	def get_teacher_by_id(self, id_):
 		'''Method for getting dict of one teacher by id'''
-		return self.orm.get('Teachers', {'id' : '%s'} % id_)
+		sql = 'SELECT t.id id, t.name name, t.login login, t.password password, t.email email, r.role_name role_name, s.name school_name FROM Teachers t \
+		INNER JOIN Roles r ON r.id = t.role_id \
+		INNER JOIN Schools s ON s.id = t.school_id WHERE t.id = %s' % id_
+		return self.orm.mysql_do(sql)
 
 	def get_all_teachers(self):
 		'''Method for getting list of all teachers'''
@@ -36,7 +39,9 @@ class TeachersModel(object):
 		pass
 
 	def get_role_by_id(self, id_):
-		pass
+		'''Method for getting dict of one role by id'''
+		sql = 'SELECT id, role_name FROM Roles WHERE id = %s' % id_
+		return self.orm.mysql_do(sql)
 
 	def get_all_roles(self):
 		'''Method for getting list of dict all roles'''
