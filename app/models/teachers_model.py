@@ -5,7 +5,7 @@ import MySQLORM
 class TeachersModel(ModelToDB):
 	"""Class for Teachers Entity"""
 	def __init__(self):
-		get_orm('ss_sms_admin', 'root', 'password', 'ss_sms_db')
+		get_orm('ss_sms_admin', 'root', 'password', 'SMSDB')
 		
 	def get_orm(self, host, username, password, db):
 		self.orm = MySQLORM()
@@ -14,7 +14,7 @@ class TeachersModel(ModelToDB):
 
 	def get_teacher_by_id(self, id_):
 		'''Method for getting dict of one teacher by id'''
-		sqlresult = orm.get(teachers_table, {'id' : '%s'} % id_)
+		sqlresult = self.orm.get(teachers_table, {'id' : '%s'} % id_)
 		return create_dict(sqlresult)
 
 	def get_all_teachers(self):
@@ -22,11 +22,13 @@ class TeachersModel(ModelToDB):
 		sql = 'SELECT id, name, login, password, email from teachers_table \
 		INNER JOIN roles_table ON roles_table.id = teachers_table.role_id \
 		INNER JOIN schools_table ON schools_table.id = teachers_table.teacher_id'
-		sqlresult = orm.mysql_do(sql)
+		sqlresult = self.orm.mysql_do(sql)
         return create_list(sqlresult)
 
-	def pass
-
+	def add_teacher(self, **kwargs):
+		'''Method for adding new teacher, **kwarg - dictionary, for example: {'name':'Sasha', 'login' : 'sasha_login', ... e.t.c.}'''
+		sqlresult = self.orm.insert(table, 'name', 'login', 'passwd', kwargs['name'], kwargs['login'],kwargs['password'])
+        # TO DO
 	def update_teacher(self):
 		pass
 
