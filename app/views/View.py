@@ -16,18 +16,21 @@ class View(object):
         """Render 404 page"""
         return render_template('page_not_found.html')
 
+    def render_add_user(self):
+        """Render user add page"""
+        return render_template('user_add.html')
+
     def add_user_ok(self, name):
         """Render successfull user adding"""
         # display message on the users list page
         flash('%s was successfully added to database') % name
-        return redirect('users_list.html')
+        return redirect(url_for('users_list'))
 
     def add_user_err(self, **kwargs):
         """Render adding user error"""
         _data = kwargs
         return render_template('user_add.html', errors=_data)
 
-    def render_list_users(self, **kwargs):
+    def render_list_users(self, data):
         """Render users list"""
-        _data = kwargs
-        return render_template('users_list.html', users=_data)
+        return render_template('users_list.html', users=data)

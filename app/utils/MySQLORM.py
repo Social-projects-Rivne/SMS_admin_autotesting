@@ -9,12 +9,8 @@ class MySQLORM(object):
 
     def connect(self, host, username, password, db):
         """Connect to database"""
-        self.db = MySQLdb.connect(host, username, password, db)
+        self.db = MySQLdb.connect(host, username, password, db, charset='utf8')
         self.cursor = self.db.cursor(MySQLdb.cursors.DictCursor)
-        #self.db.set_character_set('utf8')
-        #self.cursor.execute('SET NAMES utf8;')
-        #self.cursor.execute('SET CHARACTER SET utf8;')
-        #self.cursor.execute('SET character_set_connection=utf8;')
 
     def mysql_do(self, sql):
         """Run MySQL operations"""
