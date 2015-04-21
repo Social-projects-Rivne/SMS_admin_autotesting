@@ -19,9 +19,9 @@ class TeachersModel(ModelToDB):
 
 	def get_all_teachers(self):
 		'''Method for getting list of all teachers'''
-		sql = SELECT id, name, login, password, email from teachers_table \
+		sql = 'SELECT id, name, login, password, email from teachers_table \
 		INNER JOIN roles_table ON roles_table.id = teachers_table.role_id \
-		INNER JOIN schools_table ON schools_table.id = teachers_table.teacher_id
+		INNER JOIN schools_table ON schools_table.id = teachers_table.teacher_id'
 		sqlresult = orm.mysql_do(sql)
         return create_list(sqlresult)
 
@@ -33,9 +33,6 @@ class TeachersModel(ModelToDB):
 	def delete_teacher(self):
 		pass
 
-
-	
-
 	def create_dict(self,sqlrow):
 		'''Helper method to create dictionary from sql row'''
 		sqlrow_dict = {
@@ -45,7 +42,7 @@ class TeachersModel(ModelToDB):
 		'password' : sqlrow[3],
 		'email' : sqlrow[4],
 		'role' : sqlrow[5],
-		'schole' : sqlrow[6],
+		'schoole' : sqlrow[6],
 		}
 		return sqlrow_dict
 	
