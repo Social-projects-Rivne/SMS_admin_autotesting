@@ -4,48 +4,22 @@
 
 from flask import request
 
+
+
 from app.views.view import View
 from app.models.teachers_model import TeachersModel
+from app.models.teachers_model_with_entity import Teacher, ExtendedTeachersModel
 
+import re
 
 class AdminController(object):
 
     """AdminController - user controller"""
 
     def __init__(self):
-        self.model = TeachersModel()
+        self.model = ExtendedTeachersModel()
         self.view = View()
 
-    def validate_on_submite(self, **kwargs):
-        """correct = true else false"""
-        self.message = dict()
-        # regex pattern
-        email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"
-        name_pattern = "^([A-Z])\w+\s([A-Z])\w+$"
-        login_pattern = "^[A-Za-z0-9]+$"
-        # check data
-        if not re.match(name_pattern, kwargs.get('name')):
-            self.message['name'] = 'Invalid name'
-
-        if not kwargs.get('role'):
-            self.message['role'] = 'Invalid role'
-
-        if not kwargs.get('password'):
-            self.message['password'] = 'Invalid password'
-
-        if not re.match(login_pattern, kwargs.get('login')):
-            self.message['login'] = 'Invalid login'
-
-        if not kwargs.get('school'):
-            self.message['school'] = 'Invalid school'
-
-        if not re.match(email_pattern, kwargs.get('email')):
-            self.message['email'] += 'Invalid email address'
-        # If validate return true
-        if self.message:
-            return False
-        else:
-            return True
 
     def get_index(self):
         """return index.html"""
@@ -67,48 +41,32 @@ class AdminController(object):
                  {'id': 3, 'role_name': 'Teacher'})
 
         if request.method == 'POST':
-
-            _name = request.form['name'].strip()
-            if not _name:
-                _errors['name'] = u"ПІБ є обов’язковим"
-
-            _login = request.form['login'].strip()
-            if not _login:
-                _errors['login'] = u"Логін є обов’язковим"
-
-            _password = request.form['password'].strip()
-            if not _password:
-                _errors['password'] = u"Пароль є обов’язковим"
-
-            _email = request.form['email'].strip()
-            if not _email:
-                _errors['email'] = u"Email є обов’язковим"
-
-            _role = request.form['user_role']
-            if not _role:
-                _errors['user_role'] = u"Виберіть права зі списку"
-
             # save user in case here isn't any mistakes
-            if not _errors:
+            if self._validate_on_submite(name = request.form['name']
+                                        ,login =request.form['login']
+                                        ,password = request.form['password']
+                                        ,email = request.form['email']
+                                        ,user_role =request.form['user_role']
+                                        ):
+                _name = request.form['name'].strip()
+                _login = request.form['login'].strip()
+                _password = request.form['password'].strip()
+                _email = request.form['email'].strip()
+                _role = request.form['user_role']
+
+                #create entity
+                _teacher = Teacher( None, _name, _login, _password, _email, 
+                                    _role, None, 
+                                    None, None)
+                
                 # TO DO:
                 # - save all data in DB
-
+                self.model.insert_teacher(_teacher)
                 # redirect to users list and make status message
                 return self.view.add_user_form_success(_name)
-
+            _errors = self.message
         # render empty user add form
         return self.view.render_add_user_form(_roles, _errors)
-
-    def get_view_add_post(self, **kwargs):
-        """view => user_add.html post"""
-        self.data = kwargs
-        if validate_on_submite(self.data):
-            #save data to db
-            self.model.set(self.data)
-            #return operation succes
-            return self.view.add_user_ok()
-        else:
-            return self.view.add_user_err(self.message)
 
     def get_view_all(self):
         """view => user_add.html get"""
@@ -117,3 +75,30 @@ class AdminController(object):
         #render page with all users
         return self.view.render_list_users(self.data)
 
+    def _validate_on_submite(self, **kwargs):
+        """correct = true else false"""
+        self.message = dict()
+        # regex pattern
+        email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"
+        name_pattern = "^([A-Z])\w+\s([A-Z])\w+$"
+        login_pattern = "^[A-Za-z0-9]+$"
+        # check data
+        if not re.match(name_pattern, kwargs.get('name')):
+            self.message['name'] = u'Некоректно введно імя'
+
+        if not kwargs.get('user_role'):
+            self.message['user_role'] = u'Виберіть роль'
+
+        if not kwargs.get('password'):
+            self.message['password'] = u'Введіть пароль'
+
+        if not re.match(login_pattern, kwargs.get('login')):
+            self.message['login'] = u'Некоректно введно логин'
+
+        if not re.match(email_pattern, kwargs.get('email')):
+            self.message['email'] = u'Некоректно введно емейл'
+        # If validate return true
+        if self.message:
+            return False
+        else:
+            return True
