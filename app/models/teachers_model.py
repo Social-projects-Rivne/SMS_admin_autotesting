@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import MySQLdb
-import MySQLORM
+from app.utils.MySQLORM import MySQLORM
 
-class TeachersModel(ModelToDB):
+class TeachersModel(object):
 	"""Class for Teachers Entity"""
 	def __init__(self):
 		get_orm('ss_sms_admin', 'root', 'password', 'SMSDB')
@@ -36,7 +36,7 @@ class TeachersModel(ModelToDB):
 		pass
 
 	def create_dict(self,sqlrow):
-		'''Helper method to create dictionary from sql row'''
+		'''Helper method to create dictionary from sqlrow'''
 		sqlrow_dict = {
 		'id' : sqlrow[0],
 		'name' : sqlrow[1],
