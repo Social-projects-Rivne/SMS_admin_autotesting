@@ -12,27 +12,18 @@
         <fieldset>
           <legend>Додати користувача системи</legend>
 
-          <div class="form-group {% if errors.lname %}has-error{% endif %}">
-            <label for="inputLname" class="col-lg-2 control-label">
-              Прізвище
+          <div class="form-group {% if errors.name %}has-error{% endif %}">
+            <label for="inputName" class="col-lg-2 control-label">
+              ПІБ
             </label>
             <div class="col-lg-3">
-              <input type="text" class="form-control" id="inputLname"
-                placeholder="Прізвище" name="lname" value="{{ request.lname }}">
+              <input type="text" class="form-control" id="inputName"
+                placeholder="ПІБ" name="name" value="{{ request.name }}">
               <span class="help-block"><!--Field for error message--></span>
             </div>
           </div>
 
-          <div class="form-group {% if errors %}has-error{% endif %}">
-            <label for="inputFname" class="col-lg-2 control-label">Ім’я</label>
-            <div class="col-lg-3">
-              <input type="text" class="form-control" id="inputFname"
-                placeholder="Ім’я" name="fname" value="">
-              <span class="help-block"><!--Field for error message--></span>
-            </div>
-          </div>
-
-          <div class="form-group {% if errors %}has-error{% endif %}">
+          <div class="form-group {% if errors.login %}has-error{% endif %}">
             <label for="inputLogin" class="col-lg-2 control-label">Логін</label>
             <div class="col-lg-3">
               <input type="text" class="form-control" id="inputLogin"
@@ -41,7 +32,7 @@
             </div>
           </div>
 
-          <div class="form-group {% if errors %}has-error{% endif %}">
+          <div class="form-group {% if errors.password %}has-error{% endif %}">
             <label for="inputPassword" class="col-lg-2 control-label">Пароль</label>
             <div class="col-lg-3">
               <input type="password" class="form-control" id="inputPassword"
@@ -50,7 +41,7 @@
             </div>
           </div>
 
-          <div class="form-group {% if errors %}has-error{% endif %}">
+          <div class="form-group {% if errors.email %}has-error{% endif %}">
             <label for="inputEmail" class="col-lg-2 control-label">Електронна скринька</label>
             <div class="col-lg-3">
               <input type="text" class="form-control" id="inputEmail"
@@ -59,7 +50,7 @@
             </div>
           </div>
 
-          <div class="form-group {% if errors %}has-error{% endif %}">
+          <div class="form-group {% if errors.roles %}has-error{% endif %}">
             <label for="user_role"
                 class="col-lg-2 control-label">
               Посада
@@ -79,7 +70,7 @@
 
           <div class="form-group">
             <div class="col-lg-10 col-lg-offset-2">
-              <a href="{{ url_for('index') }}">
+              <a href="{{ url_for('users_list') }}">
                 <button type="button" class="btn btn-default" name="cancel">
                   Відмінити
                 </button>
