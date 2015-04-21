@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from app.view import View
-from app.models import teachers_model
+from app.view.View import View
+from app.models.teachers_model.teachers_model import TeachersModel
 
 
 class AdminController(object):
@@ -20,7 +20,7 @@ class AdminController(object):
         name_pattern = "^([A-Z])\w+\s([A-Z])\w+$"
         login_pattern = "^[A-Za-z0-9]+$"
         # check data
-        if not kwargs.get('name') or not re.match(name_pattern, kwargs.get('name')):
+        if not re.match(name_pattern, kwargs.get('name')):
             self.message['name'] = 'Invalid name'
 
         if not kwargs.get('role'):
@@ -29,12 +29,12 @@ class AdminController(object):
         if not kwargs.get('password'):
             self.message['password'] = 'Invalid password'
 
-        if not kwargs.get('login') or not re.match(login_pattern, kwargs.get('login')):
+        if not re.match(login_pattern, kwargs.get('login')):
             self.message['login'] = 'Invalid login'
 
         if not kwargs.get('school'):
             self.message['school'] = 'Invalid school'
-            
+
         if not re.match(email_pattern, kwargs.get('email')):
             self.message['email'] += 'Invalid email address'
         # If validate return true
