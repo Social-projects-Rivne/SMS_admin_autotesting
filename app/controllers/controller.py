@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from app.view.View import View
-from app.models.teachers_model.teachers_model import TeachersModel
+from app.views.view import View
+from app.models.teachers_model import TeachersModel
 
 
 class AdminController(object):
@@ -9,7 +9,7 @@ class AdminController(object):
     """AdminController - user controller"""
 
     def __init__(self):
-        self.model = AdminModel()
+        self.model = TeachersModel()
         self.view = View()
 
     def validate_on_submite(self, **kwargs):
@@ -38,11 +38,11 @@ class AdminController(object):
         if not re.match(email_pattern, kwargs.get('email')):
             self.message['email'] += 'Invalid email address'
         # If validate return true
-        if self.message: 
+        if self.message:
             return False
-        else: 
+        else:
             return True
-    
+
     def get_index(self):
         """return index.html"""
         return self.view.render_index()
@@ -54,7 +54,7 @@ class AdminController(object):
     def get_view_add_get(self):
         """view => user_add.html get"""
         return self.view.add()
-    
+
     def get_view_add_post(self, **kwargs):
         """view => user_add.html post"""
         self.data = kwargs
