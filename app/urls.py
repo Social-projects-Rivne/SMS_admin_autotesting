@@ -12,23 +12,27 @@ controller = AdminController()
 @app.route('/')
 @app.route('/index')
 def index():
+    """Render main page"""
+
     return controller.get_index()
 
 
 @app.route('/users_list')
 def users_list():
+    """Render page with users list"""
+
     return controller.get_view_all()
 
 
 @app.route('/user_add', methods=['GET', 'POST'])
 def user_add():
-    roles = {}
-    errors = {}
-    return render_template('user_add.html', roles=roles, errors=errors)
-    #if request.method == 'POST':
-    #    return controller.get_view_add_get()
+    """Render page with users list"""
+
+    return controller.get_view_add_get()
 
 
 @app.errorhandler(404)
 def page_not_found(error):
+    """Render 404 error page"""
+
     return controller.get_error404()

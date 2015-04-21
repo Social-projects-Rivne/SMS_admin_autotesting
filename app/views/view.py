@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import render_template, redirect, flash
+from flask import render_template, redirect, flash, url_for
 
 
 class View(object):
@@ -16,20 +16,20 @@ class View(object):
         """Render 404 page"""
         return render_template('page_not_found.html')
 
-    def render_add_user(self):
+    def render_add_user_form(self, roles, errors):
         """Render user add page"""
-        return render_template('user_add.html')
+        return render_template('user_add.html', roles=roles, errors=errors)
 
-    def add_user_ok(self, name):
+    def add_user_form_success(self, name):
         """Render successfull user adding"""
         # display message on the users list page
-        flash('%s was successfully added to database') % name
+        flash(u'%s був успішно доданий до БД' % name)
         return redirect(url_for('users_list'))
 
-    def add_user_err(self, **kwargs):
-        """Render adding user error"""
-        _data = kwargs
-        return render_template('user_add.html', errors=_data)
+    #def add_user_err(self, _data):
+    #    """Render adding user error"""
+
+    #    return render_template('user_add.html', errors=_data)
 
     def render_list_users(self, data):
         """Render users list"""

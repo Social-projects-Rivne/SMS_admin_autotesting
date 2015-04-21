@@ -1,4 +1,8 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+
+from flask import request
 
 from app.views.view import View
 from app.models.teachers_model import TeachersModel
@@ -53,7 +57,47 @@ class AdminController(object):
 
     def get_view_add_get(self):
         """view => user_add.html get"""
-        return self.view.add()
+        # define variables for sendind to template
+        _errors = {}
+
+        # TO DO:
+        # get all roles from DB
+        _roles = ({'id': 1, 'role_name': 'Admin'},
+                 {'id': 2, 'role_name': 'Zav'},
+                 {'id': 3, 'role_name': 'Teacher'})
+
+        if request.method == 'POST':
+
+            _name = request.form['name'].strip()
+            if not _name:
+                _errors['name'] = u"ПІБ є обов’язковим"
+
+            _login = request.form['login'].strip()
+            if not _login:
+                _errors['login'] = u"Логін є обов’язковим"
+
+            _password = request.form['password'].strip()
+            if not _password:
+                _errors['password'] = u"Пароль є обов’язковим"
+
+            _email = request.form['email'].strip()
+            if not _email:
+                _errors['email'] = u"Email є обов’язковим"
+
+            _role = request.form['user_role']
+            if not _role:
+                _errors['user_role'] = u"Виберіть права зі списку"
+
+            # save user in case here isn't any mistakes
+            if not _errors:
+                # TO DO:
+                # - save all data in DB
+
+                # redirect to users list and make status message
+                return self.view.add_user_form_success(_name)
+
+        # render empty user add form
+        return self.view.render_add_user_form(_roles, _errors)
 
     def get_view_add_post(self, **kwargs):
         """view => user_add.html post"""
