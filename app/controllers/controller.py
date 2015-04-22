@@ -64,7 +64,6 @@ class AdminController(object):
                                    _password, _email, _role,
                                    None, None, None)
 
-                # TO DO:
                 # - save all data in DB
                 self.model.insert_teacher(_teacher)
                 # redirect to users list and make status message
@@ -73,17 +72,6 @@ class AdminController(object):
             _errors = self.message
         # render empty user add form
         return self.view.render_add_user_form(_roles, _errors)
-
-    def update(self, id_):
-        if request.method == 'POST' and request.form['update_button']:
-            _user = self.model.delete_teacher_by_id(id_)
-            for fields in _user:
-                name = fields.name
-            self.model.update_teacher_by_id(_user)
-            return self.view.remove_user_form_success(name)
-
-    def update_few(self, *id):
-        pass
 
     def remove_user(self, id_):
         """Delete user method"""
@@ -120,8 +108,28 @@ class AdminController(object):
             data = field
 
         if request.method == 'POST':
-            return self.view.add_user_form_success(data.name)
+            if self._validate_on_submite(name = request.form['name'].strip()
+                                        ,login =request.form['login'].strip()
+                                        ,password = request.form['password'].strip()
+                                        ,email = request.form['email'].strip()
+                                        ,user_role =request.form['user_role'].strip()
+                                        ):
 
+                _name = str(request.form['name'].strip())
+                _login = str(request.form['login'].strip())
+                _password = str(request.form['password'].strip())
+                _email = str(request.form['email'].strip())
+                _role = int(request.form['user_role'])
+
+                # create entity
+                _teacher = Teacher(int(id_), _name, _login,
+                                   _password, _email, _role,
+                                   None, None, None)
+
+                self.model.update_teacher_by_id(_teacher)
+                return self.view.add_user_form_success(data.name)
+
+            _errors = self.message
         return self.view.render_add_user_form(_roles, _errors, data)
 
 
@@ -132,10 +140,10 @@ class AdminController(object):
         self.message = dict()
         # regex pattern
         email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"
-        name_pattern = "^([A-ZА-Я])\w+\s([A-ZА-Я])\w+$"
+        name_pattern = "^([A-Z\p{Cyrillic}])\w\p{Cyrillic}+\s([A-Z{Cyrillic}])\w\p{Cyrillic}+$"
         login_pattern = "^[A-Za-z0-9]+$"
         # check data
-        if not re.match(name_pattern, kwargs.get('name')):
+        if not  kwargs.get('name'):
             self.message['name'] = u'Некоректно введно імя'
 
         if not kwargs.get('user_role'):
