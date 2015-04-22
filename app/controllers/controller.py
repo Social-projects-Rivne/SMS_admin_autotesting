@@ -53,11 +53,11 @@ class AdminController(object):
                                         ,email = request.form['email']
                                         ,user_role =request.form['user_role']
                                         ):
-                _name = request.form['name'].strip()
-                _login = request.form['login'].strip()
-                _password = request.form['password'].strip()
-                _email = request.form['email'].strip()
-                _role = request.form['user_role']
+                _name = str(request.form['name'].strip())
+                _login = str(request.form['login'].strip())
+                _password = str(request.form['password'].strip())
+                _email = str(request.form['email'].strip())
+                _role = int(request.form['user_role'])
 
                 # create entity
                 _teacher = Teacher(None, _name, _login,
@@ -73,6 +73,17 @@ class AdminController(object):
             _errors = self.message
         # render empty user add form
         return self.view.render_add_user_form(_roles, _errors)
+
+    def update(self, id_):
+        if request.method == 'POST' and request.form['update_button']:
+            _user = self.model.delete_teacher_by_id(id_)
+            for fields in _user:
+                name = fields.name
+            self.model.update_teacher_by_id(_user)
+            return self.view.remove_user_form_success(name)
+
+    def update_few(self, *id):
+        pass
 
     def remove_user(self, id_):
         """Delete user method"""
@@ -100,7 +111,7 @@ class AdminController(object):
         self.message = dict()
         # regex pattern
         email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"
-        name_pattern = "^([A-Z])\w+\s([A-Z])\w+$"
+        name_pattern = "^([A-ZА-Я])\w+\s([A-ZА-Я])\w+$"
         login_pattern = "^[A-Za-z0-9]+$"
         # check data
         if not re.match(name_pattern, kwargs.get('name')):
