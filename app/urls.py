@@ -38,6 +38,13 @@ def user_remove(id_):
 
     return controller.remove_user(id_=id_)
 
+@app.route('/user_upgrade/', methods=['GET', 'POST'])
+@app.route('/user_upgrade/<int:id_>', methods=['GET', 'POST'])
+def user_upgrade(id_):
+    """Return update user form"""
+
+    return controller.update_user(id_=id_)
+
 
 @app.errorhandler(404)
 def page_not_found(error):

@@ -35,7 +35,7 @@
             {% else %}Невизначено{% endif %}
         </td>
         <td>
-          <a href="#">
+          <a href="{{ url_for('user_upgrade')}}{{ user.id_ }}">
             <span class="glyphicon glyphicon-pencil action" aria-hidden="true"></span>
           </a>
           <a href="{{ url_for('user_remove')}}{{ user.id_ }}">

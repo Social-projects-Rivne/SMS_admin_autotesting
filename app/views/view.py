@@ -18,22 +18,23 @@ class View(object):
 
         return render_template('page_not_found.html')
 
-    def render_add_user_form(self, roles, errors):
+    def render_add_user_form(self, roles, errors, user=''):
         """Render user add page"""
 
-        return render_template('user_add.html', roles=roles, errors=errors)
+        return render_template('user_add.html', roles=roles,\
+                               errors=errors, user=user)
 
     def add_user_form_success(self, name):
         """Render successfull user adding"""
 
         # display message on the users list page
-        flash(u'%s був успішно доданий до БД' % name)
+        flash(u'%s був успішно внесений в БД' % name)
         return redirect(url_for('users_list'))
 
-    def render_confirm_delete(self):
+    def render_confirm_delete(self, name=''):
         """Returns confirm delete page"""
 
-        return render_template('confirm_delete.html')
+        return render_template('confirm_delete.html', name=name)
 
     def remove_user_form_success(self, name):
         """Render successfull user delete"""

@@ -21,7 +21,8 @@
             <div class="col-lg-3">
               <input type="text" class="form-control" id="inputName"
                 placeholder="ПІБ" name="name"
-                value="{{ request.form['name'] }}">
+                value="{% if user %}{{ user.name }}
+                       {% else %}{{ request.form['name'] }}{% endif %}">
               <span class="help-block">{{ errors.name }}</span>
             </div>
           </div>
@@ -31,7 +32,8 @@
             <div class="col-lg-3">
               <input type="text" class="form-control" id="inputLogin"
                 placeholder="Login" name="login"
-                value="{{ request.form['login'] }}">
+                value="{% if user %}{{ user.login }}
+                       {% else %}{{ request.form['login'] }}{% endif %}">
               <span class="help-block">{{ errors.login }}</span>
             </div>
           </div>
@@ -41,7 +43,8 @@
             <div class="col-lg-3">
               <input type="password" class="form-control" id="inputPassword"
                 placeholder="Password" name="password"
-                value="{{ request.form['password'] }}">
+                value="{% if user %}{{ user.password }}
+                       {% else %}{{ request.form['password'] }}{% endif %}">
               <span class="help-block">{{ errors.password }}</span>
             </div>
           </div>
@@ -51,7 +54,8 @@
             <div class="col-lg-3">
               <input type="text" class="form-control" id="inputEmail"
                 placeholder="Email" name="email"
-                value="{{ request.form['email'] }}">
+                value="{% if user %}{{ user.email }}
+                       {% else %}{{ request.form['email'] }}{% endif %}">
               <span class="help-block">{{ errors.email }}</span>
             </div>
           </div>

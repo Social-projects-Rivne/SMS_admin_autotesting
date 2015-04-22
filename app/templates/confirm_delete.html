@@ -9,7 +9,7 @@
 
     <div class="page-header" id="form">
         <form action="" method="post" class="form-horizontal">
-          <p>Ви дійсно хочете видалити користувача ""?&nbsp;
+          <p>Ви дійсно хочете видалити користувача "{{ name }}"?&nbsp;
             <input type="submit" value="Так" name="delete_button"
               class="btn btn-danger">
             <a href="{{ url_for('users_list') }}">

@@ -87,12 +87,14 @@ class AdminController(object):
 
     def remove_user(self, id_):
         """Delete user method"""
+
+        # get user by id
+        _user = self.model.get_teacher_by_id(id_)
+        # get name variable for status message
+        for fields in _user:
+            name = fields.name
         if request.method == 'POST' and request.form['delete_button']:
-            # get user by id
-            _user = self.model.get_teacher_by_id(id_)
-            # get name variable for status message
-            for fields in _user:
-                name = fields.name
+
             # delete user by id
             self.model.delete_teacher_by_id(id_)
 
@@ -103,7 +105,26 @@ class AdminController(object):
         #elif request.method == 'POST' and request.form['cancel_button']:
         #    return self.get_view_all()
 
-        return self.view.render_confirm_delete()
+        return self.view.render_confirm_delete(name)
+
+    def update_user(self, id_):
+        """Update user method"""
+        # define variables for sending to template
+        _errors = {}
+
+        # get all roles from DB
+        _roles = self.first_model.get_all_roles()
+
+        user = self.model.get_teacher_by_id(id_)
+        for field in user:
+            data = field
+
+        if request.method == 'POST':
+            return self.view.add_user_form_success(data.name)
+
+        return self.view.render_add_user_form(_roles, _errors, data)
+
+
 
 
     def _validate_on_submite(self, **kwargs):
