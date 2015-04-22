@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import re
 
 from flask import request
 
@@ -9,7 +10,6 @@ from app.models.teachers_model import TeachersModel
 from app.models.teachers_model_with_entity import Teacher,\
                                                   ExtendedTeachersModel
 
-import re
 
 class AdminController(object):
 
@@ -36,7 +36,7 @@ class AdminController(object):
         # render page with all users
         return self.view.render_list_users(self.data)
 
-    def get_view_add_get(self):
+    def user_add(self):
         """view => user_add.html get"""
         # define variables for sending to template
         _errors = {}
@@ -54,9 +54,9 @@ class AdminController(object):
                                         ,user_role =request.form['user_role']
                                         ):
                 _name = str(request.form['name'].strip())
-                _login = str(request.form['login'].strip())
+                _login = str(request.form['login'])
                 _password = str(request.form['password'].strip())
-                _email = str(request.form['email'].strip())
+                _email = str(request.form['email'])
                 _role = int(request.form['user_role'])
 
                 # create entity
@@ -71,7 +71,7 @@ class AdminController(object):
 
             _errors = self.message
         # render empty user add form
-        return self.view.render_add_user_form(_roles, _errors)
+        return self.view.render_user_form(_roles, _errors)
 
     def remove_user(self, id_):
         """Delete user method"""
@@ -115,7 +115,7 @@ class AdminController(object):
                                         ,user_role =request.form['user_role'].strip()
                                         ):
 
-                _name = str(request.form['name'].strip())
+                _name = unicode(request.form['name'].strip())
                 _login = str(request.form['login'].strip())
                 _password = str(request.form['password'].strip())
                 _email = str(request.form['email'].strip())
@@ -130,7 +130,7 @@ class AdminController(object):
                 return self.view.add_user_form_success(data.name)
 
             _errors = self.message
-        return self.view.render_add_user_form(_roles, _errors, data)
+        return self.view.render_user_form(_roles, _errors, data)
 
 
 
@@ -143,7 +143,7 @@ class AdminController(object):
         name_pattern = "^([A-Z\p{Cyrillic}])\w\p{Cyrillic}+\s([A-Z{Cyrillic}])\w\p{Cyrillic}+$"
         login_pattern = "^[A-Za-z0-9]+$"
         # check data
-        if not  kwargs.get('name'):
+        if not kwargs.get('name'):
             self.message['name'] = u'Некоректно введно імя'
 
         if not kwargs.get('user_role'):

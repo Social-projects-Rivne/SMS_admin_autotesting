@@ -12,15 +12,19 @@
         <!--TO DO: implement CSRF security-->
         {{ csrf_token }}
         <fieldset>
-          <legend>Додати користувача системи</legend>
+          {% if 'user_add' in request.path %}
+            <legend>Додати користувача системи</legend>
+          {% else %}
+            <legend>Редагувати користувача</legend>
+          {% endif %}
 
           <div class="form-group {% if errors.name %}has-error{% endif %}">
             <label for="inputName" class="col-xs-2 control-label">
-              ПІБ
+              ПІБ<p class="required-field">&lowast;</p>
             </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputName"
-                placeholder="ПІБ" name="name"
+                placeholder="Ющенко Віктор Андрійович" name="name"
                 value="{% if user %}{{ user.name }}
                        {% else %}{{ request.form['name'] }}{% endif %}">
               <span class="help-block">{{ errors.name }}</span>
@@ -28,7 +32,9 @@
           </div>
 
           <div class="form-group {% if errors.login %}has-error{% endif %}">
-            <label for="inputLogin" class="col-xs-2 control-label">Логін</label>
+            <label for="inputLogin" class="col-xs-2 control-label">
+              Логін<p class="required-field">&lowast;</p>
+            </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputLogin"
                 placeholder="Login" name="login"
@@ -39,7 +45,9 @@
           </div>
 
           <div class="form-group {% if errors.password %}has-error{% endif %}">
-            <label for="inputPassword" class="col-xs-2 control-label">Пароль</label>
+            <label for="inputPassword" class="col-xs-2 control-label">
+              Пароль<p class="required-field">&lowast;</p>
+            </label>
             <div class="col-xs-3">
               <input type="password" class="form-control" id="inputPassword"
                 placeholder="Password" name="password"
@@ -50,10 +58,12 @@
           </div>
 
           <div class="form-group {% if errors.email %}has-error{% endif %}">
-            <label for="inputEmail" class="col-xs-2 control-label">Електронна скринька</label>
+            <label for="inputEmail" class="col-xs-2 control-label">
+             Електронна пошта<p class="required-field">&lowast;</p>
+            </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputEmail"
-                placeholder="Email" name="email"
+                placeholder="example@gmail.com" name="email"
                 value="{% if user %}{{ user.email }}
                        {% else %}{{ request.form['email'] }}{% endif %}">
               <span class="help-block">{{ errors.email }}</span>
@@ -63,7 +73,7 @@
           <div class="form-group {% if errors.user_role %}has-error{% endif %}">
             <label for="user_role"
                 class="col-xs-2 control-label">
-              Посада
+              Посада<p class="required-field">&lowast;</p>
             </label>
             <div class="col-xs-3">
               <select class="form-control" name="user_role" id="user_role">
@@ -95,6 +105,9 @@
           </div><!-- /.form-group -->
         </fieldset>
       </form>
+      <p class="form-description col-xs-offset-2">
+        &lowast; &mdash; поля обов'язкові для заповнення.
+      </p>
     </div><!-- /.col-xs-12 -->
   </div><!-- /.row -->
   <!--End Main Page Content-->

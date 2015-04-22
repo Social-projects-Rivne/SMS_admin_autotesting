@@ -2,6 +2,19 @@
     display: inline;
 }
 
+.required-field {
+    display: inline;
+    font-size: 10px;
+    color: #CD661D;
+}
+
+.form-description {
+    font-size: 10px;
+    color: #9E9696;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
 span[class$="action"] {
     margin-right: 15px;
 }

@@ -18,7 +18,7 @@ class View(object):
 
         return render_template('page_not_found.html')
 
-    def render_add_user_form(self, roles, errors, user=''):
+    def render_user_form(self, roles, errors, user=''):
         """Render user add page"""
 
         return render_template('user_add.html', roles=roles,\
