@@ -9,7 +9,7 @@ sys.path.append(DB_ROOT)
 
 from db import credentials
 
-# flask configuratiion
+# flask configuration
 
 CSRF_ENABLED = True
 SECRET_KEY = 'q1234567890q'

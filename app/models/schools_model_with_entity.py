@@ -19,8 +19,8 @@ class ExtendedSchoolsModel(object):
 
     """This class is used to retrieve data about schools from DB"""
 
-    select_schools_query = ' SELECT id, name, address  \
-                            FROM Schools '
+    select_schools_query = 'SELECT id, name, address \
+                            FROM Schools'
 
     def __init__(self):
         pass
@@ -42,12 +42,12 @@ class ExtendedSchoolsModel(object):
 
     def get_school_by_id(self, id_):
         """Get school by given id"""
-        return self._get_schools('WHERE t.id=%d' % (id_))
+        return self._get_schools('WHERE id=%d' % (id_))
 
     def update_school_by_id(self, school):
         """Update school by id"""
         orm = self.initORM()
-        orm.update('schools', 'name="%s", address="%s"' %
+        orm.update('Schools', 'name="%s", address="%s"' %
                    (school.name, school.address),
                    'id=%d' % (school.id_))
         orm.close()
@@ -55,13 +55,13 @@ class ExtendedSchoolsModel(object):
     def delete_school_by_id(self, id_):
         """Delete school by given id"""
         orm = self.initORM()
-        orm.delete('schools', 'id = %d' % (id_))
+        orm.delete('Schools', 'id = %d' % (id_))
         orm.close()
 
     def insert_school(self, school):
         """Insert school into DB"""
         orm = self.initORM()
-        orm.insert('schools', ('name', 'address'),
+        orm.insert('Schools', ('name', 'address'),
                    (school.name, school.address))
         orm.close()
 

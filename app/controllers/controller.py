@@ -59,7 +59,7 @@ class AdminController(object):
                                         ,email = request.form['email']
                                         ,user_role =request.form['user_role']
                                         ):
-                _teacher = self.create_entity_teacher()
+                _teacher = self._create_entity_teacher()
                 _teacher.name = str(_teacher.name).encode("UTF-8")
                 # - save all data in DB
                 self.teacher_model.insert_teacher(_teacher)
@@ -113,7 +113,7 @@ class AdminController(object):
                                         ):
 
                 # create entity
-                _teacher = self.create_entity_teacher()
+                _teacher = self._create_entity_teacher()
                 _teacher.id_ = int(id_)
 
                 self.teacher_model.update_teacher_by_id(_teacher)
@@ -151,14 +151,17 @@ class AdminController(object):
 
         for field in _school:
             data = field
+
         if request.method == 'POST':
+
+            # create entity
             _school = self._create_entity_school()
-            _school.id_ = id_
-            school_model.update_school_by_id(_school)
+            _school.id_ = int(id_)
+            self.school_model.update_school_by_id(_school)
 
-            return self.view.add_school_form_success(_name)
+            return self.view.add_school_form_success(_school.name)
 
-        return self.view.render_school_form(_school, _errors)
+        return self.view.render_school_form(_errors, data)
 
     def remove_school(self, id_):
         """delete school by id"""
@@ -183,7 +186,7 @@ class AdminController(object):
 
         return School(None, _name, _address)
 
-    def create_entity_teacher(self):
+    def _create_entity_teacher(self):
         """entity Teacher"""
         _name = unicode(request.form['name'])
         _login = str(request.form['login'].strip())
