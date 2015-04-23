@@ -8,14 +8,15 @@
   <!--Start Main Page Content-->
   <div class="jumbotron">
     <h2>Сервіс керування персоналом</h2>
-    <p class="lead">Даний сервіс надає доступ для внесення користувачів майбутньої аплікації</p>
+    <p class="lead">Даний сервіс надає доступ для внесення користувачів, шкіл,
+      та предметів майбутньої аплікації</p>
     <br>
-    <nav>
-      <ul class="pager">
-        <li><a href="{{ url_for('users_list') }}">Перегляд</a></li>
-        <li><a href="{{ url_for('user_add') }}">Додати</a></li>
-      </ul>
-    </nav>
+    <p>
+      <a class="btn btn-lg btn-success" href="{{ url_for('users_list') }}"
+          role="button">
+        До роботи
+      </a>
+    </p>
   </div><!-- /.jumbotron -->
   <!--End Main Page Content-->
 {% endblock %}

@@ -6,9 +6,11 @@
 
 {% block content %}
   <!--Start Main Page Content-->
-  <div class="page-header">
-    <h3 class="inline_link">Сторінку не знайдено! </h3>
-    <a class="inline_link" href="{{ url_for('index') }}">На головну</a>
+  <div class="panel panel-warning">
+    <div class="panel-body">
+        <h3 class="inline_link">Сторінку не знайдено! </h3>
+        <a class="inline_link" href="{{ url_for('index') }}">На головну</a>
+    </div>
   </div>
   <!--End Main Page Content-->
 {% endblock %}
