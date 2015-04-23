@@ -60,6 +60,11 @@ body {
   line-height: 40px;
 }
 
+/*Table styles*/
+.col-width-1 { width: 10%; }
+
+.col-width-4{ width: 40%; }
+
 /* Custom page footer */
 .footer {
   padding-top: 19px;
