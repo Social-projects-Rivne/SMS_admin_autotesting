@@ -44,10 +44,12 @@ class ExtendedTeachersModel(object):
 
     def initORM(self):
         """Make connect to database"""
+
         host = credentials[0]
         username = credentials[1]
         password = credentials[2]
         db = credentials[3]
+
         orm = MySQLORM()
         orm.connect(host, username, password, db)
         return orm

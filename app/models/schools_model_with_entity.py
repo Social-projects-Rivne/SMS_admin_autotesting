@@ -27,6 +27,7 @@ class ExtendedSchoolsModel(object):
 
     def initORM(self):
         """Make connect to database"""
+
         host = credentials[0]
         username = credentials[1]
         password = credentials[2]
@@ -71,7 +72,7 @@ class ExtendedSchoolsModel(object):
             id_ = row["id"]
             name = row["name"]
             address = row["address"]
-            school = school(id_, name, address)
+            school = School(id_, name, address)
             schools.append(school)
         return schools
 

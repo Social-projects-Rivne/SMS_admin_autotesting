@@ -69,7 +69,7 @@ if __name__ == '__main__':
     testdb = MySQLORM()
 
     print('Connecting to database')
-    testdb.connect('localhost', 'mysqluser', 'passwrd', 'TESTDB')
+    testdb.connect('localhost', 'mysqluser', '123456', 'TESTDB')
 
     print('Executing any query')
     testdb.mysql_do('drop table if exists Test')

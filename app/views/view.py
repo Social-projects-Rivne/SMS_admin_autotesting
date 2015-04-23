@@ -47,3 +47,11 @@ class View(object):
         """Render users list"""
 
         return render_template('users_list.html', users=data)
+
+    def render_list_schools(self, data):
+        """Render schools list"""
+        return render_template('schools_list.html', schools=data)
+
+    def render_school_form(self, errors):
+        """ """
+        return render_template('school_add.html', errors=errors)

@@ -9,6 +9,10 @@ from app.views.view import View
 from app.models.teachers_model import TeachersModel
 from app.models.teachers_model_with_entity import Teacher,\
                                                   ExtendedTeachersModel
+from app.models.subjects_model_with_entity import Subject, \
+                                                   ExtendedSubjectsModel
+from app.models.schools_model_with_entity import School, \
+                                                   ExtendedSchoolsModel
 
 
 class AdminController(object):
@@ -17,7 +21,9 @@ class AdminController(object):
 
     def __init__(self):
         self.first_model = TeachersModel()
-        self.model = ExtendedTeachersModel()
+        self.teacher_model = ExtendedTeachersModel()
+        self.subject_model = ExtendedSubjectsModel()
+        self.school_model = ExtendedSchoolsModel()
         self.view = View()
 
 
@@ -32,7 +38,7 @@ class AdminController(object):
     def get_view_all(self):
         """view => user_add.html get"""
         # get data from db
-        self.data = self.model.get_all_teachers()
+        self.data = self.teacher_model.get_all_teachers()
         # render page with all users
         return self.view.render_list_users(self.data)
 
@@ -53,21 +59,12 @@ class AdminController(object):
                                         ,email = request.form['email']
                                         ,user_role =request.form['user_role']
                                         ):
-                _name = str(request.form['name'].strip())
-                _login = str(request.form['login'])
-                _password = str(request.form['password'].strip())
-                _email = str(request.form['email'])
-                _role = int(request.form['user_role'])
-
-                # create entity
-                _teacher = Teacher(None, _name, _login,
-                                   _password, _email, _role,
-                                   None, None, None)
-
+                _teacher = self.create_entity_teacher()
+                _teacher.name = str(_teacher.name).encode("UTF-8")
                 # - save all data in DB
-                self.model.insert_teacher(_teacher)
+                self.teacher_model.insert_teacher(_teacher)
                 # redirect to users list and make status message
-                return self.view.add_user_form_success(_name)
+                return self.view.add_user_form_success(_teacher.name)
 
             _errors = self.message
         # render empty user add form
@@ -77,14 +74,14 @@ class AdminController(object):
         """Delete user method"""
 
         # get user by id
-        _user = self.model.get_teacher_by_id(id_)
+        _user = self.teacher_model.get_teacher_by_id(id_)
         # get name variable for status message
         for fields in _user:
             name = fields.name
         if request.method == 'POST' and request.form['delete_button']:
 
             # delete user by id
-            self.model.delete_teacher_by_id(id_)
+            self.teacher_model.delete_teacher_by_id(id_)
 
             return self.view.remove_user_form_success(name)
 
@@ -103,40 +100,104 @@ class AdminController(object):
         # get all roles from DB
         _roles = self.first_model.get_all_roles()
 
-        user = self.model.get_teacher_by_id(id_)
+        user = self.teacher_model.get_teacher_by_id(id_)
         for field in user:
             data = field
 
         if request.method == 'POST':
-            if self._validate_on_submite(name = request.form['name'].strip()
-                                        ,login =request.form['login'].strip()
-                                        ,password = request.form['password'].strip()
-                                        ,email = request.form['email'].strip()
-                                        ,user_role =request.form['user_role'].strip()
+            if self._validate_on_submite(name = request.form['name']
+                                        ,login =request.form['login']
+                                        ,password = request.form['password']
+                                        ,email = request.form['email']
+                                        ,user_role =request.form['user_role']
                                         ):
 
-                _name = unicode(request.form['name'].strip())
-                _login = str(request.form['login'].strip())
-                _password = str(request.form['password'].strip())
-                _email = str(request.form['email'].strip())
-                _role = int(request.form['user_role'])
-
                 # create entity
-                _teacher = Teacher(int(id_), _name, _login,
-                                   _password, _email, _role,
-                                   None, None, None)
-
-                self.model.update_teacher_by_id(_teacher)
+                _teacher = self.create_entity_teacher()
+                _teacher.id_ = int(id_)
+                
+                self.teacher_model.update_teacher_by_id(_teacher)
                 return self.view.add_user_form_success(data.name)
 
             _errors = self.message
         return self.view.render_user_form(_roles, _errors, data)
 
 
+    #school CRUD
+    #---------------------------------------------------
+    def get_view_all_schools(self):
+        """return list all school"""
+        # get data from db
+        self.data = self.school_model.get_all_schools()
+        # render page with all users
+        return self.view.render_list_schools(self.data) 
 
+    def get_view_add_school(self):
+        """add new school"""
+        _errors = {}
+
+        if request.method == 'POST':
+            _school = self._create_entity_school()
+            self.school_model.insert_school(_school)
+            return self.view.add_user_form_success(_school.name)
+
+        return self.view.render_school_form(_errors)
+
+    def update_school(self, id_):
+        """update school by id"""
+        _errors = {}
+
+        _school = self.school_model.get_school_by_id(id_)
+        
+        for field in _school:
+            data = field
+        if request.method == 'POST':
+            _school = self._create_entity_school()
+            _school.id_ = id_
+            school_model.update_school_by_id(_school)
+
+            return self.view.add_school_form_success(_name)
+
+        return self.view.render_school_form(_school, _errors)
+
+    def school_delete(self, id_):
+        """delete school by id"""
+        _errors = {}
+        _school = self._school_model.get_school_by_id(id_)
+
+        for field in _school:
+            name = field.name
+
+        if request.method == 'POST':
+            _school = self._create_entity_school()
+            return self.view.remove_school_form_success(_school.name)
+
+        return self.view.render_confirm_delete(name)
+    
+
+    #---------------------------------------------
+    def _create_entity_school(self):
+        """entity School"""
+        _name = str(request.form['name'])
+        _address = str(request.form['address'])
+            
+        return School(None, _name, _address)
+
+    def create_entity_teacher(self):
+        """entity Teacher"""
+        _name = unicode(request.form['name'])
+        _login = str(request.form['login'].strip())
+        _password = str(request.form['password'].strip())
+        _email = str(request.form['email'])
+        _role = int(request.form['user_role'])
+
+        # create entity
+        return Teacher(None, _name, _login,
+                           _password, _email, _role,
+                           None, None, None)
 
     def _validate_on_submite(self, **kwargs):
-        """correct = true else false"""
+        """validate request data from form"""
         self.message = dict()
         # regex pattern
         email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"

@@ -9,6 +9,7 @@ class TeachersModel(object):
 	def __init__(self):
 		self.get_orm(*credentials)
 
+
 	def get_orm(self, host, username, password, db):
 		self.orm = MySQLORM()
 		self.orm.connect(host, username, password, db)
