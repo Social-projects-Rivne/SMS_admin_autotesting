@@ -42,14 +42,7 @@ def user_upgrade(id_):
     """Return update user form"""
     return controller.update_user(id_=id_)
 
-
-@app.errorhandler(404)
-def page_not_found(error):
-    """Return 404 error page"""
-    return controller.get_error404()
-
 #---Routes for schools----
-
 
 @app.route('/schools_list')
 def schools_list():
@@ -63,21 +56,20 @@ def school_add():
     return controller.get_view_add_school()
 
 
-@app.route('/school_remove/', methods=['GET', 'POST'])
+@app.route('/school_remove/')
 @app.route('/school_remove/<int:id_>', methods=['GET', 'POST'])
 def school_remove(id_):
     """Return page with school_remove"""
     return controller.remove_school(id_=id_)
 
 
-@app.route('/school_upgrade/', methods=['GET', 'POST'])
+@app.route('/school_upgrade/')
 @app.route('/school_upgrade/<int:id_>', methods=['GET', 'POST'])
 def school_upgrade(id_):
     """Return update school form"""
     return controller.update_school(id_=id_)
 
 #---Routes for subjects----
-
 
 @app.route('/subjects_list')
 def subjects_list():
@@ -91,15 +83,22 @@ def subject_add():
     return controller.get_view_add_subject()
 
 
-@app.route('/subject_remove/', methods=['GET', 'POST'])
+@app.route('/subject_remove/')
 @app.route('/subject_remove/<int:id_>', methods=['GET', 'POST'])
 def subject_remove(id_):
     """Return page with subject_remove"""
     return controller.remove_subject(id_=id_)
 
 
-@app.route('/subject_upgrade/', methods=['GET', 'POST'])
+@app.route('/subject_upgrade/')
 @app.route('/subject_upgrade/<int:id_>', methods=['GET', 'POST'])
 def subject_upgrade(id_):
     """Return update subject form"""
     return controller.update_subject(id_=id_)
+
+#---Routes for error----
+
+@app.errorhandler(404)
+def page_not_found(error):
+    """Return 404 error page"""
+    return controller.get_error404()
