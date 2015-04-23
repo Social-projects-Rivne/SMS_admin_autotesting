@@ -165,15 +165,16 @@ class AdminController(object):
 
     def remove_school(self, id_):
         """delete school by id"""
-        _errors = {}
-        _school = self._school_model.get_school_by_id(id_)
+        _school = self.school_model.get_school_by_id(id_)
 
         for field in _school:
             name = field.name
 
         if request.method == 'POST':
-            _school = self._create_entity_school()
-            return self.view.remove_school_form_success(_school.name)
+
+            # delete school by id
+            self.school_model.delete_school_by_id(id_)
+            return self.view.remove_school_form_success(name)
 
         return self.view.render_confirm_delete(name)
 
