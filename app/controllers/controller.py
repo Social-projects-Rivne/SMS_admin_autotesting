@@ -115,7 +115,7 @@ class AdminController(object):
                 # create entity
                 _teacher = self.create_entity_teacher()
                 _teacher.id_ = int(id_)
-                
+
                 self.teacher_model.update_teacher_by_id(_teacher)
                 return self.view.add_user_form_success(data.name)
 
@@ -129,8 +129,8 @@ class AdminController(object):
         """return list all school"""
         # get data from db
         self.data = self.school_model.get_all_schools()
-        # render page with all users
-        return self.view.render_list_schools(self.data) 
+        # render page with all schools
+        return self.view.render_list_schools(self.data)
 
     def get_view_add_school(self):
         """add new school"""
@@ -139,7 +139,7 @@ class AdminController(object):
         if request.method == 'POST':
             _school = self._create_entity_school()
             self.school_model.insert_school(_school)
-            return self.view.add_user_form_success(_school.name)
+            return self.view.add_school_form_success(_school.name)
 
         return self.view.render_school_form(_errors)
 
@@ -148,7 +148,7 @@ class AdminController(object):
         _errors = {}
 
         _school = self.school_model.get_school_by_id(id_)
-        
+
         for field in _school:
             data = field
         if request.method == 'POST':
@@ -160,7 +160,7 @@ class AdminController(object):
 
         return self.view.render_school_form(_school, _errors)
 
-    def school_delete(self, id_):
+    def remove_school(self, id_):
         """delete school by id"""
         _errors = {}
         _school = self._school_model.get_school_by_id(id_)
@@ -173,14 +173,14 @@ class AdminController(object):
             return self.view.remove_school_form_success(_school.name)
 
         return self.view.render_confirm_delete(name)
-    
+
 
     #---------------------------------------------
     def _create_entity_school(self):
         """entity School"""
         _name = str(request.form['name'])
         _address = str(request.form['address'])
-            
+
         return School(None, _name, _address)
 
     def create_entity_teacher(self):

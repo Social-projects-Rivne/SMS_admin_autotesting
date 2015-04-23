@@ -8,15 +8,21 @@
   <!--Start Main Page Content-->
   <div class="row" id="form">
     <div class="col-xs-12">
+      <div class="page-header">
+          {% if 'school_add' in request.path %}
+            <h3>Додати школу</h3>
+          {% else %}
+            <h3>Редагувати школу</h3>
+          {% endif %}
+      </div><!-- /.page-header -->
+
       <form action="" class="form-horizontal" method="POST" role="form">
         <!--TO DO: implement CSRF security-->
         {{ csrf_token }}
-        <fieldset>
-          <legend>Додати школу</legend>
 
           <div class="form-group {% if errors.name %}has-error{% endif %}">
             <label for="inputName" class="col-xs-2 control-label">
-              Назва
+              Назва<p class="required-field">&lowast;</p>
             </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputName"
@@ -28,7 +34,9 @@
           </div>
 
           <div class="form-group {% if errors.address %}has-error{% endif %}">
-            <label for="inputAddress" class="col-xs-2 control-label">Адреса</label>
+            <label for="inputAddress" class="col-xs-2 control-label">
+              Адреса<p class="required-field">&lowast;</p>
+            </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputAddress"
                 placeholder="Адреса" name="address"
@@ -36,7 +44,7 @@
                        {% else %}{{ request.form['address'] }}{% endif %}">
               <span class="help-block">{{ errors.address }}</span>
             </div>
-          </div>
+          </div><!-- /.form-group -->
 
           <div class="form-group">
             <div class="col-xs-10 col-xs-offset-2">
@@ -50,8 +58,13 @@
               </button>
             </div><!-- /.col-xs-10 col-xs-offset-2 -->
           </div><!-- /.form-group -->
-        </fieldset>
+
       </form>
+
+      <p class="form-description col-xs-offset-2">
+        &lowast; &mdash; поля обов'язкові для заповнення.
+      </p>
+
     </div><!-- /.col-xs-12 -->
   </div><!-- /.row -->
   <!--End Main Page Content-->

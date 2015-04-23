@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from app.utils.MySQLORM import MySQLORM
+from app.utils.dbdriver import MySQLORM
 from config import credentials
 
 

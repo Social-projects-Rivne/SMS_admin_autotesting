@@ -48,10 +48,28 @@ class View(object):
 
         return render_template('users_list.html', users=data)
 
+    #---View for schools----
+
     def render_list_schools(self, data):
         """Render schools list"""
+
         return render_template('schools_list.html', schools=data)
 
-    def render_school_form(self, errors):
-        """ """
-        return render_template('school_add.html', errors=errors)
+    def render_school_form(self, errors, school=''):
+        """Render school add page"""
+
+        return render_template('school_add.html', errors=errors, school=school)
+
+    def add_school_form_success(self, name):
+        """Render successfull school adding"""
+
+        # display message on the schools list page
+        flash(u'%s була успішно внесена в БД' % name)
+        return redirect(url_for('schools_list'))
+
+    def remove_school_form_success(self, name):
+        """Render successfull school delete"""
+
+        # display message on the schools list page
+        flash(u'%s була успішно видалена з БД' % name)
+        return redirect(url_for('schools_list'))

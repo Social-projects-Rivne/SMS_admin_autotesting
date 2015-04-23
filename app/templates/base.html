@@ -22,7 +22,7 @@
         <h3 class="text-muted">School Management Services</h3>
       </div>
 
-      {% if 'index' not in request.path %}
+      {% if 'index' not in request.path and request.path != '/' %}
       <!--Navigation menu-->
       <ul class="nav nav-tabs">
         <li role="presentation"

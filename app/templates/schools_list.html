@@ -6,37 +6,40 @@
 
 {% block content %}
 <!--Start Main Page Content-->
+
   <div class="page-header">
       <h3>Список шкіл</h3>
   </div><!-- /.page-header -->
-  <table class="table table-hover table-striped">
-    <thead>
-      <tr>
-        <th>№</th>
-        <th>Назва</th>
-        <th>Адреса</th>
-        <th>Дії</th>
-      </tr>
-    </thead>
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Назва</th>
+          <th>Адреса</th>
+          <th>Дії</th>
+        </tr>
+      </thead>
 
-    <tbody>
-      {% for school in schools %}
-      <tr>
-        <td>{{ loop.index }}</td>
-        <td>{{ school.name }}</td>
-        <td>{{ school.address }}</td>
-        <td>
-          <a href="{{ url_for('school_upgrade')}}{{ school.id_ }}">
-            <span class="glyphicon glyphicon-pencil action" aria-hidden="true"></span>
-          </a>
-          <a href="{{ url_for('school_remove')}}{{ school.id_ }}">
-            <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-          </a>
-        </td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+      <tbody>
+        {% for school in schools %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ school.name }}</td>
+          <td>{{ school.address }}</td>
+          <td>
+            <a href="{{ url_for('school_upgrade')}}{{ school.id_ }}">
+              <span class="glyphicon glyphicon-pencil action" aria-hidden="true"></span>
+            </a>
+            <a href="{{ url_for('school_remove')}}{{ school.id_ }}">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 
   <div class="row">
     <div class="col-lg-10 col-lg-offset-2">
