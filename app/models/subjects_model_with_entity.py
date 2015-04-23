@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from app.utils.MySQLORM import MySQLORM
+from config import credentials
+
 
 class Subject(object):
 
@@ -10,7 +12,8 @@ class Subject(object):
     def __init__(self, id_, name):
         self.id_ = id_
         self.name = name
-		
+
+
 class ExtendedSubjectsModel(object):
 
     """This class is used to retrieve data about subjects from DB"""
@@ -23,10 +26,10 @@ class ExtendedSubjectsModel(object):
 
     def initORM(self):
         """Make connect to database"""
-        host = 'localhost'
-        username = 'root'
-        db = 'SMSDB'
-        password = 'Lofa666'
+        host = credentials[0]
+        username = credentials[1]
+        password = credentials[2]
+        db = credentials[3]
         orm = MySQLORM()
         orm.connect(host, username, password, db)
         return orm
@@ -42,7 +45,7 @@ class ExtendedSubjectsModel(object):
     def update_subject_by_id(self, subject):
         """Update subject by id"""
         orm = self.initORM()
-        orm.update('subjects', 'name="%s"'  %
+        orm.update('subjects', 'name="%s"' %
                    (subject.name),
                    'id=%d' % (subject.id_))
         orm.close()

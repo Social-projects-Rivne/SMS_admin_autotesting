@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 from app.utils.MySQLORM import MySQLORM
+from config import credentials
 
 class TeachersModel(object):
 	"""Class for Teachers Entity"""
 	def __init__(self):
-		self.get_orm('localhost', 'root', 'Lofa666', 'SMSDB')
+		self.get_orm(*credentials)
 
 	def get_orm(self, host, username, password, db):
 		self.orm = MySQLORM()

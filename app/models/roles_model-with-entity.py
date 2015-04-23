@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from app.utils.MySQLORM import MySQLORM
+from config import credentials
+
 
 class Role(object):
 
@@ -10,7 +12,7 @@ class Role(object):
     def __init__(self, id_, role_name):
         self.id_ = id_
         self.role_name = role_name
-		
+
 class ExtendedRolesModel(object):
 
     """This class is used to retrieve data about roles from DB"""
@@ -23,10 +25,10 @@ class ExtendedRolesModel(object):
 
     def initORM(self):
         """Make connect to database"""
-        host = 'localhost'
-        username = 'root'
-        db = 'SMSDB'
-        password = 'Lofa666'
+        host = credentials[0]
+        username = credentials[1]
+        password = credentials[2]
+        db = credentials[3]
         orm = MySQLORM()
         orm.connect(host, username, password, db)
         return orm

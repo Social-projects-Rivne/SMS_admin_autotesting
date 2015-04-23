@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from app.utils.MySQLORM import MySQLORM
+from config import credentials
 
 
 class Teacher(object):
@@ -43,10 +44,10 @@ class ExtendedTeachersModel(object):
 
     def initORM(self):
         """Make connect to database"""
-        host = 'localhost'
-        username = 'root'
-        db = 'SMSDB'
-        password = 'Lofa666'
+        host = credentials[0]
+        username = credentials[1]
+        password = credentials[2]
+        db = credentials[3]
         orm = MySQLORM()
         orm.connect(host, username, password, db)
         return orm
