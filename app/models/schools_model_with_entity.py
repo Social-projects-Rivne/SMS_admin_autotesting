@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from app.utils.dbdriver import MySQLORM
+from app.utils.dbdriver import DBDriver
 from config import credentials
 
 
@@ -32,7 +32,7 @@ class ExtendedSchoolsModel(object):
         username = credentials[1]
         password = credentials[2]
         db = credentials[3]
-        orm = MySQLORM()
+        orm = DBDriver()
         orm.connect(host, username, password, db)
         return orm
 

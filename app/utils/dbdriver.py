@@ -3,7 +3,7 @@
 import MySQLdb
 
 
-class MySQLORM(object):
+class DBDriver(object):
 
     """This class can connect to MySQL databases and run CRUD operations"""
 
@@ -66,7 +66,7 @@ class MySQLORM(object):
         self.db.close()
 
 if __name__ == '__main__':
-    testdb = MySQLORM()
+    testdb = DBDriver()
 
     print('Connecting to database')
     testdb.connect('localhost', 'mysqluser', '123456', 'TESTDB')

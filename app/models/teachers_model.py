@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from app.utils.dbdriver import MySQLORM
+from app.utils.dbdriver import DBDriver
 from config import credentials
 
 class TeachersModel(object):
@@ -11,7 +11,7 @@ class TeachersModel(object):
 
 
 	def get_orm(self, host, username, password, db):
-		self.orm = MySQLORM()
+		self.orm = DBDriver()
 		self.orm.connect(host, username, password, db)
 		return self.orm
 

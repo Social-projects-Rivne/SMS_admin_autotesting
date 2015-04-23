@@ -2,7 +2,7 @@
 
 from flask import Flask
 
-from utils.dbdriver import MySQLORM
+from utils.dbdriver import DBDriver
 
 
 app = Flask(__name__)
