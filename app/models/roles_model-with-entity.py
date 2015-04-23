@@ -39,7 +39,7 @@ class ExtendedRolesModel(object):
 
     def get_role_by_id(self, id_):
         """Get role by given id"""
-        return self._get_roles('WHERE t.id=%d' % (id_))
+        return self._get_roles('WHERE id=%d' % (id_))
 
     def _create_list_from_dbresult(self, results):
         """Make list of roles objects from select"""

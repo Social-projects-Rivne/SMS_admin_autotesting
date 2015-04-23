@@ -40,12 +40,12 @@ class ExtendedSubjectsModel(object):
 
     def get_subject_by_id(self, id_):
         """Get subject by given id"""
-        return self._get_subjects('WHERE t.id=%d' % (id_))
+        return self._get_subjects('WHERE id=%d' % (id_))
 
     def update_subject_by_id(self, subject):
         """Update subject by id"""
         orm = self.initORM()
-        orm.update('subjects', 'name="%s"' %
+        orm.update('Subjects', 'name="%s"' %
                    (subject.name),
                    'id=%d' % (subject.id_))
         orm.close()
@@ -53,13 +53,13 @@ class ExtendedSubjectsModel(object):
     def delete_subject_by_id(self, id_):
         """Delete subject by given id"""
         orm = self.initORM()
-        orm.delete('subjects', 'id = %d' % (id_))
+        orm.delete('Subjects', 'id = %d' % (id_))
         orm.close()
 
     def insert_subject(self, subject):
         """Insert subject into DB"""
         orm = self.initORM()
-        orm.insert('subjects', ('name'),
+        orm.insert('Subjects', ('name'),
                    (subject.name))
         orm.close()
 
