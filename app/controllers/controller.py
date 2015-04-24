@@ -180,6 +180,69 @@ class AdminController(object):
 
 
     #---------------------------------------------
+    #subject CRUD
+    #---------------------------------------------
+    def get_view_all_subjects(self):
+        """return list all subject"""
+
+        # get data from db
+        self.data = self.subject_model.get_all_subjects()
+        print str(self.data);
+        # render page with all schools
+        return self.view.render_list_subjects(self.data)
+
+    def get_view_add_subject(self):
+        """add new subject"""
+
+        _errors = {}
+
+        if request.method == 'POST':
+
+            name = str(request.form['name'])
+            _subject = Subject(None, name)
+
+            self.subject_model.insert_subject(_subject)
+            return self.view.add_subject_form_success(_subject.name)
+
+        return self.view.render_subject_form(_errors)
+
+    def remove_subject(self, id_):
+        """delete subject by id"""
+        
+        _subject = self.subject_model.get_subject_by_id(id_)
+
+        for field in _subject:
+            name = field.name
+
+        if request.method == 'POST':
+
+            # delete school by id
+            self.subject_model.delete_subject_by_id(id_)
+            return self.view.remove_subject_form_success(name)
+
+        return self.view.render_confirm_delete(name)
+
+    def update_subject(self, id_):
+        """update school by id"""
+        _errors = {}
+
+        _subject = self.subject_model.get_subject_by_id(id_)
+
+        for field in _subject:
+            data = field
+
+        if request.method == 'POST':
+
+            # create entity
+            name = str(request.form['name'])
+            _subject = Subject(id_, name)
+
+            self.subject_model.update_subject_by_id(_subject)
+
+            return self.view.add_subject_form_success(_subject.name)
+
+        return self.view.render_subject_form(_errors, data)
+    #---------------------------------------------
     def _create_entity_school(self):
         """entity School"""
         _name = str(request.form['name'])
