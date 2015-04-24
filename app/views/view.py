@@ -16,7 +16,7 @@ class View(object):
     def render_error(self):
         """Render 404 page"""
 
-        return render_template('page_not_found.html')
+        return render_template('page_not_found.html'), 404
 
     def render_user_form(self, roles, errors, user=''):
         """Render user add page"""
@@ -71,5 +71,5 @@ class View(object):
         """Render successfull school delete"""
 
         # display message on the schools list page
-        flash(u'%s була успішно видалена з БД' % name)
+        flash(u'%s було успішно видалено з БД' % name)
         return redirect(url_for('schools_list'))

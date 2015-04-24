@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Авторизація | SMS</title>
+  <link href="{{ url_for('static', filename='css/login.css') }}"
+    rel="stylesheet">
+{% endblock  %}
+
+{% block header %}{% endblock  %}
+
+{% block content %}
+  <!--Start Main Page Content-->
+  <form class="form-signin">
+    <h2 class="form-signin-heading">Увійти в систему</h2>
+    <!--<label for="inputEmail" class="sr-only"></label>
+    <input type="email" id="inputEmail" class="form-control"
+      placeholder="Email address" required autofocus>-->
+    <label for="inputPassword" class="sr-only">Пароль</label>
+    <input type="password" id="inputPassword" class="form-control"
+      placeholder="Password" required autofocus>
+    <div class="checkbox">
+      <label>
+        <input type="checkbox" value="remember-me">Запам’ятати мене
+      </label>
+    </div>
+    <button class="btn btn-lg btn-primary btn-block" type="submit">
+      Вперед
+    </button>
+  </form>
+  <!--End Main Page Content-->
+{% endblock %}
+
+{% block footer %}{% endblock  %}

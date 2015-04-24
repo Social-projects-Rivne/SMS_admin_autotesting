@@ -12,4 +12,4 @@ from db import credentials
 # flask configuration
 
 CSRF_ENABLED = True
-SECRET_KEY = 'q1234567890q'
+SECRET_KEY = os.urandom(24)

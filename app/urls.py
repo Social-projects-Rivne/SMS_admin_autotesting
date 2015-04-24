@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, request
+from flask import render_template, request, session
 
 from app import app
 from app.controllers.controller import AdminController
@@ -15,6 +15,11 @@ def index():
     """Return main page"""
 
     return controller.get_index()
+
+
+@app.route('/login', methods=['GET', 'POPST'])
+def login():
+    pass
 
 
 @app.route('/users_list')
@@ -44,6 +49,7 @@ def user_upgrade(id_):
 
 #---Routes for schools----
 
+
 @app.route('/schools_list')
 def schools_list():
     """Return page with schools list"""
@@ -71,6 +77,7 @@ def school_upgrade(id_):
 
 #---Routes for subjects----
 
+
 @app.route('/subjects_list')
 def subjects_list():
     """Return page with subjects list"""
@@ -97,6 +104,7 @@ def subject_upgrade(id_):
     return controller.update_subject(id_=id_)
 
 #---Routes for error----
+
 
 @app.errorhandler(404)
 def page_not_found(error):

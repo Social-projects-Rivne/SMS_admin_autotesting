@@ -26,7 +26,7 @@
             </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputName"
-                placeholder="Назва" name="name"
+                placeholder="НВК-ліцей № 19" name="name"
                 value="{% if school %}{{ school.name }}
                        {% else %}{{ request.form['name'] }}{% endif %}">
               <span class="help-block">{{ errors.name }}</span>
@@ -39,7 +39,7 @@
             </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputAddress"
-                placeholder="Адреса" name="address"
+                placeholder="м.Рівне вул. Макарова 48" name="address"
                 value="{% if school %}{{ school.address }}
                        {% else %}{{ request.form['address'] }}{% endif %}">
               <span class="help-block">{{ errors.address }}</span>

@@ -7,16 +7,17 @@
     <meta name="description" content="School Management Services">
     <meta name="author" content="SoftServe RV10 Group">
 
-    {% block title %}{% endblock  %}
-
     <!-- Include Styles -->
     <link href="https://bootswatch.com/united/bootstrap.css" rel="stylesheet">
     <link href="{{ url_for('static', filename='css/style.css') }}"
       rel="stylesheet">
+
+    {% block title %}{% endblock %}
   </head>
 
   <body>
     <div class="container">
+      {% block header %}
       <!--Start Header-->
       <div class="header clearfix">
         <h3 class="text-muted">School Management Services</h3>
@@ -40,31 +41,17 @@
       </ul>
       <!--End of navigation menu-->
       {% endif %}
-
-      <!-- Status message -->
-      {% with messages = get_flashed_messages() %}
-        {% if messages %}
-          <div class="row" id="content-columns">
-            <div class="col-xs-12" id="content-column">
-              <div class="alert alert-info" role="alert">
-                <ul>
-                  {% for message in messages %}
-                    <li>{{ message }}</li>
-                  {% endfor %}
-                </ul>
-              </div>
-            </div>
-          </div>
-        {% endif %}
-      {% endwith %}
+      {% endblock %}
 
       {% block content %}{% endblock %}
 
+      {% block footer %}
       <!-- Site footer -->
       <footer class="footer">
         <p>&copy; Copyright 2015 School Management Services |
           All Rights Reserved</p>
       </footer><!-- /.footer -->
+      {% endblock %}
 
     </div><!-- /.container -->
 

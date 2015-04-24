@@ -1,0 +1,18 @@
+{% block status_message %}
+  <!-- Status message -->
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}
+      <div class="row" id="content-columns">
+        <div class="col-xs-12" id="content-column">
+          <div class="alert alert-info" role="alert">
+            <ul>
+              {% for message in messages %}
+                <li>{{ message }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  {% endwith %}
+{% endblock %}
