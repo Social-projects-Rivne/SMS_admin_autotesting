@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Список предметів  | SMS</title>
+{% endblock  %}
+
+{% block content %}
+<!--Start Main Page Content-->
+
+  <div class="page-header">
+      <h3>Список предметів</h3>
+  </div><!-- /.page-header -->
+  <div class="table-responsive">
+    <table class="table table-hover table-striped">
+      <colgroup class="col-width-1">
+      <colgroup class="col-width-4">
+      <colgroup class="col-width-4">
+      <colgroup class="col-width-1">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>Назва</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for subject in subjects %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td>{{ subject.name }}</td>
+          <td>
+            <a href="{{ url_for('subject_upgrade')}}{{ subject.id_ }}">
+              <span class="glyphicon glyphicon-pencil action" aria-hidden="true"></span>
+            </a>
+            <a href="{{ url_for('subject_remove')}}{{ subject.id_ }}">
+              <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+            </a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-10 col-lg-offset-2">
+      <ul class="pager">
+        <li class="next">
+          <a class="subject_add_link" href="{{ url_for('subject_add') }}">
+            Додати предмет
+          </a>
+        </li>
+      </ul>
+    </div><!-- /.col-lg-10 col-lg-offset-2 -->
+  </div><!-- /.row -->
+<!--End Main Page Content-->
+{% endblock %}

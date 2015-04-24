@@ -73,3 +73,29 @@ class View(object):
         # display message on the schools list page
         flash(u'%s було успішно видалено з БД' % name)
         return redirect(url_for('schools_list'))
+
+    #---View for subjects----
+
+    def render_list_subjects(self, data):
+        """Render subjects list"""
+
+        return render_template('subject_list.html', subjects=data)
+
+    def render_subject_form(self, errors, subject=''):
+        """Render subject add page"""
+
+        return render_template('subject_add.html', errors=errors,\
+                               subject=subject)
+
+    def add_subject_form_success(self, name):
+        """Render successfull subject adding"""
+
+        flash(u'%s був успішно внесена в БД'% name)
+        return redirect(url_for('subjects_list'))
+
+    def remove_subject_form_success(self, name):
+        """Render successfull subject delete"""
+
+        # display message on the schools list page
+        flash(u'%s був успішно видалена з БД' % name)
+        return redirect(url_for('subjects_list'))

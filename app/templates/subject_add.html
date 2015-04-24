@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}
+  <title>Додати предмет | SMS</title>
+{% endblock  %}
+
+{% block content %}
+  <!--Start Main Page Content-->
+  <div class="row" id="form">
+    <div class="col-xs-12">
+      <div class="page-header">
+          {% if 'subject_add' in request.path %}
+            <h3>Додати предмет</h3>
+          {% else %}
+            <h3>Редагувати предмет</h3>
+          {% endif %}
+      </div><!-- /.page-header -->
+
+      <form action="" class="form-horizontal" method="POST" role="form">
+        <!--TO DO: implement CSRF security-->
+        {{ csrf_token }}
+
+          <div class="form-group {% if errors.name %}has-error{% endif %}">
+            <label for="inputName" class="col-xs-2 control-label">
+              Назва<p class="required-field">&lowast;</p>
+            </label>
+            <div class="col-xs-3">
+              <input type="text" class="form-control" id="inputName"
+                placeholder="Назва" name="name"
+                value="{% if subject %}{{ subject.name }}
+                       {% else %}{{ request.form['name'] }}{% endif %}">
+              <span class="help-block">{{ errors.name }}</span>
+            </div>
+          </div><!-- /.form-group -->
+
+          <div class="form-group">
+            <div class="col-xs-10 col-xs-offset-2">
+              <a href="{{ url_for('subjects_list') }}">
+                <button type="button" class="btn btn-default" name="cancel">
+                  Відмінити
+                </button>
+              </a>
+              <button type="submit" class="btn btn-primary" name="go">
+                Прийняти
+              </button>
+            </div><!-- /.col-xs-10 col-xs-offset-2 -->
+          </div><!-- /.form-group -->
+
+      </form>
+
+      <p class="form-description col-xs-offset-2">
+        &lowast; &mdash; поля обов'язкові для заповнення.
+      </p>
+
+    </div><!-- /.col-xs-12 -->
+  </div><!-- /.row -->
+  <!--End Main Page Content-->
+{% endblock %}

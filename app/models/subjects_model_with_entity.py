@@ -59,8 +59,8 @@ class ExtendedSubjectsModel(object):
     def insert_subject(self, subject):
         """Insert subject into DB"""
         orm = self.initORM()
-        orm.insert('Subjects', ('name'),
-                   (subject.name))
+        orm.insert('Subjects', ('name',),
+                   (subject.name,))
         orm.close()
 
     def _create_list_from_dbresult(self, results):
@@ -69,7 +69,7 @@ class ExtendedSubjectsModel(object):
         for row in results:
             id_ = row["id"]
             name = row["name"]
-            subject = subject(id_, name)
+            subject = Subject(id_, name)
             subjects.append(subject)
         return subjects
 
