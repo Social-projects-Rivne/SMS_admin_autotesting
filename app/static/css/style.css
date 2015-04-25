@@ -1,4 +1,4 @@
-.inline_link {
+.inline {
   display: inline;
 }
 
@@ -52,7 +52,7 @@ body {
 /* Everything but the jumbotron gets side spacing for mobile first views */
 .header,
 .marketing,
-.footer {
+.footer, .row {
   padding-right: 15px;
   padding-left: 15px;
 }

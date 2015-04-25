@@ -7,7 +7,7 @@ import sys
 DB_ROOT = os.path.join(basedir, '..', 'database_settings')
 sys.path.append(DB_ROOT)
 
-from db import credentials
+from db import credentials, USERNAME, PASSWORD
 
 # flask configuration
 
