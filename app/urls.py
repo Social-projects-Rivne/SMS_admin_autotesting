@@ -43,14 +43,14 @@ def index():
 @login_required
 def users_list():
     """Return page with users list"""
-    return controller.get_view_all()
+    return controller.list_all_users()
 
 
 @app.route('/user_add', methods=['GET', 'POST'])
 @login_required
 def user_add():
     """Return user add form"""
-    return controller.user_add()
+    return controller.add_user()
 
 
 @app.route('/user_remove/')
@@ -75,14 +75,14 @@ def user_upgrade(id_):
 @login_required
 def schools_list():
     """Return page with schools list"""
-    return controller.get_view_all_schools()
+    return controller.list_all_schools()
 
 
 @app.route('/school_add', methods=['GET', 'POST'])
 @login_required
 def school_add():
     """Return page with school add"""
-    return controller.get_view_add_school()
+    return controller.add_school()
 
 
 @app.route('/school_remove/')
@@ -107,14 +107,14 @@ def school_upgrade(id_):
 @login_required
 def subjects_list():
     """Return page with subjects list"""
-    return controller.get_view_all_subjects()
+    return controller.list_all_subjects()
 
 
 @app.route('/subject_add', methods=['GET', 'POST'])
 @login_required
 def subject_add():
     """Return page with subject add"""
-    return controller.get_view_add_subject()
+    return controller.add_subject()
 
 
 @app.route('/subject_remove/')
