@@ -1,3 +1,12 @@
+/*Reset link styles*/
+a:link,
+a:hover,
+a:focus,
+a:active {
+  text-decoration: none;
+  outline: none;
+}
+
 .inline {
   display: inline;
 }
@@ -67,7 +76,9 @@ body {
 /*Table styles*/
 .col-width-1 { width: 10%; }
 
-.col-width-4{ width: 40%; }
+.col-width-4 { width: 40%; }
+
+.col-width-8 { width: 80%; }
 
 /* Custom page footer */
 .footer {
