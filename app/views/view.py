@@ -43,17 +43,17 @@ class View(object):
         flash(u'%s був успішно видалений з БД' % name)
         return redirect(url_for('users_list'))
 
-    def render_list_users(self, data):
+    def render_list_users(self, users):
         """Render users list"""
 
-        return render_template('users_list.html', users=data)
+        return render_template('users_list.html', users=users)
 
     #---View for schools----
 
-    def render_list_schools(self, data):
+    def render_list_schools(self, schools):
         """Render schools list"""
 
-        return render_template('schools_list.html', schools=data)
+        return render_template('schools_list.html', schools=schools)
 
     def render_school_form(self, errors, school=''):
         """Render school add page"""
@@ -71,15 +71,15 @@ class View(object):
         """Render successfull school delete"""
 
         # display message on the schools list page
-        flash(u'%s було успішно видалено з БД' % name)
+        flash(u'%s була успішно видалена з БД' % name)
         return redirect(url_for('schools_list'))
 
     #---View for subjects----
 
-    def render_list_subjects(self, data):
+    def render_list_subjects(self, subjects):
         """Render subjects list"""
 
-        return render_template('subject_list.html', subjects=data)
+        return render_template('subject_list.html', subjects=subjects)
 
     def render_subject_form(self, errors, subject=''):
         """Render subject add page"""

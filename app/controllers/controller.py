@@ -6,7 +6,7 @@ import re
 from flask import request
 
 from app.views.view import View
-from app.models.teachers_model import TeachersModel
+from app.models.roles_model import RolesModel
 from app.models.teachers_model_with_entity import Teacher,\
     ExtendedTeachersModel
 from app.models.subjects_model_with_entity import Subject, \
@@ -21,7 +21,7 @@ class AdminController(object):
        to the view"""
 
     def __init__(self):
-        self.first_model = TeachersModel()
+        self.role_model = RolesModel()
         self.teacher_model = ExtendedTeachersModel()
         self.subject_model = ExtendedSubjectsModel()
         self.school_model = ExtendedSchoolsModel()
@@ -29,10 +29,12 @@ class AdminController(object):
 
     def get_index(self):
         """Return home page"""
+
         return self.view.render_index()
 
     def get_error404(self):
         """Return error page"""
+
         return self.view.render_error()
 
     #--------------------------------------------------
@@ -40,6 +42,7 @@ class AdminController(object):
     #--------------------------------------------------
     def list_all_users(self):
         """Get all teachers from db and return teachers list page"""
+
         # get data from db
         _data = self.teacher_model.get_all_teachers()
         # render page with all users
@@ -47,19 +50,21 @@ class AdminController(object):
 
     def add_user(self):
         """Validate data and add teacher to db"""
+
         # define variables for sending to template
         _errors = {}
 
         # get all roles from DB
-        _roles = self.first_model.get_all_roles()
+        _roles = self.role_model.get_all_roles()
 
         if request.method == 'POST':
             # save user in case there aren't any mistakes
-            if self._validate_on_submite(name=request.form['name'],
-                                         login=request.form['login'],
-                                         password=request.form['password'],
-                                         email=request.form['email'],
-                                         user_role=request.form['user_role']):
+            if self._validate_teachers(name=request.form['name'],
+                                       login=request.form['login'],
+                                       password=request.form['password'],
+                                       email=request.form['email'],
+                                       user_role=request.form['user_role']):
+                # create entity
                 _teacher = self._create_entity_teacher()
                 _teacher.name = str(_teacher.name).encode("UTF-8")
                 # save all data in DB
@@ -73,28 +78,31 @@ class AdminController(object):
 
     def update_user(self, id_):
         """Update user in db"""
+
         # define variables for sending to template
         _errors = {}
 
         # get all roles from DB
-        _roles = self.first_model.get_all_roles()
+        _roles = self.role_model.get_all_roles()
 
-        user = self.teacher_model.get_teacher_by_id(id_)
-        for field in user:
+        _user = self.teacher_model.get_teacher_by_id(id_)
+        for field in _user:
             _data = field
 
         if request.method == 'POST':
-            if self._validate_on_submite(name=request.form['name'],
-                                         login=request.form['login'],
-                                         password=request.form['password'],
-                                         email=request.form['email'],
-                                         user_role=request.form['user_role']):
+            # save user in case there aren't any mistakes
+            if self._validate_teachers(name=request.form['name'],
+                                       login=request.form['login'],
+                                       password=request.form['password'],
+                                       email=request.form['email'],
+                                       user_role=request.form['user_role']):
 
                 # create entity
                 _teacher = self._create_entity_teacher()
                 _teacher.id_ = int(id_)
-
+                # update all data in DB
                 self.teacher_model.update_teacher_by_id(_teacher)
+                # redirect to users list and make status message
                 return self.view.add_user_form_success(_data.name)
 
             _errors = self.message
@@ -128,6 +136,7 @@ class AdminController(object):
     #---------------------------------------------------
     def list_all_schools(self):
         """Get all schools from db and return schools list page"""
+
         # get data from db
         _data = self.school_model.get_all_schools()
         # render page with all schools
@@ -135,17 +144,27 @@ class AdminController(object):
 
     def add_school(self):
         """Add new school to db"""
+
         _errors = {}
 
         if request.method == 'POST':
-            _school = self._create_entity_school()
-            self.school_model.insert_school(_school)
-            return self.view.add_school_form_success(_school.name)
+            # save school in case there aren't any mistakes
+            if self._validate_schools(name=request.form['name'],
+                                      address=request.form['address']):
+                # create entity
+                _school = self._create_entity_school()
+                # save all data in DB
+                self.school_model.insert_school(_school)
+                # redirect to schools list and make status message
+                return self.view.add_school_form_success(_school.name)
 
+            _errors = self.message
+        # render empty school add form
         return self.view.render_school_form(_errors)
 
     def update_school(self, id_):
         """Update school in db"""
+
         _errors = {}
 
         _school = self.school_model.get_school_by_id(id_)
@@ -154,18 +173,23 @@ class AdminController(object):
             _data = field
 
         if request.method == 'POST':
+            # save school in case there aren't any mistakes
+            if self._validate_schools(name=request.form['name'],
+                                      address=request.form['address']):
+                # create entity
+                _school = self._create_entity_school()
+                _school.id_ = int(id_)
+                # update all data in DB
+                self.school_model.update_school_by_id(_school)
+                # redirect to schools list and make status message
+                return self.view.add_school_form_success(_school.name)
 
-            # create entity
-            _school = self._create_entity_school()
-            _school.id_ = int(id_)
-            self.school_model.update_school_by_id(_school)
-
-            return self.view.add_school_form_success(_school.name)
-
+            _errors = self.message
         return self.view.render_school_form(_errors, _data)
 
     def remove_school(self, id_):
         """Delete school from db"""
+
         _school = self.school_model.get_school_by_id(id_)
 
         for field in _school:
@@ -198,17 +222,22 @@ class AdminController(object):
         _errors = {}
 
         if request.method == 'POST':
+            # save subject in case there aren't any mistakes
+            if self._validate_subjects(name=request.form['name']):
+                # create entity
+                _subject = self._create_entity_subject()
+                # save all data in DB
+                self.subject_model.insert_subject(_subject)
+                # redirect to subjects list and make status message
+                return self.view.add_subject_form_success(_subject.name)
 
-            name = str(request.form['name'])
-            _subject = Subject(None, name)
-
-            self.subject_model.insert_subject(_subject)
-            return self.view.add_subject_form_success(_subject.name)
-
+            _errors = self.message
+        # render empty subject add form
         return self.view.render_subject_form(_errors)
 
     def update_subject(self, id_):
         """Update subject in db"""
+
         _errors = {}
 
         _subject = self.subject_model.get_subject_by_id(id_)
@@ -217,15 +246,17 @@ class AdminController(object):
             _data = field
 
         if request.method == 'POST':
+            # save subject in case there aren't any mistakes
+            if self._validate_subjects(name=request.form['name']):
+                # create entity
+                _subject = self._create_entity_subject()
+                _subject.id_ = int(id_)
+                # save all data in DB
+                self.subject_model.update_subject_by_id(_subject)
+                # redirect to subjects list and make status message
+                return self.view.add_subject_form_success(_subject.name)
 
-            # create entity
-            name = str(request.form['name'])
-            _subject = Subject(id_, name)
-
-            self.subject_model.update_subject_by_id(_subject)
-
-            return self.view.add_subject_form_success(_subject.name)
-
+            _errors = self.message
         return self.view.render_subject_form(_errors, _data)
 
     def remove_subject(self, id_):
@@ -245,28 +276,37 @@ class AdminController(object):
         return self.view.render_confirm_delete(_name)
     #---------------------------------------------
 
-    def _create_entity_school(self):
-        """Create School entity"""
-        _name = str(request.form['name'])
-        _address = str(request.form['address'])
-
-        return School(None, _name, _address)
-
     def _create_entity_teacher(self):
         """Create Teacher entity"""
+
         _name = unicode(request.form['name'])
         _login = str(request.form['login'].strip())
         _password = str(request.form['password'].strip())
         _email = str(request.form['email'])
         _role = int(request.form['user_role'])
-
         # create entity
         return Teacher(None, _name, _login,
                        _password, _email, _role,
                        None, None, None)
 
-    def _validate_on_submite(self, **kwargs):
-        """Validate request data from form"""
+    def _create_entity_school(self):
+        """Create School entity"""
+
+        _name = str(request.form['name'])
+        _address = str(request.form['address'])
+        # create entity
+        return School(None, _name, _address)
+
+    def _create_entity_subject(self):
+        """Create Subject entity"""
+
+        _name = str(request.form['name'])
+        # create entity
+        return Subject(None, _name)
+
+    def _validate_teachers(self, **kwargs):
+        """Validate request teacher's data from form"""
+
         self.message = dict()
         # regex pattern
         email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"
@@ -274,7 +314,7 @@ class AdminController(object):
         login_pattern = "^[A-Za-z0-9]+$"
         # check data
         if not kwargs.get('name'):
-            self.message['name'] = u'Некоректно введно імя'
+            self.message['name'] = u'Некоректно введно ім\'я'
 
         if not kwargs.get('user_role'):
             self.message['user_role'] = u'Виберіть роль'
@@ -287,6 +327,37 @@ class AdminController(object):
 
         if not re.match(email_pattern, kwargs.get('email')):
             self.message['email'] = u'Некоректно введно емейл'
+        # If validate return true
+        if self.message:
+            return False
+        else:
+            return True
+
+    def _validate_schools(self, **kwargs):
+        """Validate request school's data from form"""
+
+        self.message = dict()
+        # check data
+        if not kwargs.get('name'):
+            self.message['name'] = u'Введіть назву'
+
+        if not kwargs.get('address'):
+            self.message['address'] = u'Введіть адресу'
+
+        # If validate return true
+        if self.message:
+            return False
+        else:
+            return True
+
+    def _validate_subjects(self, **kwargs):
+        """Validate request subject's data from form"""
+
+        self.message = dict()
+        # check data
+        if not kwargs.get('name'):
+            self.message['name'] = u'Введіть назву'
+
         # If validate return true
         if self.message:
             return False

@@ -47,7 +47,7 @@ class ExtendedRolesModel(object):
         for row in results:
             id_ = row["id"]
             role_name = row["role_name"]
-            role = role(id_, role_name)
+            role = Role(id_, role_name)
             roles.append(role)
         return roles
 
