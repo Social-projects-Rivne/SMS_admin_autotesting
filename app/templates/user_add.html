@@ -27,8 +27,7 @@
           <div class="col-xs-3">
             <input type="text" class="form-control" id="inputName"
               placeholder="Хоменко Микола Павлович" name="name"
-              value="{% if user %}{{ user.name }}
-                     {% else %}{{ request.form['name'] }}{% endif %}"
+              value="{% if user and not errors %}{{ user.name }}{% else %}{{ request.form['name'] }}{% endif %}"
               maxlength="60">
             <span class="help-block">{{ errors.name }}</span>
           </div>
@@ -41,8 +40,7 @@
           <div class="col-xs-3">
             <input type="text" class="form-control" id="inputLogin"
               placeholder="Login" name="login"
-              value="{% if user %}{{ user.login }}
-                     {% else %}{{ request.form['login'] }}{% endif %}"
+              value="{% if user and not errors %}{{ user.login }}{% else %}{{ request.form['login'] }}{% endif %}"
               maxlength="40">
             <span class="help-block">{{ errors.login }}</span>
           </div>
@@ -55,8 +53,7 @@
           <div class="col-xs-3">
             <input type="password" class="form-control" id="inputPassword"
               placeholder="Password" name="password"
-              value="{% if user %}{{ user.password }}
-                     {% else %}{{ request.form['password'] }}{% endif %}"
+              value="{% if user and not errors %}{{ user.password }}{% else %}{{ request.form['password'] }}{% endif %}"
               maxlength="100">
             <span class="help-block">{{ errors.password }}</span>
           </div>
@@ -69,8 +66,7 @@
           <div class="col-xs-3">
             <input type="text" class="form-control" id="inputEmail"
               placeholder="example@gmail.com" name="email"
-              value="{% if user %}{{ user.email }}
-                     {% else %}{{ request.form['email'] }}{% endif %}"
+              value="{% if user and not errors %}{{ user.email }}{% else %}{{ request.form['email'] }}{% endif %}"
               maxlength="100">
             <span class="help-block">{{ errors.email }}</span>
           </div>
@@ -86,8 +82,8 @@
               <option value="">Виберіть права</option>
 
               {% for role in roles %}
-              <option value="{{ role.id }}" {% if user.role_id  == role.id %}
-                  selected{% endif %}>
+              <option value="{{ role.id }}"
+                  {% if user.role_id  == role.id %}selected{% endif %}>
                 {{ role.role_name }}
               </option>
               {% endfor %}
@@ -109,7 +105,6 @@
             </button>
           </div><!-- /.col-xs-10 col-xs-offset-2 -->
         </div><!-- /.form-group -->
-
       </form>
       <p class="form-description col-xs-offset-2">
         &lowast; &mdash; поля обов'язкові для заповнення.

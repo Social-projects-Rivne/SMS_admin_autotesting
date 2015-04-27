@@ -9,9 +9,9 @@ class Teacher(object):
 
     """This class creates teacher objects to use them in Teacher Model"""
 
-    def __init__(self, id_, name, login, password, email,
-                 role_id, role_name,
-                 school_id, school_name):
+    def __init__(self, id_, name, login,
+                 password, email, role_id,
+                 role_name, school_id, school_name):
         self.id_ = id_
         self.name = name
         self.login = login
@@ -73,7 +73,8 @@ class ExtendedTeachersModel(object):
     def update_teacher_by_id(self, teacher):
         """Update teacher by id"""
         orm = self.initORM()
-        orm.update('Teachers', 'name="%s", login="%s", email="%s", password="%s", role_id=%d' %
+        orm.update('Teachers', 'name="%s", login="%s", email="%s", \
+                    password="%s", role_id=%d' %
                    (teacher.name, teacher.login, teacher.email,
                     teacher.password, teacher.role_id),
                    'id=%d' % (teacher.id_))
@@ -88,8 +89,10 @@ class ExtendedTeachersModel(object):
     def insert_teacher(self, teacher):
         """Insert teacher into DB"""
         orm = self.initORM()
-        orm.insert('Teachers', ('name', 'login', 'email', 'password', 'role_id'),
-                   (teacher.name, teacher.login, teacher.email, teacher.password, teacher.role_id))
+        orm.insert('Teachers', ('name', 'login', 'email', 'password',
+                                'role_id'),
+                   (teacher.name, teacher.login, teacher.email,
+                    teacher.password, teacher.role_id))
         orm.close()
 
     def set_role_id_to_teacher_by_id(self, id_, role_id):

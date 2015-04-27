@@ -15,7 +15,13 @@
             {% else %}{% endif %} "{{ name }}"?&nbsp;
             <input type="submit" value="Так" name="delete_button"
               class="btn btn-danger">
+            {% if 'user' in request.path %}
             <a href="{{ url_for('users_list') }}">
+            {% elif 'subject' in request.path %}
+            <a href="{{ url_for('subjects_list') }}">
+            {% else %}
+            <a href="{{ url_for('schools_list') }}">
+            {% endif %}
               <input type="button" value="Ні" name="cancel_button"
                 class="btn btn-default">
             </a>

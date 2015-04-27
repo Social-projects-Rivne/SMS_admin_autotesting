@@ -13,6 +13,7 @@ class Role(object):
         self.id_ = id_
         self.role_name = role_name
 
+
 class ExtendedRolesModel(object):
 
     """This class is used to retrieve data about roles from DB"""

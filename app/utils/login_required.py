@@ -10,6 +10,6 @@ def login_required(rout):
     @wraps(rout)
     def decorated_function(*args, **kwargs):
         if 'logged_in' not in session:
-            return redirect(url_for('login', next=request.url))
+            return redirect(url_for('login'))
         return rout(*args, **kwargs)
     return decorated_function

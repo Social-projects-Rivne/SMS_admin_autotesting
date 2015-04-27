@@ -13,6 +13,11 @@ class View(object):
 
         return render_template('index.html')
 
+    def render_login(self, error=''):
+        """Render login page"""
+
+        return render_template('login.html', error=error)
+
     def render_error(self):
         """Render 404 page"""
 
@@ -21,14 +26,14 @@ class View(object):
     def render_user_form(self, roles, errors, user=''):
         """Render user add page"""
 
-        return render_template('user_add.html', roles=roles,\
+        return render_template('user_add.html', roles=roles,
                                errors=errors, user=user)
 
     def add_user_form_success(self, name):
         """Render successfull user adding"""
 
         # display message on the users list page
-        flash(u'%s був успішно внесений в БД' % name)
+        flash(u'Користувача "%s" успішно внесено в БД' % name.decode('utf-8'))
         return redirect(url_for('users_list'))
 
     def render_confirm_delete(self, name=''):
@@ -64,7 +69,7 @@ class View(object):
         """Render successfull school adding"""
 
         # display message on the schools list page
-        flash(u'%s була успішно внесена в БД' % name)
+        flash(u'%s була успішно внесена в БД' % name.decode('utf-8'))
         return redirect(url_for('schools_list'))
 
     def remove_school_form_success(self, name):
@@ -84,13 +89,13 @@ class View(object):
     def render_subject_form(self, errors, subject=''):
         """Render subject add page"""
 
-        return render_template('subject_add.html', errors=errors,\
+        return render_template('subject_add.html', errors=errors,
                                subject=subject)
 
     def add_subject_form_success(self, name):
         """Render successfull subject adding"""
 
-        flash(u'%s був успішно внесений в БД'% name)
+        flash(u'%s був успішно внесений в БД' % name.decode('utf-8'))
         return redirect(url_for('subjects_list'))
 
     def remove_subject_form_success(self, name):

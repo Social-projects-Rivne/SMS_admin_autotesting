@@ -26,9 +26,8 @@
             </label>
             <div class="col-xs-3">
               <input type="text" class="form-control" id="inputName"
-                placeholder="Назва" name="name"
-                value="{% if subject %}{{ subject.name }}
-                       {% else %}{{ request.form['name'] }}{% endif %}">
+                placeholder="Назва" name="name" maxlength="30"
+                value="{% if subject and not errors %}{{ subject.name }}{% else %}{{ request.form['name'] }}{% endif %}">
               <span class="help-block">{{ errors.name }}</span>
             </div>
           </div><!-- /.form-group -->

@@ -4,6 +4,7 @@
 from app.utils.dbdriver import DBDriver
 from config import credentials
 
+
 class RolesModel(object):
 
     """This class is used to retrieve data about roles from DB"""

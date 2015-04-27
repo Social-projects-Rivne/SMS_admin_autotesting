@@ -1,0 +1,17 @@
+
+<!--Navigation menu-->
+<ul class="nav nav-tabs">
+  <li role="presentation"
+      {% if 'user' in request.path %}class="active"{% endif %}>
+    <a href="{{ url_for('users_list') }}">Користувачі</a>
+  </li>
+  <li role="presentation"
+      {% if 'school' in request.path %}class="active"{% endif %}>
+    <a href="{{ url_for('schools_list') }}">Школи</a>
+  </li>
+  <li role="presentation"
+      {% if 'subject' in request.path %}class="active"{% endif %}>
+    <a href="{{ url_for('subjects_list') }}">Предмети</a>
+  </li>
+</ul>
+<!--End of navigation menu-->

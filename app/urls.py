@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from flask import render_template, request, session, redirect, flash, url_for
+from flask import request, session, redirect, url_for
 
 from app import app
 from app.controllers.controller import AdminController
@@ -10,27 +10,6 @@ from app.utils.login_required import login_required
 controller = AdminController()
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    error = None
-    if request.method == 'POST':
-        if request.form['username'] != app.config['USERNAME'] or\
-                request.form['password'] != app.config['PASSWORD']:
-            error = 'Invalid username or password'
-        else:
-            session['logged_in'] = True
-            #flash(u'Ви успішно увійшли в систему')
-            return redirect(url_for('index'))
-    return render_template('login.html', error=error)
-
-
-@app.route('/logout')
-def logout():
-    session.pop('logged_in', None)
-    #flash(u'Ви вийшли з системи')
-    return redirect(url_for('login'))
-
-
 @app.route('/')
 @app.route('/index')
 @login_required
@@ -38,6 +17,7 @@ def index():
     """Return main page"""
 
     return controller.get_index()
+
 
 @app.route('/users_list')
 @login_required
@@ -133,6 +113,27 @@ def subject_upgrade(id_):
     return controller.update_subject(id_=id_)
 
 #---Routes for error----
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    error = None
+    if request.method == 'POST':
+        if request.form['username'] != app.config['USERNAME'] or\
+                request.form['password'] != app.config['PASSWORD']:
+            error = 'Invalid username or password'
+        else:
+            session['logged_in'] = True
+            #flash(u'Ви успішно увійшли в систему')
+            return controller.get_index()
+    return controller.get_login(error)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    #flash(u'Ви вийшли з системи')
+    return redirect(url_for('login'))
 
 
 @app.errorhandler(404)

@@ -33,6 +33,11 @@ class AdminController(object):
 
         return self.view.render_index()
 
+    def get_login(self, error):
+        """Return login page"""
+
+        return self.view.render_login(error=error)
+
     def get_error404(self):
         """Return error page"""
 
@@ -67,7 +72,7 @@ class AdminController(object):
                                        user_role=request.form['user_role']):
                 # create entity
                 _teacher = self._create_entity_teacher()
-                _teacher.name = str(_teacher.name).encode("UTF-8")
+                #_teacher.name = str(_teacher.name).encode("UTF-8")
                 # save all data in DB
                 self.teacher_model.insert_teacher(_teacher)
                 # redirect to users list and make status message
@@ -104,7 +109,7 @@ class AdminController(object):
                 # update all data in DB
                 self.teacher_model.update_teacher_by_id(_teacher)
                 # redirect to users list and make status message
-                return self.view.add_user_form_success(_data.name)
+                return self.view.add_user_form_success(_teacher.name)
 
             _errors = self.message
         return self.view.render_user_form(_roles, _errors, _data)
@@ -280,7 +285,7 @@ class AdminController(object):
     def _create_entity_teacher(self):
         """Create Teacher entity"""
 
-        _name = unicode(request.form['name'])
+        _name = request.form['name'].strip().encode('utf-8')
         _login = str(request.form['login'].strip())
         _password = str(request.form['password'].strip())
         _email = str(request.form['email'])
@@ -293,15 +298,15 @@ class AdminController(object):
     def _create_entity_school(self):
         """Create School entity"""
 
-        _name = str(request.form['name'])
-        _address = str(request.form['address'])
+        _name = request.form['name'].strip().encode('utf-8')
+        _address = request.form['address'].strip().encode('utf-8')
         # create entity
         return School(None, _name, _address)
 
     def _create_entity_subject(self):
         """Create Subject entity"""
 
-        _name = str(request.form['name'])
+        _name = request.form['name'].strip().encode('utf-8')
         # create entity
         return Subject(None, _name)
 
@@ -324,7 +329,7 @@ class AdminController(object):
             self.message['password'] = u'Введіть пароль'
 
         if not _validate.check_login(kwargs.get('login')):
-            self.message['login'] = u'Некоректно введно логин'
+            self.message['login'] = u'Некоректно введно логін'
 
         if not _validate.check_email(kwargs.get('email')):
             self.message['email'] = u'Некоректно введно емейл'
