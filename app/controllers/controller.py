@@ -280,7 +280,7 @@ class AdminController(object):
     def _create_entity_teacher(self):
         """Create Teacher entity"""
 
-        _name = unicode(request.form['name'], 'ascii').encode("utf-8")
+        _name = unicode(request.form['name'])
         _login = str(request.form['login'].strip())
         _password = str(request.form['password'].strip())
         _email = str(request.form['email'])
