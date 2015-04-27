@@ -13,6 +13,7 @@ from app.models.subjects_model_with_entity import Subject, \
     ExtendedSubjectsModel
 from app.models.schools_model_with_entity import School, \
     ExtendedSchoolsModel
+from app.utils.validation import Validate
 
 
 class AdminController(object):
@@ -279,7 +280,7 @@ class AdminController(object):
     def _create_entity_teacher(self):
         """Create Teacher entity"""
 
-        _name = unicode(request.form['name'])
+        _name = unicode(request.form['name'], 'ascii').encode("utf-8")
         _login = str(request.form['login'].strip())
         _password = str(request.form['password'].strip())
         _email = str(request.form['email'])
@@ -308,10 +309,10 @@ class AdminController(object):
         """Validate request teacher's data from form"""
 
         self.message = dict()
-        # regex pattern
-        email_pattern = "^[-0-9a-zA-Z.+_]+@[-0-9a-zA-Z.+_]+\.[a-zA-Z]{2,4}$"
-        name_pattern = "^([A-Z\p{Cyrillic}])\w\p{Cyrillic}+\s([A-Z{Cyrillic}])\w\p{Cyrillic}+$"
-        login_pattern = "^[A-Za-z0-9]+$"
+
+        # validate entity
+        _validate = Validate()
+
         # check data
         if not kwargs.get('name'):
             self.message['name'] = u'Некоректно введно ім\'я'
@@ -322,10 +323,10 @@ class AdminController(object):
         if not kwargs.get('password'):
             self.message['password'] = u'Введіть пароль'
 
-        if not re.match(login_pattern, kwargs.get('login')):
+        if not _validate.check_login(kwargs.get('login')):
             self.message['login'] = u'Некоректно введно логин'
 
-        if not re.match(email_pattern, kwargs.get('email')):
+        if not _validate.check_email(kwargs.get('email')):
             self.message['email'] = u'Некоректно введно емейл'
         # If validate return true
         if self.message:
