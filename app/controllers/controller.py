@@ -156,8 +156,8 @@ class AdminController(object):
 
         if request.method == 'POST':
             # save school in case there aren't any mistakes
-            if self._validate_schools(name=request.form['name'],
-                                      address=request.form['address']):
+            if self._validate_schools(name=request.form['name'].strip(),
+                                      address=request.form['address'].strip()):
                 # create entity
                 _school = self._create_entity_school()
                 # save all data in DB
@@ -181,8 +181,8 @@ class AdminController(object):
 
         if request.method == 'POST':
             # save school in case there aren't any mistakes
-            if self._validate_schools(name=request.form['name'],
-                                      address=request.form['address']):
+            if self._validate_schools(name=request.form['name'].strip(),
+                                      address=request.form['address'].strip()):
                 # create entity
                 _school = self._create_entity_school()
                 _school.id_ = int(id_)
@@ -230,7 +230,7 @@ class AdminController(object):
 
         if request.method == 'POST':
             # save subject in case there aren't any mistakes
-            if self._validate_subjects(name=request.form['name']):
+            if self._validate_subjects(name=request.form['name'].strip()):
                 # create entity
                 _subject = self._create_entity_subject()
                 # save all data in DB
@@ -254,7 +254,7 @@ class AdminController(object):
 
         if request.method == 'POST':
             # save subject in case there aren't any mistakes
-            if self._validate_subjects(name=request.form['name']):
+            if self._validate_subjects(name=request.form['name'].strip()):
                 # create entity
                 _subject = self._create_entity_subject()
                 _subject.id_ = int(id_)
