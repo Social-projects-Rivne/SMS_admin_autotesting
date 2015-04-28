@@ -27,6 +27,7 @@ class AdminController(object):
         self.subject_model = ExtendedSubjectsModel()
         self.school_model = ExtendedSchoolsModel()
         self.view = View()
+        self.validate = Validate()
 
     def get_index(self):
         """Return home page"""
@@ -314,10 +315,6 @@ class AdminController(object):
         """Validate request teacher's data from form"""
 
         self.message = dict()
-
-        # validate entity
-        _validate = Validate()
-
         # check data
         if not kwargs.get('name'):
             self.message['name'] = u'Некоректно введно ім\'я'
@@ -328,10 +325,10 @@ class AdminController(object):
         if not kwargs.get('password'):
             self.message['password'] = u'Введіть пароль'
 
-        if not _validate.check_login(kwargs.get('login')):
+        if not self.validate.check_login(kwargs.get('login')):
             self.message['login'] = u'Некоректно введно логін'
 
-        if not _validate.check_email(kwargs.get('email')):
+        if not self.validate.check_email(kwargs.get('email')):
             self.message['email'] = u'Некоректно введно емейл'
         # If validate return true
         if self.message:
@@ -344,11 +341,11 @@ class AdminController(object):
 
         self.message = dict()
         # check data
-        if not kwargs.get('name'):
-            self.message['name'] = u'Введіть назву'
+        if not self.validate.check_cyrillic(kwargs.get('name')):
+            self.message['name'] = u'Некоректно введено назву'
 
-        if not kwargs.get('address'):
-            self.message['address'] = u'Введіть адресу'
+        if not self.validate.check_cyrillic(kwargs.get('address')):
+            self.message['address'] = u'Некоректно введено адресу'
 
         # If validate return true
         if self.message:
@@ -361,8 +358,8 @@ class AdminController(object):
 
         self.message = dict()
         # check data
-        if not kwargs.get('name'):
-            self.message['name'] = u'Введіть назву'
+        if not self.validate.check_cyrillic(kwargs.get('name')):
+            self.message['name'] = u'Некоректно введено назву'
 
         # If validate return true
         if self.message:
