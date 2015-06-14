@@ -13,6 +13,7 @@ class School(object):
         self.id_ = id_
         self.name = name
         self.address = address
+        self.state = 1
 
 
 class ExtendedSchoolsModel(object):
@@ -61,8 +62,8 @@ class ExtendedSchoolsModel(object):
     def insert_school(self, school):
         """Insert school into DB"""
         orm = self.initORM()
-        orm.insert('Schools', ('name', 'address'),
-                   (school.name, school.address))
+        orm.insert('Schools', ('name', 'address', 'state'),
+                   (school.name, school.address, 1))
         orm.close()
 
     def _create_list_from_dbresult(self, results):

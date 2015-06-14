@@ -21,6 +21,7 @@ class Teacher(object):
         self.role_name = role_name
         self.school_id = school_id
         self.school_name = school_name
+        self.state = 1
 
 
 class ExtendedTeachersModel(object):
@@ -90,9 +91,9 @@ class ExtendedTeachersModel(object):
         """Insert teacher into DB"""
         orm = self.initORM()
         orm.insert('Teachers', ('name', 'login', 'email', 'password',
-                                'role_id'),
+                                'role_id', 'state'),
                    (teacher.name, teacher.login, teacher.email,
-                    teacher.password, teacher.role_id))
+                    teacher.password, teacher.role_id, 1))
         orm.close()
 
     def set_role_id_to_teacher_by_id(self, id_, role_id):
