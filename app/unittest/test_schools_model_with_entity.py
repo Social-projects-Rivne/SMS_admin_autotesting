@@ -1,5 +1,4 @@
 import unittest
-# from ..utils.dbdriver import DBDriver
 from app.utils.dbdriver import DBDriver
 
 from app.models.schools_model_with_entity import School, \
@@ -37,7 +36,6 @@ class TestExtendedSchoolsModel(unittest.TestCase):
             ExtendedSchoolsModel.select_schools_query + ' where name = "%s"' % self.school_to_test.name)
         for row in results:
             self.school_to_test_ids.append(row['id'])
-        #### print(self.school_to_test_ids)
         orm.close()
 
     def tearDown(self):
@@ -65,7 +63,6 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         """ Test, that checks, whether get_all_schools is not empty """
         schools = self.extendedSchoolsModel.get_all_schools()
         self.assertTrue(len(schools) > 0)
-        # self.fail()
 
     def test_get_all_schools_return_school_objects(self):
         """  Test, that checks, whether get_all_schools returns an object in type of School """
