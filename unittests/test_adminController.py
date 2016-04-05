@@ -1,4 +1,7 @@
+import os
 import unittest
+
+import sys
 from flask import Flask
 from app import app
 import config as config
@@ -12,8 +15,9 @@ __author__ = 'boris'
 
 class TestAdminController(unittest.TestCase):
     def setUp(self):
-
         """ Fixture that creates a initial data and records for tests """
+        app.config['TESTING'] = True
+        app.test_client()
         pass
         # from app import app
         #
@@ -38,13 +42,18 @@ class TestAdminController(unittest.TestCase):
     # @app.route('/index')
     # @login_required
     def test_get_index(self):
-        app = Flask(__name__)
+        app = Flask(__name__, template_folder='app/templates')
+        app.root_path = config.basedir
+        DB_ROOT = os.path.join(config.basedir, '..', 'database_settings')
+        sys.path.append(DB_ROOT)
         app.config.from_object('config')
+        print(config.basedir)
+        print( app.root_path)
         with app.app_context():
             controller = AdminController()
             controller.get_index()
-            print(1)
-            print(controller)
+            # print(1)
+            # print(controller)
             self.fail()
     """
     def test_get_login(self):
@@ -57,8 +66,11 @@ class TestAdminController(unittest.TestCase):
     # @app.route('/users_list')
     # @login_required
     def test_list_all_users(self):
+        app = Flask(__name__)
+        app.root_path = config.basedir
         controller = AdminController()
-        controller.list_all_users()
+        with app.app_context():
+            controller.list_all_users()
         self.fail()
 
     def test_add_user(self):
