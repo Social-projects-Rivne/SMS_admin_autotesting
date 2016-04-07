@@ -27,6 +27,7 @@ class TestAdminController(unittest.TestCase):
 
         self.app_t_client = app.test_client()
         self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
+        self.arg_dict_users = {'login': 'ТестЮзер'}
 
         self.host = credentials[0]
         self.username = credentials[1]
@@ -43,6 +44,8 @@ class TestAdminController(unittest.TestCase):
                             'name = "%s"' % (self.arg_dict_subj['name']))
             self.orm.delete('Subjects', 'name = "%s%s"' % (
                 self.arg_dict_subj['name'], "ЗмІнЕнИй"))
+            self.orm.delete('Teachers',
+                            'login = "%s"' % (self.arg_dict_users['login']))
             # pass
         except:
             pass
@@ -75,8 +78,50 @@ class TestAdminController(unittest.TestCase):
         self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     # ---------------------------------------------
+    # Testing teacher CRUD, // alex.sebestyanovych
+    # ---------------------------------------------
+
+    def test_list_all_users_get_response(self):
+        """ Test method list_all_users, method "GET", check status-code """
+        response = self.app_t_client.get(path='/users_list',
+                                         method="GET",
+                                         data=self.arg_dict_users)
+        self.assertTrue(response.status_code == 302)
+
+    def test_list_all_users_post_response(self):
+        """ Test method list_all_users, method "POST", check status-code """
+        response = self.app_t_client.get(path='/users_list',
+                                         method="POST",
+                                         data=self.arg_dict_users)
+        self.assertTrue(response.status_code == 302)
+
+    def test_add_user_get_response(self):
+        """ Test method add_user, method "GET", check status-code """
+        response = self.app_t_client.get(path='/user_add',
+                                         method="GET",
+                                         data=self.arg_dict_users)
+        self.assertTrue(response.status_code == 302)
+
+    def test_add_user_post_response(self):
+        """ Test method add_user, method "POST", check status-code """
+        response = self.app_t_client.get(path='/user_add',
+                                         method="POST",
+                                         data=self.arg_dict_users)
+        self.assertTrue(response.status_code == 302)
+
+    def test_add_user_get_content(self):
+        """ Test method add_user, method "GET",
+                check whether content is HTML """
+        with app.test_request_context(path='/user_add',
+                                      method="GET",
+                                      data=self.arg_dict_users):
+            response = self.admin.add_user()
+            self.assertTrue(response.__repr__().find("</html>") >= 0)
+
+    # ---------------------------------------------
     # Testing subject CRUD
     # ---------------------------------------------
+
     def test_list_all_subjects_get_response(self):
         """ Test method list_all_subjects, method "GET", check status-code """
         response = self.app_t_client.get(path='/subject_list',
