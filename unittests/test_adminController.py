@@ -1,4 +1,4 @@
-    # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 import os
 import unittest
 import sys
@@ -6,176 +6,224 @@ import urllib2
 
 from flask import Flask
 
-from app import app
+from app import app, DBDriver
+from app.models.subjects_model_with_entity import ExtendedSubjectsModel
 import config as config
 from app.controllers.controller import AdminController
 from db import credentials
 
-
 __author__ = 'boris'
+
 
 class TestAdminController(unittest.TestCase):
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
-        # app = aPP(__name__, template_folder='app/templates')
-        # self.app = Flask(__name__, template_folder='app/templates')
-        # self.app.config.from_object('config')
-        # self.app.root_path = config.basedir
-        # DB_ROOT = os.path.join(config.basedir, '..', 'database_settings')
-        # self.app.config['TESTING'] = True
-        #
-        # self.app.test_client()
+
+        self.admin = AdminController()
+        self.admin.view.render_login = lambda error: "login.html"
+        self.admin.view.render_index = lambda: "index.html"
+        self.admin.view.render_error = lambda: "page_not_found.html"
+        self.admin.view.render_list_users = lambda users: "users_list.html"
+
+        self.app_t_client = app.test_client()
+        self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
+
+        self.host = credentials[0]
+        self.username = credentials[1]
+        self.password = credentials[2]
+        self.db = credentials[3]
+
+        self.orm = DBDriver()
+        self.orm.connect(self.host, self.username, self.password, self.db)
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
         try:
-            pass
+            self.orm.delete('Subjects',
+                            'name = "%s"' % (self.arg_dict_subj['name']))
+            self.orm.delete('Subjects', 'name = "%s%s"' % (
+                self.arg_dict_subj['name'], "ЗмІнЕнИй"))
+            # pass
         except:
             pass
         finally:
-            pass
+            self.orm.close()
 
-    def test_creation_of_object(self):
-        self.assertIsNotNone(AdminController())
-
-    def test_type_if_object(self):
-        self.assertTrue(isinstance(AdminController(), AdminController))
-
-    """
     def test_get_index(self):
-        print("test_get_index")
-        with app.test_request_context():
-            controller = AdminController()
-            print("index")
-            print(controller.get_index())
-            # print(1)
-            # print(controller)
-            self.fail()
-    """
-    """
+        """Test method return page get_index()"""
+        self.assertEqual(self.admin.get_index(), "index.html")
+
     def test_get_login(self):
-        self.fail()
+        """Test method return page get_login()"""
+        self.assertEqual(self.admin.get_login('404'), "login.html")
 
     def test_get_error404(self):
-        self.fail()
+        """Test method return page get_error404()"""
+        self.assertEqual(self.admin.get_error404(),
+                         "page_not_found.html")
 
-    """
-    # @app.route('/users_list')
-    # @login_required
-    """
-    def test_list_all_users(self):
+    def test_object_type(self):
+        """Check type of object"""
+        self.assertTrue(isinstance(AdminController(), AdminController))
 
-        print("test_list_all_users")
+    def test_object_not_none(self):
+        """Check, whether AdminController() is not empty"""
+        self.assertIsNotNone(AdminController())
 
-        app = Flask(__name__)
-        app.root_path = config.basedir
-        controller = AdminController()
-        with app.app_context():
-            controller.list_all_users()
-        self.fail()
+    def test_list_all_users_has_content(self):
+        """Check, whether list of all users is not empty"""
+        self.assertTrue(len(self.admin.list_all_users()) > 0)
 
-    """
+    # ---------------------------------------------
+    # Testing subject CRUD
+    # ---------------------------------------------
+    def test_list_all_subjects_get_response(self):
+        """ Test method list_all_subjects, method "GET", check status-code """
+        response = self.app_t_client.get(path='/subject_list',
+                                         method="GET",
+                                         data=self.arg_dict_subj)
+        self.assertTrue(response.status_code == 302)
 
-    def test_add_user(self):
-        arg_dict = {'name':'name','login':'login',
-            'password':'password','email':'email',
-            'user_role':'user_role'}
+    def test_list_all_subjects_post_response(self):
+        """ Test method list_all_subjects, method "POST", check status-code """
+        response = self.app_t_client.get(path='/subject_list',
+                                         method="POST",
+                                         data=self.arg_dict_subj)
+        self.assertTrue(response.status_code == 302)
 
-        with app.test_request_context(path = '/user_add', method="POST", data = arg_dict ):
-            controller = AdminController()
-            print(controller.add_user())
+    def test_list_all_subjects_get_content(self):
+        """ Test method list_all_subjects, method "GET",
+                check whether content is HTML """
+        with app.test_request_context(path='/subject_list',
+                                      method="GET",
+                                      data=self.arg_dict_subj):
+            response = self.admin.add_subject()
+            self.assertTrue(response.__repr__().find("</html>") >= 0)
 
-        # self.fail()
+    def test_list_all_subjects_post_content(self):
+        """ Test method list_all_subjects, method "POST", check status-code """
+        with app.test_request_context(path='/subject_list',
+                                      method="POST",
+                                      data=self.arg_dict_subj):
+            response = self.admin.add_subject()
+            self.assertTrue(response.status_code == 302)
 
-    """
-    def test_update_user(self):
-        self.fail()
+    def test_add_subject_get_response(self):
+        """ Test method add_subject, method "GET", check status-code """
+        response = self.app_t_client.get(path='/subject_add',
+                                         method="GET",
+                                         data=self.arg_dict_subj)
+        self.assertTrue(response.status_code == 302)
 
-    def test_remove_user(self):
-        self.fail()
-
-    def test_list_all_schools(self):
-        self.fail()
-
-    def test_add_school(self):
-        self.fail()
-
-    def test_update_school(self):
-        self.fail()
-
-    def test_remove_school(self):
-        self.fail()
-    """
-
-    def test_list_all_subjects(self):
-        print("test_list_all_subjects")
-
-        with app.test_request_context(path = '/subjects_list', method="GET"):
-            # rv = app.preprocess_request()
-
-            controller = AdminController()
-            print(controller.list_all_subjects())
-
-            # if rv != None:
-            #     response = self.app.make_response(rv)
-            # else:
-                # do the main dispatch
-                # rv = app.dispatch_request()
-                # response = app.make_response(rv)
-
-                # now do the after funcs
-                # response = app.process_response(response)
-
-        # self.fail()
-
-    def test_add_subject_get_responce(self):
-        print("test_add_subject_get_responce")
-        arg_dict = {'name': 'Предмет'}
-        appt = app.test_client()
-        responce = appt.post(path='/subject_add', method="GET", data=arg_dict)
-        print(responce)
-
-    def test_add_subject_post_responce(self):
-        print("test_add_subject_post_responce")
-        arg_dict = {'name': 'Предмет'}
-        appt = app.test_client()
-        responce = appt.post(path='/subject_add', method="POST", data=arg_dict)
-        print(responce)
+    def test_add_subject_post_response(self):
+        """ Test method add_subject, method "POST", check status-code """
+        response = self.app_t_client.get(path='/subject_add',
+                                         method="POST",
+                                         data=self.arg_dict_subj)
+        self.assertTrue(response.status_code == 302)
 
     def test_add_subject_get_content(self):
-        print("test_add_subject_get_content")
-        arg_dict = {'name': 'Предмет'}
-        with app.test_request_context(path='/subject_add', method="GET",
-                                      data=arg_dict):
-
-            rv = app.preprocess_request()
-
-            controller = AdminController()
-            req = controller.add_subject()
-            print(req)
-            print(type(req))
-            # print(controller.add_subject())
+        """ Test method add_subject, method "GET",
+                check whether content is HTML """
+        with app.test_request_context(path='/subject_add',
+                                      method="GET",
+                                      data=self.arg_dict_subj):
+            response = self.admin.add_subject()
+            self.assertTrue(response.__repr__().find("</html>") >= 0)
 
     def test_add_subject_post_content(self):
-        print("test_add_subject_post_content")
-        arg_dict = {'name': 'Предмет'}
-        with app.test_request_context(path='/subject_add', method="POST",
-                                      data=arg_dict):
-            rv = app.preprocess_request()
+        """ Test method add_subject, method "POST", check status-code """
+        with app.test_request_context(path='/subject_add',
+                                      method="POST",
+                                      data=self.arg_dict_subj):
+            response = self.admin.add_subject()
+            self.assertTrue(response.status_code == 302)
 
-            controller = AdminController()
-            print(controller.add_subject())
+    def test_add_subject_db_results(self):
+        """ Test method add_subject, method "POST",
+                check changes in DB - whether object is created """
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "%s"' % self.arg_dict_subj['name'])
+        with app.test_request_context(path='/subject_add',
+                                      method="POST",
+                                      data=self.arg_dict_subj):
+            response = self.admin.add_subject()
+            results_after = self.orm.mysql_do(
+                ExtendedSubjectsModel.select_subjects_query +
+                ' where name = "%s"' % self.arg_dict_subj['name'])
+            self.assertTrue(len(results_before) == len(results_after) - 1)
 
+    def test_update_subject_response(self):
+        """ Test method update_subject, method "POST", check status-code """
+        self.orm.insert('Subjects', ('name',),
+                        (self.arg_dict_subj['name'],))
 
-    """
-    def test_update_subject(self):
-        self.fail()
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "%s"' % self.arg_dict_subj['name'])
+        test_subject_id = results_before[0]['id']
+        with app.test_request_context(path='/subject_update',
+                                      method="POST",
+                                      data=self.arg_dict_subj):
+            response = self.admin.update_subject(test_subject_id)
+            self.assertTrue(response.status_code == 302)
 
-    def test_remove_subject(self):
-        # controller = AdminController()
-        # controller.remove_subject()
-        self.fail()
-    """
+    def test_update_subject_db_result(self):
+        """ Test method update_subject, method "POST",
+                check changes in DB - whether object is updated"""
+        self.orm.insert('Subjects', ('name',),
+                        (self.arg_dict_subj['name'],))
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "%s"' % self.arg_dict_subj['name'])
+        test_subject_id = results_before[0]['id']
+
+        with app.test_request_context(path='/subject_update',
+                                      method="POST",
+                                      data={'name': self.arg_dict_subj[
+                                          'name'] + "ЗмІнЕнИй"}):
+            response = self.admin.update_subject(test_subject_id)
+            results_after = self.orm.mysql_do(
+                ExtendedSubjectsModel.select_subjects_query +
+                ' where name = "%s%s"' % (
+                    self.arg_dict_subj['name'], "ЗмІнЕнИй"))
+            self.assertTrue(len(results_before) == len(results_after))
+
+    def test_remove_subject_response(self):
+        """ Test method remove_subject, method "POST", check status code"""
+        self.orm.insert('Subjects', ('name',),
+                        (self.arg_dict_subj['name'],))
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "%s"' % self.arg_dict_subj['name'])
+        test_subject_id = results_before[0]['id']
+        with app.test_request_context(path='/subject_remove',
+                                      method="POST",
+                                      data=self.arg_dict_subj):
+            response = self.admin.remove_subject(test_subject_id)
+            self.assertTrue(response.status_code == 302)
+
+    def test_remove_subject_db_results(self):
+        """ Test method remove_subject, method "POST",
+                check changes in DB - whether object is removed """
+        self.orm.insert('Subjects', ('name',),
+                        (self.arg_dict_subj['name'],))
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "%s"' % self.arg_dict_subj['name'])
+        test_subject_id = results_before[0]['id']
+        with app.test_request_context(path='/subject_remove',
+                                      method="POST",
+                                      data=self.arg_dict_subj):
+            response = self.admin.remove_subject(test_subject_id)
+            results_after = self.orm.mysql_do(
+                ExtendedSubjectsModel.select_subjects_query +
+                ' where name = "%s"' % self.arg_dict_subj['name'])
+            self.assertTrue(len(results_before) == len(results_after) + 1)
 
 
 if __name__ == "__main__":
