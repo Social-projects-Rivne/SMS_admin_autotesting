@@ -50,8 +50,8 @@ class TestExtendedRolesModel(unittest.TestCase):
 
     def test_get_all_roles(self):
         """ Get all roles """
-        role_to_test = self.extendedRolesModel._get_roles()
-        self.assertIsNotNone(role_to_test)
+        role_to_test = self.extendedRolesModel.get_all_roles()
+        self.assertIsInstance(role_to_test, list)
 
     def test_get_role_by_id(self):
         """Get role by given id"""
