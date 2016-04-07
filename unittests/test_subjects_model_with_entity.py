@@ -32,7 +32,7 @@ class TestExtendedSubjectsModel(unittest.TestCase):
 
         self.subject_model = ExtendedSubjectsModel()
         self.dbh = self.subject_model.initORM()
-        self.test_subject_name = 'Math'
+        self.test_subject_name = 'TestSubject'
         self.test_subject_id = self.dbh.mysql_do(
             "SELECT id FROM SMSDB.Subjects WHERE name = '{0}'".format(
             self.test_subject_name))
@@ -42,14 +42,32 @@ class TestExtendedSubjectsModel(unittest.TestCase):
         if len(self.test_subject_id) > 0:
             self.test_subject_id = self.test_subject_id[0]['id']
         else:
-            # manualy set current id of subject 'Math' :)
-            self.test_subject_id = 18
+            # manualy insert test subject 'Math' and get it id :)
+            self.dbh.mysql_do(
+                "INSERT INTO SMSDB.Subjects (id,name) VALUES (null,'{0}')".format(
+                self.test_subject_name))
+            self.test_subject_id = self.dbh.mysql_do(
+                "SELECT id FROM SMSDB.Subjects WHERE name = '{0}'".format(
+                self.test_subject_name))[0]['id']
+
 
         self.test_subject = Subject(self.test_subject_id, self.test_subject_name)
 
     def tearDown(self):
         """Clear all preparations for test"""
         self.dbh.close()
+
+    @classmethod
+    def tearDownClass(cls):
+
+        """Delete our 'TestSubject' from db after all tests"""
+
+        dbh = DBDriver()
+        dbh.connect(credentials[0],credentials[1],credentials[2],credentials[3])
+        dbh.mysql_do(
+            "DELETE FROM SMSDB.Subjects WHERE name = '{0}'".format(
+            'TestSubject'))
+        dbh.close()
 
     def test_get_all_subjects(self):
 
