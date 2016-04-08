@@ -4,6 +4,7 @@ import unittest
 from app import app, DBDriver
 from app.models.schools_model_with_entity import ExtendedSchoolsModel
 from app.models.subjects_model_with_entity import ExtendedSubjectsModel
+from app.models.teachers_model_with_entity import ExtendedTeachersModel
 from app.controllers.controller import AdminController
 from db import credentials
 
@@ -18,13 +19,16 @@ class TestAdminController(unittest.TestCase):
         self.admin.view.render_login = lambda error: "login.html"
         self.admin.view.render_index = lambda: "index.html"
         self.admin.view.render_error = lambda: "page_not_found.html"
-        # self.admin.view.render_list_users = lambda users: "users_list.html"
 
         self.app_t_client = app.test_client()
         self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
         self.arg_dict_school = {'name': 'ШкОлАдЛяТеСтУвАнНя',
                                 'address': 'АдРеСаШкОлИ'}
-        self.arg_dict_users = {'login': 'ТестЮзер'}
+        self.arg_dict_users = {'name': 'ТестЮзер',
+                               'login': 'ТестЛогін',
+                               'password': 'ТестПароль',
+                               'email': 'ТестМейл',
+                               'user_role': 'ТестРоль'}
 
         self.host = credentials[0]
         self.username = credentials[1]
@@ -38,6 +42,12 @@ class TestAdminController(unittest.TestCase):
                          self.arg_dict_school['address']))
         self.orm.insert('Subjects', ('name',),
                         (self.arg_dict_subj['name'],))
+        self.orm.insert('Teachers', ('name',),
+                        (self.arg_dict_users['name'],
+                         self.arg_dict_users['login'],
+                         self.arg_dict_users['password'],
+                         self.arg_dict_users['email'],
+                         self.arg_dict_users['user_role']))
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
@@ -53,7 +63,9 @@ class TestAdminController(unittest.TestCase):
                 self.arg_dict_school['name'], "ЗмІнЕнИй"))
 
             self.orm.delete('Teachers',
-                            'login = "%s"' % (self.arg_dict_users['login']))
+                            'name = "{}"'.format(self.arg_dict_users['name']))
+            self.orm.delete('Teachers', 'name = "{}{}"'.format(
+                self.arg_dict_users['name'], "ЗмІнЕнИй"))
             # pass
         except Exception:
             print(Exception)
@@ -73,14 +85,6 @@ class TestAdminController(unittest.TestCase):
         self.assertEqual(self.admin.get_error404(),
                          "page_not_found.html")
 
-    def test_object_type(self):
-        """Check type of object"""
-        self.assertTrue(isinstance(AdminController(), AdminController))
-
-    def test_object_not_none(self):
-        """Check, whether AdminController() is not empty"""
-        self.assertIsNotNone(AdminController())
-
     def _test_list_all_users_has_content(self):
         """Check, whether list of all users is not empty"""
         self.assertTrue(len(self.admin.list_all_users()) > 0)
@@ -89,12 +93,18 @@ class TestAdminController(unittest.TestCase):
     # Testing teacher CRUD, // alex.sebestyanovych
     # ---------------------------------------------
 
-    def test_list_all_users_get_response(self):
-        """ Test method list_all_users, method "GET", check status-code """
-        response = self.app_t_client.get(path='/users_list',
-                                         method="GET",
-                                         data=self.arg_dict_users)
-        self.assertTrue(response.status_code == 302)
+    def _test_list_all_users_has_content(self):
+        """Check, whether list of all users is not empty"""
+        self.assertTrue(len(self.admin.list_all_users()) > 0)
+
+    def test_list_all_users_get_content(self):
+        """ Test method list_all_users, method "GET",
+        check whether content is HTML """
+        with app.test_request_context(path='/users_list',
+                                      method="GET",
+                                      data=self.arg_dict_users):
+            response = self.admin.list_all_users()
+            self.assertTrue(response.__repr__().find("</html>") >= 0)
 
     def test_list_all_users_post_response(self):
         """ Test method list_all_users, method "POST", check status-code """
@@ -103,12 +113,14 @@ class TestAdminController(unittest.TestCase):
                                          data=self.arg_dict_users)
         self.assertTrue(response.status_code == 302)
 
-    def test_add_user_get_response(self):
-        """ Test method add_user, method "GET", check status-code """
-        response = self.app_t_client.get(path='/user_add',
-                                         method="GET",
-                                         data=self.arg_dict_users)
-        self.assertTrue(response.status_code == 302)
+    def test_add_user_get_content(self):
+        """ Test method add_user, method "GET",
+        check whether content is HTML """
+        with app.test_request_context(path='/user_add',
+                                      method="GET",
+                                      data=self.arg_dict_users):
+            response = self.admin.add_user()
+            self.assertTrue(response.__repr__().find("</html>") >= 0)
 
     def test_add_user_post_response(self):
         """ Test method add_user, method "POST", check status-code """
@@ -116,53 +128,6 @@ class TestAdminController(unittest.TestCase):
                                          method="POST",
                                          data=self.arg_dict_users)
         self.assertTrue(response.status_code == 302)
-
-    def test_add_user_get_content(self):
-        """ Test method add_user, method "GET",
-                check whether content is HTML """
-        with app.test_request_context(path='/user_add',
-                                      method="GET",
-                                      data=self.arg_dict_users):
-            response = self.admin.add_user()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
-
-    def test_list_all_users_post_response_context(self):
-        """ Test method list_all_users, method "POST", check \
-        status-code with using of request_context """
-        with app.test_request_context(path='/user_list',
-                                      method="POST",
-                                      data=self.arg_dict_users):
-            result = self.admin.list_all_users()
-            status = self.app_t_client.get('/users_list')
-            self.assertEqual(status.status_code, 302)
-
-    def _test_list_all_users_post_response_context(self):
-        """ Test method list_all_users, method "POST", check \
-        status-code with using of request_context """
-        with app.test_request_context(path='/user_list',
-                                      method="POST",
-                                      data=self.arg_dict_users):
-            result = self.admin.list_all_users()
-            status = self.app_t_client.get('/users_list')
-            # self.assertIn(u'<title>Список користувачів | SMS</title>', result)
-            # self.assertIn(u'href="/logout"', result)
-            self.assertEqual(status.status_code, 302)
-
-    def test_list_all_users_get_response_context(self):
-        """ Test method list_all_users, method "GET", check \
-        status-code with using of request_context """
-        with app.test_request_context(path='/user_list',
-                                      method="GET",
-                                      data=self.arg_dict_users):
-            result = self.admin.list_all_users()
-            status = self.app_t_client.get('/users_list')
-            # print("result")
-            # print(result)
-            # print("status")
-            # print(status)
-            # self.assertIn(u'<title>Список користувачів | SMS</title>', result)
-            # self.assertIn(u'href="/logout"', result)
-            self.assertEqual(status.status_code, 302)
 
     # --------------------------------------------------
     # Testing school CRUD
