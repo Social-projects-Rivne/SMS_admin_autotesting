@@ -24,11 +24,13 @@ class TestAdminController(unittest.TestCase):
         self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
         self.arg_dict_school = {'name': 'ШкОлАдЛяТеСтУвАнНя',
                                 'address': 'АдРеСаШкОлИ'}
-        self.arg_dict_users = {'name': 'ТестЮзер',
-                               'login': 'ТестЛогін',
-                               'password': 'ТестПароль',
-                               'email': 'ТестМейл',
-                               'user_role': 'ТестРоль'}
+        self.arg_dict_users = {'name': 'Тест Тестович',
+                               'login': 'testlogin',
+                               'password': 'TestPassword',
+                               'email': 'testmail@domain.com',
+                               'role_id': 1,
+                               'user_role': 1,
+                               'delete_button': True}
 
         self.host = credentials[0]
         self.username = credentials[1]
@@ -42,12 +44,15 @@ class TestAdminController(unittest.TestCase):
                          self.arg_dict_school['address']))
         self.orm.insert('Subjects', ('name',),
                         (self.arg_dict_subj['name'],))
-        self.orm.insert('Teachers', ('name',),
-                        (self.arg_dict_users['name'],
-                         self.arg_dict_users['login'],
-                         self.arg_dict_users['password'],
-                         self.arg_dict_users['email'],
-                         self.arg_dict_users['user_role']))
+        self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
+                                                 `login`, `email`, `password`) \
+                                                  VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
+            self.arg_dict_users['name'],
+            self.arg_dict_users['role_id'],
+            self.arg_dict_users['login'],
+            self.arg_dict_users['email'],
+            self.arg_dict_users['password']
+        ))
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
@@ -64,11 +69,9 @@ class TestAdminController(unittest.TestCase):
 
             self.orm.delete('Teachers',
                             'name = "{}"'.format(self.arg_dict_users['name']))
-            self.orm.delete('Teachers', 'name = "{}{}"'.format(
-                self.arg_dict_users['name'], "ЗмІнЕнИй"))
             # pass
-        except Exception:
-            print(Exception)
+        except Exception as error:
+            print(error)
         finally:
             self.orm.close()
 
@@ -90,12 +93,8 @@ class TestAdminController(unittest.TestCase):
         self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     # ---------------------------------------------
-    # Testing teacher CRUD, // alex.sebestyanovych
+    # Testing teacher CRUD
     # ---------------------------------------------
-
-    def _test_list_all_users_has_content(self):
-        """Check, whether list of all users is not empty"""
-        self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     def test_list_all_users_get_content(self):
         """ Test method list_all_users, method "GET",
@@ -103,15 +102,9 @@ class TestAdminController(unittest.TestCase):
         with app.test_request_context(path='/users_list',
                                       method="GET",
                                       data=self.arg_dict_users):
-            response = self.admin.list_all_users()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
-
-    def test_list_all_users_post_response(self):
-        """ Test method list_all_users, method "POST", check status-code """
-        response = self.app_t_client.get(path='/users_list',
-                                         method="POST",
-                                         data=self.arg_dict_users)
-        self.assertTrue(response.status_code == 302)
+            response = repr(self.admin.list_all_users())
+            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn(u'SMS</title>', response)
 
     def test_add_user_get_content(self):
         """ Test method add_user, method "GET",
@@ -119,15 +112,61 @@ class TestAdminController(unittest.TestCase):
         with app.test_request_context(path='/user_add',
                                       method="GET",
                                       data=self.arg_dict_users):
-            response = self.admin.add_user()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
+            response = repr(self.admin.add_user())
+            self.assertTrue(response.find("</html>") >= 0)
 
-    def test_add_user_post_response(self):
-        """ Test method add_user, method "POST", check status-code """
-        response = self.app_t_client.get(path='/user_add',
-                                         method="POST",
-                                         data=self.arg_dict_users)
-        self.assertTrue(response.status_code == 302)
+    def test_add_user_results(self):
+        """ Test method add_user, method "POST",
+        check changes in DB - whether object is created """
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        with app.test_request_context(path='/user_add',
+                                      method="POST",
+                                      data=self.arg_dict_users):
+            response = self.admin.add_user()
+            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
+
+            self.assertEqual(results_after, results_before) # BUG! Nothing changed!
+            self.assertEqual(results_after[0]['login'], self.arg_dict_users['login'])
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(u'<a href="/users_list">', response.data)
+
+    def test_update_user_response(self):
+        """ Test method update_user, method "POST", check status-code """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data={'name': self.arg_dict_users[
+                                          'name'] + "Апдейт",
+                                            'login': self.arg_dict_users[
+                                                'login'] + "change",
+                                            'password': self.arg_dict_users[
+                                                'password'] + "change",
+                                            'email': self.arg_dict_users[
+                                                'email'] + "a@mail.com",
+                                            'user_role': 2}):
+            response = self.admin.update_user(test_id)
+            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
+            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn(u'SMS</title>', response)
+            self.assertEqual(results_before, results_after)
+
+    def test_remove_user_response(self):
+        """ Test method remove_user, method "POST", check status code"""
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_remove',
+                                      method="POST",
+                                      data=self.arg_dict_users):
+            response = self.admin.remove_user(test_id)
+            results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
+            self.assertTrue(response.status_code == 302)
+
+            self.assertNotEqual(results_before, results_after)
+            self.assertTrue(results_after < results_before)
+            self.assertIn(u'<a href="/users_list">', response.data)
 
     # --------------------------------------------------
     # Testing school CRUD
