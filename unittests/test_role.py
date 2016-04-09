@@ -3,6 +3,7 @@
 
 import unittest
 from app.models.roles_model import RolesModel
+from app.utils.dbdriver import DBDriver
 
 
 class TestRolesModel(unittest.TestCase):
@@ -12,7 +13,9 @@ class TestRolesModel(unittest.TestCase):
 
     def test_initORM(self):
         """Check that function is not empty"""
-        self.assertIsNotNone(self.roles.initORM())
+        orm = self.roles.initORM()
+        self.assertIsNotNone(orm)
+        self.assertIsInstance(orm, DBDriver)
 
     def test_get_all_roles(self):
         """Test, that checks, whether get_all_roles
