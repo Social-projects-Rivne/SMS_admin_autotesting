@@ -11,24 +11,6 @@ from db import credentials
 __author__ = 'boris'
 
 
-class Test_View(object):
-    def __init__(self):
-        self.errors = []
-
-    def render_login(self, error):
-        self.errors.append(error)
-
-    def get_errors(self):
-        return self.errors
-
-
-def run_tests_with_false_classes():
-    cont = AdminController()
-    cont.view = Test_View()
-    cont.get_login(404)
-    print(cont.view.get_errors())
-
-
 class TestAdminController(unittest.TestCase):
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
@@ -68,11 +50,11 @@ class TestAdminController(unittest.TestCase):
         self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
                          `login`, `email`, `password`) \
                           VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
-            self.arg_dict_users['name'],
-            self.arg_dict_users['role_id'],
-            self.arg_dict_users['login'],
-            self.arg_dict_users['email'],
-            self.arg_dict_users['password']
+                                self.arg_dict_users['name'],
+                                self.arg_dict_users['role_id'],
+                                self.arg_dict_users['login'],
+                                self.arg_dict_users['email'],
+                                self.arg_dict_users['password']
         ))
 
     def tearDown(self):
@@ -304,7 +286,7 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.update_school(test_id)
             self.assertTrue(response.find("</html>") >= 0)
 
-    def test_update_school_content_wrong_name(self):
+    def test_update_school_content_wrong_school(self):
         """ Test method update_school, method "GET",
         check whether response has warning """
 
