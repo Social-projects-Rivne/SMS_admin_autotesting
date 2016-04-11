@@ -34,6 +34,13 @@ class TestAdminController(unittest.TestCase):
                                'role_id': 1,
                                'user_role': 1,
                                'delete_button': True}
+        self.arg_dict_users_negative = {'name': 'Тест Тестович',
+                               'login': 'Логін',
+                               'password': 'TestPassword',
+                               'email': 'chdomain.com',
+                               'role_id': 1,
+                               'user_role': 1,
+                               'delete_button': True}
 
         self.host = credentials[0]
         self.username = credentials[1]
@@ -79,20 +86,20 @@ class TestAdminController(unittest.TestCase):
             self.orm.close()
 
     def test_get_index(self):
-        """Test method return page get_index()"""
+        """ Test method return page get_index() """
         self.assertEqual(self.admin.get_index(), "index.html")
 
     def test_get_login(self):
-        """Test method return page get_login()"""
+        """ Test method return page get_login() """
         self.assertEqual(self.admin.get_login('404'), "login.html")
 
     def test_get_error404(self):
-        """Test method return page get_error404()"""
+        """ Test method return page get_error404() """
         self.assertEqual(self.admin.get_error404(),
                          "page_not_found.html")
 
     def _test_list_all_users_has_content(self):
-        """Check, whether list of all users is not empty"""
+        """ Check, whether list of all users is not empty """
         self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     # ---------------------------------------------
@@ -130,36 +137,50 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.add_user()
             results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
 
-            self.assertEqual(results_after,
+            self.assertNotEqual(results_after,
                              results_before)  # BUG! Nothing changed!
             self.assertEqual(results_after[0]['login'],
                              self.arg_dict_users['login'])
-            self.assertEqual(response.status_code, 302)
             self.assertIn(u'<a href="/users_list">', response.data)
 
-    def test_update_user_response(self):
+    def test_update_user_response_status(self):
         """ Test method update_user, method "POST", check status-code """
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
         test_id = results_before[0]['id']
+        dict_user_update = {
+            'name': self.arg_dict_users['name'] + "Апдейт",
+            'login': self.arg_dict_users['login'] + "change",
+            'password': self.arg_dict_users['password'] + "change",
+            'email': self.arg_dict_users['email'] + "a@mail.com",
+            'user_role': 2}
         with app.test_request_context(path='/user_update',
                                       method="POST",
-                                      data={'name': self.arg_dict_users[
-                                          'name'] + "Апдейт",
-                                            'login': self.arg_dict_users[
-                                                'login'] + "change",
-                                            'password': self.arg_dict_users[
-                                                'password'] + "change",
-                                            'email': self.arg_dict_users[
-                                                'email'] + "a@mail.com",
-                                            'user_role': 2}):
+                                      data=dict_user_update):
             response = self.admin.update_user(test_id)
             results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
             self.assertTrue(response.find("</html>") >= 0)
             self.assertIn(u'SMS</title>', response)
+            
+    def test_update_user_response(self):
+        """ Test method update_user, method "POST", 
+        whether user is updated """
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        dict_user_update = {
+            'name': self.arg_dict_users['name'] + "Апдейт",
+            'login': self.arg_dict_users['login'] + "change",
+            'password': self.arg_dict_users['password'] + "change",
+            'email': self.arg_dict_users['email'] + "a@mail.com",
+            'user_role': 2}
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data=dict_user_update):
+            response = self.admin.update_user(test_id)
+            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
             self.assertEqual(results_before, results_after)
 
-    def test_remove_user_response(self):
+    def test_remove_user_response_status(self):
         """ Test method remove_user, method "POST", check status code"""
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
@@ -171,9 +192,43 @@ class TestAdminController(unittest.TestCase):
             results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
             self.assertTrue(response.status_code == 302)
 
+    def test_remove_user_response(self):
+        """ Test method remove_user, method "POST", 
+        check changes in DB - whether object is removed """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_remove',
+                                      method="POST",
+                                      data=self.arg_dict_users):
+            response = self.admin.remove_user(test_id)
+            results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
             self.assertNotEqual(results_before, results_after)
             self.assertTrue(results_after < results_before)
-            self.assertIn(u'<a href="/users_list">', response.data)
+                            
+    def test_update_user_response_negative_login(self):
+        """ Test method update_user, method "POST", wrong login """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data=self.arg_dict_users_negative):
+            response = self.admin.update_user(test_id)
+            self.assertIn('Некоректно введно логін'.decode('utf-8'),
+                          response)
+                          
+    def test_update_user_response_negative_email(self):
+        """ Test method update_user, method "POST", wrong email """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data=self.arg_dict_users_negative):
+            response = self.admin.update_user(test_id)                       
+            self.assertIn('Некоректно введно емейл'.decode('utf-8'),
+                          response)  
 
     # --------------------------------------------------
     # Testing school CRUD
