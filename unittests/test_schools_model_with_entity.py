@@ -11,7 +11,6 @@ class TestSchool(unittest.TestCase):
         school = School(1, "name", "address")
         self.assertIsNotNone(school)
 
-
 class TestExtendedSchoolsModel(unittest.TestCase):
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
@@ -57,6 +56,11 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         finally:
             self.orm.close()
 
+    def test_creation_of_ExtendedSchoolsModel(self):
+        """ Basic smoke test: object ExtendedSchoolsModel is created """
+        school_model = e_s_m()
+        self.assertIsNotNone(school_model)
+        
     def test_initORM(self):
         """ Basic smoke test: ORM is initialized """
 
