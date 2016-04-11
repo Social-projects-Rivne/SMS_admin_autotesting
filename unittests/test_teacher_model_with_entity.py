@@ -65,13 +65,13 @@ class TestTeachersModelWithEntity(unittest.TestCase):
     def tearDown(self):
         """Deletes all preparation for tests"""
         try:
-            self.orm.connect(self.host, self.username, self.password, self.db)
             self.orm.delete('Teachers', 'name = "%s"' %
                             self.teacher_to_test.name)
             self.orm.delete('Teachers', 'name = "%s"' %
                             (self.teacher_to_test.name + 'Updated'))
-        except Exception:
-            print "Error database test string delete"
+
+        except Exception as e:
+            print (e)
         finally:
             self.orm.close()
 
