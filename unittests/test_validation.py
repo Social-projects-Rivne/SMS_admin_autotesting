@@ -12,7 +12,7 @@ class TestValidation(unittest.TestCase):
 	def test_check_email_positive(self):
 		"""Check if correct email matched"""
 		
-		str_to_test = "alex@gmail.com"
+		str_to_test = "alexv@gmail.com"
 		result = self.validator.check_email(str_to_test)
 		self.assertIsInstance(result, object)
 
