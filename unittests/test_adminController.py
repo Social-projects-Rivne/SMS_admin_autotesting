@@ -22,13 +22,18 @@ class TestAdminController(unittest.TestCase):
 
         self.app_t_client = app.test_client()
         self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
+        self.arg_dict_subj_negative = {'name': 'TestingSubject'}
         self.arg_dict_school = {'name': 'ШкОлАдЛяТеСтУвАнНя',
                                 'address': 'АдРеСаШкОлИ'}
-        self.arg_dict_users = {'name': 'ТестЮзер',
-                               'login': 'ТестЛогін',
-                               'password': 'ТестПароль',
-                               'email': 'ТестМейл',
-                               'user_role': 'ТестРоль'}
+        self.arg_dict_school_negative = {'name': 'TestSchoolName',
+                                         'address': 'TestSchoolAddr'}
+        self.arg_dict_users = {'name': 'Тест Тестович',
+                               'login': 'testlogin',
+                               'password': 'TestPassword',
+                               'email': 'testmail@domain.com',
+                               'role_id': 1,
+                               'user_role': 1,
+                               'delete_button': True}
 
         self.host = credentials[0]
         self.username = credentials[1]
@@ -42,12 +47,15 @@ class TestAdminController(unittest.TestCase):
                          self.arg_dict_school['address']))
         self.orm.insert('Subjects', ('name',),
                         (self.arg_dict_subj['name'],))
-        self.orm.insert('Teachers', ('name',),
-                        (self.arg_dict_users['name'],
-                         self.arg_dict_users['login'],
-                         self.arg_dict_users['password'],
-                         self.arg_dict_users['email'],
-                         self.arg_dict_users['user_role']))
+        self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
+                         `login`, `email`, `password`) \
+                          VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
+                                self.arg_dict_users['name'],
+                                self.arg_dict_users['role_id'],
+                                self.arg_dict_users['login'],
+                                self.arg_dict_users['email'],
+                                self.arg_dict_users['password']
+        ))
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
@@ -64,11 +72,9 @@ class TestAdminController(unittest.TestCase):
 
             self.orm.delete('Teachers',
                             'name = "{}"'.format(self.arg_dict_users['name']))
-            self.orm.delete('Teachers', 'name = "{}{}"'.format(
-                self.arg_dict_users['name'], "ЗмІнЕнИй"))
             # pass
-        except Exception:
-            print(Exception)
+        except Exception as error:
+            print(error)
         finally:
             self.orm.close()
 
@@ -90,12 +96,8 @@ class TestAdminController(unittest.TestCase):
         self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     # ---------------------------------------------
-    # Testing teacher CRUD, // alex.sebestyanovych
+    # Testing teacher CRUD
     # ---------------------------------------------
-
-    def _test_list_all_users_has_content(self):
-        """Check, whether list of all users is not empty"""
-        self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     def test_list_all_users_get_content(self):
         """ Test method list_all_users, method "GET",
@@ -103,31 +105,75 @@ class TestAdminController(unittest.TestCase):
         with app.test_request_context(path='/users_list',
                                       method="GET",
                                       data=self.arg_dict_users):
-            response = self.admin.list_all_users()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
-
-    def test_list_all_users_post_response(self):
-        """ Test method list_all_users, method "POST", check status-code """
-        response = self.app_t_client.get(path='/users_list',
-                                         method="POST",
-                                         data=self.arg_dict_users)
-        self.assertTrue(response.status_code == 302)
+            response = repr(self.admin.list_all_users())
+            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn(u'SMS</title>', response)
 
     def test_add_user_get_content(self):
         """ Test method add_user, method "GET",
         check whether content is HTML """
+
         with app.test_request_context(path='/user_add',
                                       method="GET",
                                       data=self.arg_dict_users):
-            response = self.admin.add_user()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
+            response = repr(self.admin.add_user())
+            self.assertTrue(response.find("</html>") >= 0)
 
-    def test_add_user_post_response(self):
-        """ Test method add_user, method "POST", check status-code """
-        response = self.app_t_client.get(path='/user_add',
-                                         method="POST",
-                                         data=self.arg_dict_users)
-        self.assertTrue(response.status_code == 302)
+    def test_add_user_results(self):
+        """ Test method add_user, method "POST",
+        check changes in DB - whether object is created """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        with app.test_request_context(path='/user_add',
+                                      method="POST",
+                                      data=self.arg_dict_users):
+            response = self.admin.add_user()
+            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
+
+            self.assertEqual(results_after,
+                             results_before)  # BUG! Nothing changed!
+            self.assertEqual(results_after[0]['login'],
+                             self.arg_dict_users['login'])
+            self.assertEqual(response.status_code, 302)
+            self.assertIn(u'<a href="/users_list">', response.data)
+
+    def test_update_user_response(self):
+        """ Test method update_user, method "POST", check status-code """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data={'name': self.arg_dict_users[
+                                          'name'] + "Апдейт",
+                                            'login': self.arg_dict_users[
+                                                'login'] + "change",
+                                            'password': self.arg_dict_users[
+                                                'password'] + "change",
+                                            'email': self.arg_dict_users[
+                                                'email'] + "a@mail.com",
+                                            'user_role': 2}):
+            response = self.admin.update_user(test_id)
+            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
+            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn(u'SMS</title>', response)
+            self.assertEqual(results_before, results_after)
+
+    def test_remove_user_response(self):
+        """ Test method remove_user, method "POST", check status code"""
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_remove',
+                                      method="POST",
+                                      data=self.arg_dict_users):
+            response = self.admin.remove_user(test_id)
+            results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
+            self.assertTrue(response.status_code == 302)
+
+            self.assertNotEqual(results_before, results_after)
+            self.assertTrue(results_after < results_before)
+            self.assertIn(u'<a href="/users_list">', response.data)
 
     # --------------------------------------------------
     # Testing school CRUD
@@ -135,51 +181,82 @@ class TestAdminController(unittest.TestCase):
 
     def test_list_all_schools_get_content(self):
         """ Test method list_all_schools, method "GET",
-        check whether content is HTML """
+        check whether content has a value, inserted in SetUp """
+
         with app.test_request_context(path='/schools_list',
                                       method="GET",
                                       data=self.arg_dict_school):
             response = self.admin.list_all_schools()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
+            self.assertIn(self.arg_dict_school['name'].decode('utf-8'),
+                          response)
 
-    def test_list_list_all_schools_post_content(self):
-        """ Test method list_all_schools, method "POST", check status-code """
+    def test_list_all_schools_post_content(self):
+        """ Test method list_all_schools, method "POST",
+        check whether content has a value, inserted in SetUp """
+
         with app.test_request_context(path='/schools_list',
                                       method="POST",
                                       data=self.arg_dict_school):
             response = self.admin.list_all_schools()
-            self.assertTrue(response.status_code == 302)
+            self.assertIn(self.arg_dict_school['name'].decode('utf-8'),
+                          response)
 
-    def test_add_school_get_content(self):
+    def test_add_school_content(self):
         """ Test method add_school, method "GET",
-        check whether content is HTML """
+        check whether content has a value, inserted in SetUp """
+
         with app.test_request_context(path='/school_add',
                                       method="GET",
                                       data=self.arg_dict_school):
             response = self.admin.add_school()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
+            self.assertIn(self.arg_dict_school['name'].decode('utf-8'),
+                          response)
 
-    def test_add_school_post_content(self):
+    def test_add_school_response(self):
         """ Test method add_school, method "POST", check status-code """
+
         with app.test_request_context(path='/school_add',
                                       method="POST",
                                       data=self.arg_dict_school):
             response = self.admin.add_school()
             self.assertTrue(response.status_code == 302)
+
+    def test_add_school_content_wrong_school(self):
+        """ Test method add_school, method "POST", wrong school name
+        check whether response has a warning """
+
+        with app.test_request_context(path='/school_add',
+                                      method="POST",
+                                      data=self.arg_dict_school_negative):
+            response = self.admin.add_school()
+            self.assertIn('Некоректно введено назву'.decode('utf-8'),
+                          response)
+
+    def test_add_school_content_wrong_address(self):
+        """ Test method add_school, method "POST", wrond school address
+        check whether response has a warning """
+
+        with app.test_request_context(path='/school_add',
+                                      method="POST",
+                                      data=self.arg_dict_school_negative):
+            response = self.admin.add_school()
+            self.assertIn('Некоректно введено адресу'.decode('utf-8'),
+                          response)
 
     def test_add_school_db_results(self):
         """ Test method add_school, method "POST",
         check changes in DB - whether object is created """
+
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
-            ' where name = "%s"' % self.arg_dict_school['name'])
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
         with app.test_request_context(path='/school_add',
                                       method="POST",
                                       data=self.arg_dict_school):
             response = self.admin.add_school()
             results_after = self.orm.mysql_do(
                 ExtendedSchoolsModel.select_schools_query +
-                ' where name = "%s"' % self.arg_dict_school['name'])
+                ' where name = "{}"'.format(self.arg_dict_school['name']))
             self.assertTrue(len(results_before) == len(results_after) - 1)
 
     def test_update_school_response(self):
@@ -187,13 +264,58 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
-            ' where name = "%s"' % self.arg_dict_school['name'])
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/school_update',
                                       method="POST",
                                       data=self.arg_dict_school):
             response = self.admin.update_school(test_id)
             self.assertTrue(response.status_code == 302)
+
+    def test_update_school_content(self):
+        """ Test method update_school, method "GET",
+        check whether responce is HTML """
+
+        results_before = self.orm.mysql_do(
+            ExtendedSchoolsModel.select_schools_query +
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/school_update',
+                                      method="GET",
+                                      data=self.arg_dict_school):
+            response = self.admin.update_school(test_id)
+            self.assertTrue(response.find("</html>") >= 0)
+
+    def test_update_school_content_wrong_school(self):
+        """ Test method update_school, method "GET",
+        check whether response has warning """
+
+        results_before = self.orm.mysql_do(
+            ExtendedSchoolsModel.select_schools_query +
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/school_update',
+                                      method="POST",
+                                      data=self.arg_dict_school_negative):
+            response = self.admin.update_school(test_id)
+            self.assertIn('Некоректно введено назву'.decode('utf-8'),
+                          response)
+
+    def test_update_school_content_wrong_address(self):
+        """ Test method update_school, method "GET",
+        check whether response has warning """
+
+        results_before = self.orm.mysql_do(
+            ExtendedSchoolsModel.select_schools_query +
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/school_update',
+                                      method="POST",
+                                      data=self.arg_dict_school_negative):
+            response = self.admin.update_school(test_id)
+            self.assertIn('Некоректно введено адресу'.decode('utf-8'),
+                          response)
+
 
     def test_update_school_db_result(self):
         """ Test method update_school, method "POST",
@@ -201,20 +323,18 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
-            ' where name = "%s"' % self.arg_dict_school['name'])
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
         test_id = results_before[0]['id']
-
+        dict_school_changed = {
+            'name': self.arg_dict_school['name'] + "ЗмІнЕнИй",
+            'address': self.arg_dict_school['address'] + "ЗмІнЕнИй"}
         with app.test_request_context(path='/school_update',
                                       method="POST",
-                                      data={'name': self.arg_dict_school[
-                                          'name'] + "ЗмІнЕнИй",
-                                            'address': self.arg_dict_school[
-                                                'address'] + "ЗмІнЕнИй"}):
+                                      data=dict_school_changed):
             response = self.admin.update_school(test_id)
             results_after = self.orm.mysql_do(
                 ExtendedSchoolsModel.select_schools_query +
-                ' where name = "%s%s"' % (
-                    self.arg_dict_school['name'], "ЗмІнЕнИй"))
+                ' where name = "{}"'.format(dict_school_changed['name']))
             self.assertTrue(len(results_before) == len(results_after))
 
     def test_remove_school_response(self):
@@ -222,13 +342,26 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
-            ' where name = "%s"' % self.arg_dict_school['name'])
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/school_remove',
                                       method="POST",
                                       data=self.arg_dict_school):
             response = self.admin.remove_school(test_id)
             self.assertTrue(response.status_code == 302)
+
+    def test_remove_school_content(self):
+        """ Test method remove_school, method "POST", check status code"""
+
+        results_before = self.orm.mysql_do(
+            ExtendedSchoolsModel.select_schools_query +
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/school_remove',
+                                      method="GET",
+                                      data=self.arg_dict_school):
+            response = self.admin.remove_school(test_id)
+            self.assertTrue(response.find("</html>") >= 0)
 
     def test_remove_school_db_results(self):
         """ Test method remove_school, method "POST",
@@ -236,7 +369,7 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
-            ' where name = "%s"' % self.arg_dict_school['name'])
+            ' where name = "{}"'.format(self.arg_dict_school['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/school_remove',
                                       method="POST",
@@ -244,47 +377,54 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.remove_school(test_id)
             results_after = self.orm.mysql_do(
                 ExtendedSchoolsModel.select_schools_query +
-                ' where name = "%s"' % self.arg_dict_school['name'])
+                ' where name = "{}"'.format(self.arg_dict_school['name']))
             self.assertTrue(len(results_before) == len(results_after) + 1)
 
     # ---------------------------------------------
     # Testing subject CRUD
     # ---------------------------------------------
 
-    def test_list_all_subjects_get_response(self):
+    def _test_list_all_subjects_get_response(self):
         """ Test method list_all_subjects, method "GET", check status-code """
+
         response = self.app_t_client.get(path='/subject_list',
                                          method="GET",
                                          data=self.arg_dict_subj)
         self.assertTrue(response.status_code == 302)
 
-    def test_list_all_subjects_post_response(self):
+    def _test_list_all_subjects_post_response(self):
         """ Test method list_all_subjects, method "POST", check status-code """
+
         response = self.app_t_client.get(path='/subject_list',
                                          method="POST",
                                          data=self.arg_dict_subj)
         self.assertTrue(response.status_code == 302)
 
-    def test_list_all_subjects_get_content(self):
-        """ Test method list_all_subjects, method "GET",
-        check whether content is HTML """
-        with app.test_request_context(path='/subject_list',
-                                      method="GET",
-                                      data=self.arg_dict_subj):
-            response = self.admin.list_all_subjects()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
+    def test_list_all_subjects_response(self):
+        """ Test method list_all_subjects, method "POST",
+        check whether content has a value, inserted in SetUp """
 
-    def _test_list_all_subjects_post_content(self):
-        """ Test method list_all_subjects, method "POST", check status-code """
         with app.test_request_context(path='/subject_list',
                                       method="POST",
                                       data=self.arg_dict_subj):
             response = self.admin.list_all_subjects()
-            print(response)
-            self.assertTrue(response.status_code == 302)
+            self.assertIn(self.arg_dict_subj['name'].decode('utf-8'),
+                          response)
+
+    def test_list_all_subjects_content(self):
+        """ Test method list_all_subjects, method "GET",
+        check whether content has a value, inserted in SetUp """
+
+        with app.test_request_context(path='/subject_list',
+                                      method="GET",
+                                      data=self.arg_dict_subj):
+            response = self.admin.list_all_subjects()
+            self.assertIn(self.arg_dict_subj['name'].decode('utf-8'),
+                          response)
 
     def _test_add_subject_get_response(self):
         """ Test method add_subject, method "GET", check status-code """
+
         response = self.app_t_client.get(path='/subject_add',
                                          method="GET",
                                          data=self.arg_dict_subj)
@@ -292,41 +432,57 @@ class TestAdminController(unittest.TestCase):
 
     def _test_add_subject_post_response(self):
         """ Test method add_subject, method "POST", check status-code """
+
         response = self.app_t_client.get(path='/subject_add',
                                          method="POST",
                                          data=self.arg_dict_subj)
         self.assertTrue(response.status_code == 302)
 
-    def test_add_subject_get_content(self):
-        """ Test method add_subject, method "GET",
-        check whether content is HTML """
-        with app.test_request_context(path='/subject_add',
-                                      method="GET",
-                                      data=self.arg_dict_subj):
-            response = self.admin.add_subject()
-            self.assertTrue(response.__repr__().find("</html>") >= 0)
-
-    def test_add_subject_post_content(self):
+    def test_add_subject_responce(self):
         """ Test method add_subject, method "POST", check status-code """
+
         with app.test_request_context(path='/subject_add',
                                       method="POST",
                                       data=self.arg_dict_subj):
             response = self.admin.add_subject()
             self.assertTrue(response.status_code == 302)
 
+    def test_add_subject_content(self):
+        """ Test method add_subject, method "GET",
+         whether content has a value, inserted in SetUp """
+
+        with app.test_request_context(path='/subject_add',
+                                      method="GET",
+                                      data=self.arg_dict_subj):
+            response = self.admin.add_subject()
+            self.assertIn(self.arg_dict_subj['name'].decode('utf-8'),
+                          response)
+
+    def test_add_subject_content_wrong_subject(self):
+        """ Test method add_subject, method "POST", check whether
+        returned content has warning """
+
+        with app.test_request_context(path='/subject_add',
+                                      method="POST",
+                                      data=self.arg_dict_subj_negative):
+            response = self.admin.add_subject()
+            self.assertIn('Некоректно введено назву'.decode('utf-8'),
+                          response)
+
     def test_add_subject_db_results(self):
         """ Test method add_subject, method "POST",
         check changes in DB - whether object is created """
+
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
-            ' where name = "%s"' % self.arg_dict_subj['name'])
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
         with app.test_request_context(path='/subject_add',
                                       method="POST",
                                       data=self.arg_dict_subj):
             response = self.admin.add_subject()
             results_after = self.orm.mysql_do(
                 ExtendedSubjectsModel.select_subjects_query +
-                ' where name = "%s"' % self.arg_dict_subj['name'])
+                ' where name = "{}"'.format(self.arg_dict_subj['name']))
             self.assertTrue(len(results_before) == len(results_after) - 1)
 
     def test_update_subject_response(self):
@@ -334,13 +490,44 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
-            ' where name = "%s"' % self.arg_dict_subj['name'])
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/subject_update',
                                       method="POST",
                                       data=self.arg_dict_subj):
             response = self.admin.update_subject(test_id)
             self.assertTrue(response.status_code == 302)
+
+    def test_update_subject_content_wrong_data(self):
+        """ Test method update_subject, method "POST", wrong school name
+        check whether response has a warning """
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/subject_update',
+                                      method="POST",
+                                      data=self.arg_dict_subj_negative):
+            response = self.admin.update_subject(test_id)
+            self.assertIn('Некоректно введено назву'.decode('utf-8'),
+                          response)
+
+    def test_update_subject_content(self):
+        """ Test method update_subject, method "GET",
+        check whether responce is HTML """
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
+        test_id = results_before[0]['id']
+        dict_subj_changed = {
+            'name': self.arg_dict_subj['name'] + "ЗмІнЕнИй"}
+        with app.test_request_context(path='/subject_update',
+                                      method="GET",
+                                      data=dict_subj_changed):
+            response = self.admin.update_subject(test_id)
+            self.assertTrue(response.find("</html>") >= 0)
 
     def test_update_subject_db_result(self):
         """ Test method update_subject, method "POST",
@@ -348,18 +535,17 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
-            ' where name = "%s"' % self.arg_dict_subj['name'])
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
         test_id = results_before[0]['id']
-
+        dict_subj_changed = {
+            'name': self.arg_dict_subj['name'] + "ЗмІнЕнИй"}
         with app.test_request_context(path='/subject_update',
                                       method="POST",
-                                      data={'name': self.arg_dict_subj[
-                                          'name'] + "ЗмІнЕнИй"}):
+                                      data=dict_subj_changed):
             response = self.admin.update_subject(test_id)
             results_after = self.orm.mysql_do(
                 ExtendedSubjectsModel.select_subjects_query +
-                ' where name = "%s%s"' % (
-                    self.arg_dict_subj['name'], "ЗмІнЕнИй"))
+                ' where name = "{}"'.format((dict_subj_changed['name'])))
             self.assertTrue(len(results_before) == len(results_after))
 
     def test_remove_subject_response(self):
@@ -367,7 +553,7 @@ class TestAdminController(unittest.TestCase):
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
-            ' where name = "%s"' % self.arg_dict_subj['name'])
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/subject_remove',
                                       method="POST",
@@ -375,13 +561,40 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.remove_subject(test_id)
             self.assertTrue(response.status_code == 302)
 
+    def test_remove_subject_response_negative(self):
+        """ Test method remove_subject, method "POST", check status code"""
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/subject_remove',
+                                      method="GET",
+                                      data=self.arg_dict_subj_negative):
+            response = self.admin.remove_subject(777777777777777)
+            self.assertTrue(response.status_code == 302)
+
+    def test_remove_subject_content(self):
+        """ Test method remove_subject, method "GET",
+        check whether responce is HTML """
+
+        results_before = self.orm.mysql_do(
+            ExtendedSubjectsModel.select_subjects_query +
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/subject_remove',
+                                      method="GET",
+                                      data=self.arg_dict_subj):
+            response = self.admin.remove_subject(test_id)
+            self.assertTrue(response.find("</html>") >= 0)
+
     def test_remove_subject_db_results(self):
         """ Test method remove_subject, method "POST",
                 check changes in DB - whether object is removed """
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
-            ' where name = "%s"' % self.arg_dict_subj['name'])
+            ' where name = "{}"'.format(self.arg_dict_subj['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/subject_remove',
                                       method="POST",
@@ -389,7 +602,7 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.remove_subject(test_id)
             results_after = self.orm.mysql_do(
                 ExtendedSubjectsModel.select_subjects_query +
-                ' where name = "%s"' % self.arg_dict_subj['name'])
+                ' where name = "{}"'.format(self.arg_dict_subj['name']))
             self.assertTrue(len(results_before) == len(results_after) + 1)
 
 
