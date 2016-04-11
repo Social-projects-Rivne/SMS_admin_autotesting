@@ -16,10 +16,9 @@ class TestDBDriver(unittest.TestCase):
         self.db = credentials[3]
 
         self.testdb.connect(self.host, self.username, self.password, self.db)
-        self.testdb.mysql_do('create table TestTable (id int(10), Name VARCHAR(30))')
-        self.testdb.insert('TestTable', ('id', 'Name'), (1, "Alexey"))
-        # countRowBefore = self.testdb.mysql_do('SELECT COUNT(*) FROM TestTable')
-        # print '1 - Count of strings in database = ', countRowBefore[0]
+        self.testdb.mysql_do('create table TestTable (id int(10) '
+                             'NOT NULL AUTO_INCREMENT, '
+                             'Name VARCHAR(30) NOT NULL, PRIMARY KEY (id))')
 
     def tearDown(self):
         """Deletes all preparation for tests"""
@@ -29,40 +28,60 @@ class TestDBDriver(unittest.TestCase):
             print(e)
         finally:
             self.testdb.close()
-            print('Disconnected from database')
-# ----------------------------------------------------------------------------------------------------------------
 
     def test_connect(self):
         """Connect to database"""
         self.assertIsNotNone(self.db)
-        print('Connection with MYSQL database established')
+
+    def test_mysql_do_negative(self):
+        """Rollback in case there is any error"""
+        result = self.testdb.mysql_do('SELECTS * FROM TestTable')
+        self.assertIsNone(result)
 
     def test_insert(self):
         """Inserting info into the TestTable"""
-        # countRowBefore = self.testdb.mysql_do('SELECT COUNT(*) FROM TestTable')
-        # print 'Count of strings in database = ', countRowBefore
-        self.testdb.insert('TestTable', ('id', 'Name'), (1, "Alexey"))
-        # self.testdb.insert('TestTable', ('id', 'Name'), (2, "Vasya"))
-        # Is really needed next string there ??????
-        result = self.testdb.get('TestTable', ('id', 'Name'))
-        # countRowAfter = self.testdb.mysql_do('SELECT COUNT(*) FROM TestTable')
-        # print 'Count of strings in database = ', countRowBefore
-        self.assertTrue(result[0]['Name'] == "Alexey")
-        # self.assertTrue(countRowBefore == countRowAfter)
-        print('TestTable was successfully created and new info was inserted')
+        countRowBefore = self.testdb.mysql_do('SELECT * FROM TestTable')
+        # print ('Before SQL = ', len(countRowBefore))
+        self.testdb.insert('TestTable', ('Name',), ('Vasya',))
+        countRowAfter = self.testdb.mysql_do('SELECT * FROM TestTable')
+        # print ('After SQL = ', len(countRowAfter))
+        self.assertFalse(countRowBefore == countRowAfter)
 
     def test_get(self):
         """Getting info from the TestTable"""
+        self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Gora")')
         result = self.testdb.get('TestTable', ('id', 'Name'))
-        # self.testdb.insert('TestTable', ('id', 'Name'), (1, "Alexey")) ???????
         self.assertIsNotNone(result)
-        print('The information was successfully received')
+
+    def test_get_negative(self):
+        """Rollback in case there is any error"""
+        self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Gora")')
+        result = self.testdb.get('TestTables', ('id', 'Name'))
+        self.assertIsNone(result)
 
     def test_update(self):
-        """Update info in the TestTable"""
-        self.testdb.update('TestTable', ('id', 'Name'), ('2', "Vasya"))
-        result = self.testdb.get('TestTable', ('id', 'Name'))
-        self.assertTrue(result[0]['Name'] == "Vasya")
+        """Updating info in the TestTable"""
+        self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Gora")')
+        self.testdb.update('TestTable', 'name = "Alexey"', 'Name = "Gora"')
+        result = self.testdb.mysql_do('SELECT Name FROM TestTable')
+        self.assertTrue(result[0]['Name'] == "Alexey")
+
+    def test_delete(self):
+        """Deleting data from TestTable"""
+        countRowBefore = self.testdb.mysql_do('SELECT * FROM TestTable')
+        self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Gora")')
+        self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Alex")')
+        self.testdb.delete('TestTable', "id = 1")
+        countRowAfter = self.testdb.mysql_do('SELECT * FROM TestTable')
+        self.assertFalse(countRowBefore == countRowAfter)
+
+    def test_extract_tuple_int(self):
+        """Check if _extract_tuple returns tuple with elements of TestTable"""
+        # self.testdb.mysql_do('INSERT INTO `TestTable`(`id`) VALUES("12345")')
+        result = self.testdb._extract_tuple((1, 2, 3, 4, 5))
+        result2 = self.testdb._extract_tuple(('hello, world!'))
+        self.assertIsInstance(result, str)
+        self.assertIsInstance(result2, str)
 
 
 if __name__ == '__main__':
