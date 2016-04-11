@@ -350,6 +350,20 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.remove_school(test_id)
             self.assertTrue(response.status_code == 302)
 
+    def test_remove_school_content_negative(self):
+        """ Test method remove_school, method "POST", negative test
+        trying to delete non-existent school """
+
+        with app.test_request_context(path='/school_remove',
+                                      method="GET",
+                                      data=self.arg_dict_school):
+            try:
+                response = self.admin.remove_school(777777777777777)
+            except Exception as error:
+                print(error)
+                self.assertTrue(False)
+
+
     def test_remove_school_content(self):
         """ Test method remove_school, method "POST", check status code"""
 
@@ -562,17 +576,17 @@ class TestAdminController(unittest.TestCase):
             self.assertTrue(response.status_code == 302)
 
     def test_remove_subject_response_negative(self):
-        """ Test method remove_subject, method "POST", check status code"""
+        """ Test method remove_subject, method "GET", negative test
+        trying to delete non-existent subject"""
 
-        results_before = self.orm.mysql_do(
-            ExtendedSubjectsModel.select_subjects_query +
-            ' where name = "{}"'.format(self.arg_dict_subj['name']))
-        test_id = results_before[0]['id']
         with app.test_request_context(path='/subject_remove',
                                       method="GET",
                                       data=self.arg_dict_subj_negative):
-            response = self.admin.remove_subject(777777777777777)
-            self.assertTrue(response.status_code == 302)
+            try:
+                response = self.admin.remove_subject(777777777777777)
+            except Exception as error:
+                print(error)
+                self.assertTrue(False)
 
     def test_remove_subject_content(self):
         """ Test method remove_subject, method "GET",
