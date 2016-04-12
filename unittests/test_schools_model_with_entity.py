@@ -1,3 +1,6 @@
+""" A couple of tests for testing module school_model_with_entity """
+# -*- coding: utf-8 -*-
+
 import unittest
 from app.utils.dbdriver import DBDriver
 from app.models.schools_model_with_entity import School
@@ -6,12 +9,17 @@ from db import credentials
 
 
 class TestSchool(unittest.TestCase):
+    """ Class with methods, for testing School class """
+
     def test_creation_of_school(self):
         """ Basic smoke test: object school is created """
         school = School(1, "name", "address")
         self.assertIsNotNone(school)
 
+
 class TestExtendedSchoolsModel(unittest.TestCase):
+    """ Class with methods, for testing ExtendedSchoolModel class """
+
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
 
@@ -22,7 +30,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         self.host = credentials[0]
         self.username = credentials[1]
         self.password = credentials[2]
-        self.db = credentials[3]
+        self.database = credentials[3]
 
         self.school_to_test = School(1,
                                      self.test_school_name,
@@ -30,9 +38,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         self.school_to_test_ids = []
 
         self.orm = DBDriver()
-        self.orm.connect(self.host, self.username, self.password, self.db)
+        self.orm.connect(self.host, self.username, self.password, self.database)
         self.orm.insert('Schools', ('name', 'address'),
-                   (self.school_to_test.name, self.school_to_test.address))
+                        (
+                        self.school_to_test.name, self.school_to_test.address))
         results = self.orm.mysql_do(
             e_s_m.select_schools_query +
             ' where name = "{}"'.format(self.school_to_test.name))
@@ -58,9 +67,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_creation_of_ExtendedSchoolsModel(self):
         """ Basic smoke test: object ExtendedSchoolsModel is created """
+
         school_model = e_s_m()
         self.assertIsNotNone(school_model)
-        
+
     def test_initORM(self):
         """ Basic smoke test: ORM is initialized """
 
@@ -89,8 +99,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def test_get_school_by_id(self):
         """ Tests,that method get_school_by_id returns apropriate object """
 
-        for id in self.school_to_test_ids:
-            school = self.school_model.get_school_by_id(id)
+        for school_id in self.school_to_test_ids:
+            school = self.school_model.get_school_by_id(school_id)
             self.assertTrue((school[0].name == self.school_to_test.name) and
                             (school[0].address == self.school_to_test.address))
 
@@ -103,7 +113,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         self.school_model.update_school_by_id(school_to_update)
 
         results = self.orm.mysql_do(
-            e_s_m.select_schools_query + ' where id = {}'.format(self.school_to_test_ids[0]))
+            e_s_m.select_schools_query + ' where id = {}'.format(
+                self.school_to_test_ids[0]))
 
         self.assertTrue(
             (results[0]['name'] == self.test_school_name + 'Updated') and

@@ -1,4 +1,6 @@
+""" A couple of tests for testing module controller """
 # -*- coding: utf-8 -*-
+
 import unittest
 
 from app import app, DBDriver
@@ -12,6 +14,8 @@ __author__ = 'boris'
 
 
 class TestAdminController(unittest.TestCase):
+    """ Class with methods, for testing AdminController class """
+
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
 
@@ -45,10 +49,10 @@ class TestAdminController(unittest.TestCase):
         self.host = credentials[0]
         self.username = credentials[1]
         self.password = credentials[2]
-        self.db = credentials[3]
+        self.database = credentials[3]
 
         self.orm = DBDriver()
-        self.orm.connect(self.host, self.username, self.password, self.db)
+        self.orm.connect(self.host, self.username, self.password, self.database)
         self.orm.insert('Schools', ('name', 'address'),
                         (self.arg_dict_school['name'],
                          self.arg_dict_school['address']))
@@ -161,7 +165,7 @@ class TestAdminController(unittest.TestCase):
             results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
             self.assertTrue(response.find("</html>") >= 0)
             self.assertIn(u'SMS</title>', response)
-            
+
     def test_update_user_response(self):
         """ Test method update_user, method "POST", 
         whether user is updated """
@@ -193,7 +197,7 @@ class TestAdminController(unittest.TestCase):
             self.assertTrue(response.status_code == 302)
 
     def test_remove_user_response(self):
-        """ Test method remove_user, method "POST", 
+        """ Test method remove_user, method "POST",
         check changes in DB - whether object is removed """
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
