@@ -181,7 +181,7 @@ class TestAdminController(unittest.TestCase):
             self.assertEqual(results_before, results_after)
 
     def test_remove_user_response_status(self):
-        """ Test method remove_user, method "POST", check status code"""
+        """ Test method remove_user, method "POST", check status code """
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
         test_id = results_before[0]['id']
@@ -276,7 +276,7 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.add_school()
             self.assertTrue(response.status_code == 302)
 
-    def test_add_school_content_wrong_school(self):
+    def test_add_school_content_wrong_name(self):
         """ Test method add_school, method "POST", wrong school name
         check whether response has a warning """
 
@@ -288,7 +288,7 @@ class TestAdminController(unittest.TestCase):
                           response)
 
     def test_add_school_content_wrong_address(self):
-        """ Test method add_school, method "POST", wrond school address
+        """ Test method add_school, method "POST", wrong school address
         check whether response has a warning """
 
         with app.test_request_context(path='/school_add',
@@ -329,7 +329,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_update_school_content(self):
         """ Test method update_school, method "GET",
-        check whether responce is HTML """
+        check whether response is HTML """
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
@@ -341,7 +341,7 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.update_school(test_id)
             self.assertTrue(response.find("</html>") >= 0)
 
-    def test_update_school_content_wrong_school(self):
+    def test_update_school_content_wrong_name(self):
         """ Test method update_school, method "GET",
         check whether response has warning """
 
@@ -374,7 +374,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_update_school_db_result(self):
         """ Test method update_school, method "POST",
-        check changes in DB - whether object is updated"""
+        check changes in DB - whether object is updated """
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
@@ -393,7 +393,7 @@ class TestAdminController(unittest.TestCase):
             self.assertTrue(len(results_before) == len(results_after))
 
     def test_remove_school_response(self):
-        """ Test method remove_school, method "POST", check status code"""
+        """ Test method remove_school, method "POST", check status code """
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
@@ -405,8 +405,8 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.remove_school(test_id)
             self.assertTrue(response.status_code == 302)
 
-    def test_remove_school_content_negative(self):
-        """ Test method remove_school, method "POST", negative test
+    def test_remove_school_response_negative(self):
+        """ Test method remove_school, method "POST", negative test,
         trying to delete non-existent school """
 
         with app.test_request_context(path='/school_remove',
@@ -420,7 +420,7 @@ class TestAdminController(unittest.TestCase):
 
 
     def test_remove_school_content(self):
-        """ Test method remove_school, method "POST", check status code"""
+        """ Test method remove_school, method "POST", check status code """
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
@@ -434,7 +434,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_remove_school_db_results(self):
         """ Test method remove_school, method "POST",
-                check changes in DB - whether object is removed """
+        check changes in DB - whether object is removed """
 
         results_before = self.orm.mysql_do(
             ExtendedSchoolsModel.select_schools_query +
@@ -507,7 +507,7 @@ class TestAdminController(unittest.TestCase):
                                          data=self.arg_dict_subj)
         self.assertTrue(response.status_code == 302)
 
-    def test_add_subject_responce(self):
+    def test_add_subject_response(self):
         """ Test method add_subject, method "POST", check status-code """
 
         with app.test_request_context(path='/subject_add',
@@ -568,7 +568,7 @@ class TestAdminController(unittest.TestCase):
             self.assertTrue(response.status_code == 302)
 
     def test_update_subject_content_wrong_data(self):
-        """ Test method update_subject, method "POST", wrong school name
+        """ Test method update_subject, method "POST", wrong school name,
         check whether response has a warning """
 
         results_before = self.orm.mysql_do(
@@ -584,7 +584,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_update_subject_content(self):
         """ Test method update_subject, method "GET",
-        check whether responce is HTML """
+        check whether response is HTML """
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
@@ -600,7 +600,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_update_subject_db_result(self):
         """ Test method update_subject, method "POST",
-        check changes in DB - whether object is updated"""
+        check changes in DB - whether object is updated """
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
@@ -618,7 +618,7 @@ class TestAdminController(unittest.TestCase):
             self.assertTrue(len(results_before) == len(results_after))
 
     def test_remove_subject_response(self):
-        """ Test method remove_subject, method "POST", check status code"""
+        """ Test method remove_subject, method "POST", check status code """
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
@@ -631,8 +631,8 @@ class TestAdminController(unittest.TestCase):
             self.assertTrue(response.status_code == 302)
 
     def test_remove_subject_response_negative(self):
-        """ Test method remove_subject, method "GET", negative test
-        trying to delete non-existent subject"""
+        """ Test method remove_subject, method "GET", negative test,
+        trying to delete non-existent subject """
 
         with app.test_request_context(path='/subject_remove',
                                       method="GET",
@@ -645,7 +645,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_remove_subject_content(self):
         """ Test method remove_subject, method "GET",
-        check whether responce is HTML """
+        check whether response is HTML """
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
@@ -659,7 +659,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_remove_subject_db_results(self):
         """ Test method remove_subject, method "POST",
-                check changes in DB - whether object is removed """
+        check changes in DB - whether object is removed """
 
         results_before = self.orm.mysql_do(
             ExtendedSubjectsModel.select_subjects_query +
