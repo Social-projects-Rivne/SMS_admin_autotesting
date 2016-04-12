@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 import unittest
 from app.utils.dbdriver import DBDriver
 
@@ -10,7 +12,7 @@ class TestRole(unittest.TestCase):
         
         """Basic smoke test: object role is created"""
         
-        role = Role(4, "Boss")
+        role = Role(2, u'Завуч')
         self.assertIsInstance(role, Role)
 
 
@@ -20,8 +22,8 @@ class TestExtendedRolesModel(unittest.TestCase):
         
         """Preparation"""
         
-        self.test_role_name = "Boss"
-        self.test_role_id = 4
+        self.test_role_name = u"Завуч"
+        self.test_role_id = 2
         self.extendedRolesModel = ExtendedRolesModel()
         self.role_to_test = Role(self.test_role_id, self.test_role_name)
 
@@ -33,20 +35,11 @@ class TestExtendedRolesModel(unittest.TestCase):
 
         self.orm = DBDriver()
         self.orm.connect(self.host, self.username, self.password, self.db)
-        self.orm.insert('Roles', ('id', 'role_name'),
-                   (self.test_role_id, self.test_role_name))
+        
 
     def tearDown(self):
         """Fixture that deletes all preparation for tests"""
-        
-        try:
-            self.orm.delete('Roles', 'role_name = "%s"' % (self.test_role_name))
-        
-        except:
-            pass
-        
-        finally: 
-            self.orm.close()
+        self.orm.close()
 
     def test_initORM(self):
         """Basic smoke test: ORM is initialized"""
@@ -57,19 +50,19 @@ class TestExtendedRolesModel(unittest.TestCase):
         """Get all roles"""
         
         roles = self.extendedRolesModel.get_all_roles()
-        self.assertTrue(len(roles) > 0)
+        self.assertTrue(len(roles) == 3)
 
     def test_get_role_by_id(self):
         """Get role by given id"""
         
-        role = self.extendedRolesModel.get_role_by_id(4)
-        self.assertTrue(role[0].role_name == self.test_role_name)
+        roles_by_id = self.extendedRolesModel.get_role_by_id(self.test_role_id)
+        self.assertTrue(roles_by_id[0].role_name == self.test_role_name)
 
     def test_create_list_from_dbresult(self):
         """Check if func creates list"""
         
-        role = self.extendedRolesModel._get_roles('WHERE id=%d' % (4))
-        self.assertIsInstance(role, list)
+        role = self.extendedRolesModel._get_roles('WHERE id=%d' % (self.test_role_id))
+        self.assertIsInstance(role[0], Role)
 
 
 if __name__ == "__main__":
