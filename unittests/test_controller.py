@@ -1,6 +1,5 @@
 """ A couple of tests for testing module controller """
 # -*- coding: utf-8 -*-
-
 import unittest
 
 from app import app, DBDriver
@@ -9,8 +8,6 @@ from app.models.subjects_model_with_entity import ExtendedSubjectsModel
 from app.models.teachers_model_with_entity import ExtendedTeachersModel
 from app.controllers.controller import AdminController
 from db import credentials
-
-__author__ = 'boris'
 
 
 class TestAdminController(unittest.TestCase):
@@ -49,28 +46,27 @@ class TestAdminController(unittest.TestCase):
         self.host = credentials[0]
         self.username = credentials[1]
         self.password = credentials[2]
-        self.database = credentials[3]
+        self.db = credentials[3]
 
         self.orm = DBDriver()
-        self.orm.connect(self.host, self.username,
-                         self.password, self.database)
+        self.orm.connect(self.host, self.username, self.password, self.db)
         self.orm.insert('Schools', ('name', 'address'),
                         (self.arg_dict_school['name'],
                          self.arg_dict_school['address']))
         self.orm.insert('Subjects', ('name',),
                         (self.arg_dict_subj['name'],))
         self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
-                         `login`, `email`, `password`) \
+                          `login`, `email`, `password`) \
                           VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
-                          self.arg_dict_users['name'],
-                          self.arg_dict_users['role_id'],
-                          self.arg_dict_users['login'],
-                          self.arg_dict_users['email'],
-                          self.arg_dict_users['password']))
+                              self.arg_dict_users['name'],
+                              self.arg_dict_users['role_id'],
+                              self.arg_dict_users['login'],
+                              self.arg_dict_users['email'],
+                              self.arg_dict_users['password']
+        ))
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
-
         try:
             self.orm.delete('Subjects',
                             'name = "{}"'.format(self.arg_dict_subj['name']))
@@ -92,23 +88,16 @@ class TestAdminController(unittest.TestCase):
 
     def test_get_index(self):
         """ Test method return page get_index() """
-
         self.assertEqual(self.admin.get_index(), "index.html")
 
     def test_get_login(self):
         """ Test method return page get_login() """
-
         self.assertEqual(self.admin.get_login('404'), "login.html")
 
     def test_get_error404(self):
         """ Test method return page get_error404() """
-
         self.assertEqual(self.admin.get_error404(),
                          "page_not_found.html")
-
-    def _test_list_all_users_has_content(self):
-        """ Check, whether list of all users is not empty """
-        self.assertTrue(len(self.admin.list_all_users()) > 0)
 
     # ---------------------------------------------
     # Testing teacher CRUD
@@ -117,12 +106,10 @@ class TestAdminController(unittest.TestCase):
     def test_list_all_users_get_content(self):
         """ Test method list_all_users, method "GET",
         check whether content is HTML """
-
         with app.test_request_context(path='/users_list',
                                       method="GET",
                                       data=self.arg_dict_users):
             response = repr(self.admin.list_all_users())
-            self.assertTrue(response.find("</html>") >= 0)
             self.assertIn(u'SMS</title>', response)
 
     def test_add_user_get_content(self):
@@ -133,7 +120,7 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=self.arg_dict_users):
             response = repr(self.admin.add_user())
-            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn(u'SMS</title>', response)
 
     def test_add_user_results(self):
         """ Test method add_user, method "POST",
@@ -146,14 +133,26 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.add_user()
             results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
 
-            self.assertNotEqual(len(results_after),
-                                len(results_before))  # BUG! Nothing changed!
+            self.assertNotEqual(results_after,
+                                results_before)  # BUG! Nothing changed!
             self.assertEqual(results_after[0]['login'],
                              self.arg_dict_users['login'])
+
+    def test_add_user_content(self):
+        """ Test method add_user, method "POST",
+        check whether content is HTML """
+
+        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        with app.test_request_context(path='/user_add',
+                                      method="POST",
+                                      data=self.arg_dict_users):
+            response = self.admin.add_user()
+            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
             self.assertIn(u'<a href="/users_list">', response.data)
 
     def test_update_user_response_status(self):
-        """ Test method update_user, method "POST", check status-code """
+        """ Test method update_user, method "POST",
+        chec k whether content is HTML """
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
         test_id = results_before[0]['id']
@@ -168,7 +167,6 @@ class TestAdminController(unittest.TestCase):
                                       data=dict_user_update):
             response = self.admin.update_user(test_id)
             results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
-            self.assertTrue(response.find("</html>") >= 0)
             self.assertIn(u'SMS</title>', response)
 
     def test_update_user_response(self):
@@ -189,8 +187,8 @@ class TestAdminController(unittest.TestCase):
             results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
             self.assertEqual(results_before, results_after)
 
-    def test_remove_user_response_status(self):
-        """ Test method remove_user, method "POST", check status code """
+    def test_remove_user_status(self):
+        """ Test method remove_user, method "POST", check status code"""
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
         test_id = results_before[0]['id']
@@ -238,7 +236,6 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.update_user(test_id)
             self.assertIn('Некоректно введно емейл'.decode('utf-8'),
                           response)
-
     # --------------------------------------------------
     # Testing school CRUD
     # ---------------------------------------------------
