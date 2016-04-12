@@ -1,8 +1,8 @@
 import unittest
-from flask import Flask, url_for, redirect, render_template, request
+from flask import Flask, url_for, redirect, render_template, request, session
 from app import app
-from app.views.view import View
 from app.controllers.controller import AdminController
+from app.views.view import View
 
 
 class TestView(unittest.TestCase):
@@ -13,60 +13,102 @@ class TestView(unittest.TestCase):
         self.appt = app.test_client()
         self.appt.testing = True
         self.appt.debug = True
+        self.appt.SECRET_KEY = 'F12Zr47j\3yX R~X@H!jmM]L'
         
-        self.dict_user = {'login': 'username',
-                          'password': 'password'}
+        self.dict_user = {'id' : 1,
+        				  'login' : 'username',
+                          'password' : 'password'}
+        self.controller.view.render_login = lambda error: "login.html"
+        self.controller.view.render_index = lambda: "index.html"
+        self.controller.view.render_error = lambda: "page_not_found.html"
         
-        name = ''
-        roles = ''
-        errors = ''
-        user = ''
-        school = ''
-        subject = ''
-        schools = ''
-        subjects = ''
-        
-       
     def test_render_login(self):
         """Test if login page is rendered"""
-        response = self.appt.get(path = '/login', 
-                                 method = "POST",
-                                 data = self.dict_user)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Авторизація | SMS', response.data)
-        
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = a.get(path = '/login', 
+                             method = "POST",
+                             data = self.dict_user)
+
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Password', response.data)
+                
     def test_render_index(self):
         """Test if home page is rendered"""
-        response = self.appt.get(path = '/index', 
-                                 method = "POST",
-                                 data = self.dict_user)
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Головна сторінка | SMS', response.data)
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = a.get(path = '/index', 
+                             method = "POST",
+                             data = self.dict_user)
 
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Головна сторінка | SMS', response.data)
+        
     def test_render_error(self):
         """Test the 404 page is rendered"""
-        response = self.appt.get("/page_not_found")
-        self.assertEqual(response.status_code, 404)   
-        self.assertIn('Error 404 | SMS', response.data)
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = a.get(path = '/page_not_found', 
+                             method = "POST",
+                             data = self.dict_user)
 
+            #print str(response)
+            self.assertEqual(response.status_code, 404)
+            self.assertIn('Error 404 | SMS', response.data)
+        
     def test_render_user_form(self, roles = '', errors = '', user = ''):
         """Test if user add page is rendered"""
-        response = self.appt.get("/user_add")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Додати користувача', response.data)
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = a.get(path = '/user_add', 
+                             method = "POST",
+                             data = self.dict_user)
 
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Додати користувача', response.data)
+        
     def test_add_user_form_success(self, name=''):
         """Test the url redirection when user was added successfully"""
         response = self.appt.get("/users_list")
         self.assertEqual(response.status_code, 302)
-        #self.assertIn('Список користувачів', response.data)
-        #self.assertEqual(urlparse(response.location).path, "/users_list")
-
+                
     def test_render_confirm_delete(self, name=''):
         """Test if function returns confirm delete page"""
-        response = self.appt.get("/confirm_delete")
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = a.get(path = '/confirm_delete', 
+                             method = "POST",
+                             data = self.dict_user)
+
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Видалити | SMS', response.data)
+        """response = self.appt.get("/confirm_delete")
         self.assertEqual(response.status_code, 200)
-        self.assertIn('Видалити | SMS', response.data)
+        self.assertIn('Видалити | SMS', response.data)"""
 
     def test_remove_user_form_success(self, name=''):
         """Test the url redirection when user was deleted successfully"""
@@ -75,10 +117,20 @@ class TestView(unittest.TestCase):
 
     def test_render_list_users(self, users=''):
         """Test users list is rendered"""
-        response = self.appt.get("/users_list")
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Список користувачів  | SMS', response.data)
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = a.get(path = '/users_list', 
+                             method = "POST",
+                             data = self.dict_user)
 
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Список користувачів  | SMS', response.data)
+        
     #---View for schools----
 
     def test_render_list_schools(self, schools=''):
