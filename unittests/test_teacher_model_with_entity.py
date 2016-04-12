@@ -1,3 +1,5 @@
+"""Test Teachers model with entity"""
+
 import unittest
 from app.utils.dbdriver import DBDriver
 from app.models.teachers_model_with_entity import Teacher, \
@@ -6,6 +8,8 @@ from db import credentials
 
 
 class TestTeachers(unittest.TestCase):
+    """This class creates teacher objects to use them in Teacher Model"""
+
     def test_creation_of_teacher(self):
         """Test1: object teacher is created"""
         teacher = Teacher(1, "name", "login", "password", "email", "role_id",
@@ -14,6 +18,7 @@ class TestTeachers(unittest.TestCase):
 
 
 class TestTeachersModelWithEntity(unittest.TestCase):
+    """This class is used to retrieve data about teachers from DB"""
     def setUp(self):
         """Creates a initial data and records for tests"""
         self.test_teacher_name = "testTeacherName"
@@ -70,8 +75,8 @@ class TestTeachersModelWithEntity(unittest.TestCase):
             self.orm.delete('Teachers', 'name = "%s"' %
                             (self.teacher_to_test.name + 'Updated'))
 
-        except Exception as e:
-            print (e)
+        except Exception as error:
+            print error
         finally:
             self.orm.close()
 
@@ -176,7 +181,8 @@ class TestTeachersModelWithEntity(unittest.TestCase):
                                                    ))
         teacher_count_after = len(self.extendedTeachersModel.get_teacher_by_id
                                   (self.teacher_to_test_ids[0]))
-        print "Count of teachers in Database after SQL query = ", teacher_count_after
+        print "Count of teachers in Database after SQL query = ", \
+            teacher_count_after
         self.assertFalse(teacher_count_before == teacher_count_after)
 
     def test_set_role_id_to_teacher_by_id(self):
