@@ -13,63 +13,91 @@ from app import app
 class TestLoginRequired(unittest.TestCase):
     
     def setUp(self):
+        """Prepare the initial data for tests"""
         self.controller = AdminController()
-        #self.app.config['SECRET_KEY'] = 'F12Zr47j\3yX R~X@H!jmM]Lwf/,?KT'
+        
         self.appt = app.test_client()
         self.appt.testing = True
         self.appt.debug = True
+        self.appt.SECRET_KEY = 'F12Zr47j\3yX R~X@H!jmM]L'
         
-        self.dict_user = {'username': 'username',
-                          'login': 'username',
-                          'password': 'password'}
-        #app_f = flask.Flask(__name__)
-        #app_f.config.update(dict(SECRET_KEY = 'test key',
-                             #  DEBUG = True))
+        self.dict_user = {'id' : 1,
+                          'login' : 'username',
+                          'password' : 'password'}
 
-    """ def test_login_required_True(self, rout):
+    def teardown(self):
+        """Delete the preparation data for tests"""
+        try: 
+            session.pop('login', None)
+        except Exception as error:
+            print(error)
+        finally:
+            session.close()
         
-        if session.get(app.urls.login().logged_in):
-            assertIsNotNone(rout)"""
-
     def test_login_required_True_response(self):
-        #rout = controller.get_login()
+        """Test the path redirection when user is logged in using 
+        test_client()"""
         with self.appt as a:
             with a.session_transaction() as sess:
+                sess['id'] = 1
                 sess['username'] = 'username'
                 sess['password'] = 'password'
                 sess['logged_in'] = True
-                #logg = sess.get('logged_in')
-            response = a.get(path = '/login', 
-                                 method = "POST",
-                                 data = self.dict_user)
+            response = a.get(path = '/index', 
+                             method = "POST",
+                             data = self.dict_user)
 
-            print str(response)
-            #self.assertEqual('Invalid username or password', response.data)
-        #self.assertIsNotNone(rout)
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Головна сторінка | SMS', response.data)
 
     def test_login_required_True_context(self):
-        #rout = self.controller.get_login()
-        error_log = 'empty'
+        """Test the path redirection when user is logged in using context"""
+        with app.test_request_context(path = '/index', 
+                                      method = "POST",
+                                      data = self.dict_user):
+            with self.appt.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = True
+            response = self.controller.get_index()
+            #print response
+            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn('SMS', response)
+
+    def test_login_required_False_response(self):
+        """Test the path redirection when user is not logged in using 
+        test_client()"""
+        with self.appt as a:
+            with a.session_transaction() as sess:
+                sess['id'] = 1
+                sess['username'] = 'username'
+                sess['password'] = 'password'
+                sess['logged_in'] = False
+            response = a.get(path = '/login', 
+                             method = "POST",
+                             data = self.dict_user)
+
+            #print str(response)
+            self.assertEqual(response.status_code, 200)
+            self.assertIn('Password', response.data)
+
+    def test_login_required_False_context(self):
+        """Test the path redirection when user is not logged in using 
+        context"""
         with app.test_request_context(path = '/login', 
                                       method = "POST",
                                       data = self.dict_user):
             with self.appt.session_transaction() as sess:
+                sess['id'] = 1
                 sess['username'] = 'username'
                 sess['password'] = 'password'
-                sess['logged_in'] = True
-                #logg = sess.get('logged_in')
-            response = self.controller.get_login(error_log)
+                sess['logged_in'] = False
+            response = self.controller.get_login('')
             #print response
-            print error_log
-            #logged = session.get('logged_in')
-            #print str(logged)
-            #self.assertTrue(logged)
-            #self.assertIsNotNone(rout)
+            self.assertTrue(response.find("</html>") >= 0)
+            self.assertIn('Password', response)
     
-    """def test_login_required_False(self, rout, dict_user):
-        if not session.get('logged_in'):
-            response = self.app.get("login")
-            self.assertEqual(response.status_code, 302)"""
-        
 if __name__ =='__main__':
     unittest.main(verbosity=2)
