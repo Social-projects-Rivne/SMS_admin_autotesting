@@ -1,3 +1,5 @@
+"""Test DBDriver.py"""
+
 import unittest
 from app.utils.dbdriver import DBDriver
 from db import credentials
@@ -24,8 +26,8 @@ class TestDBDriver(unittest.TestCase):
         """Deletes all preparation for tests"""
         try:
             self.testdb.mysql_do('drop table if exists TestTable')
-        except Exception as e:
-            print(e)
+        except Exception as error:
+            print error
         finally:
             self.testdb.close()
 
@@ -40,12 +42,10 @@ class TestDBDriver(unittest.TestCase):
 
     def test_insert(self):
         """Inserting info into the TestTable"""
-        countRowBefore = self.testdb.mysql_do('SELECT * FROM TestTable')
-        # print ('Before SQL = ', len(countRowBefore))
+        count_before = self.testdb.mysql_do('SELECT * FROM TestTable')
         self.testdb.insert('TestTable', ('Name',), ('Vasya',))
-        countRowAfter = self.testdb.mysql_do('SELECT * FROM TestTable')
-        # print ('After SQL = ', len(countRowAfter))
-        self.assertFalse(countRowBefore == countRowAfter)
+        count_after = self.testdb.mysql_do('SELECT * FROM TestTable')
+        self.assertFalse(count_before == count_after)
 
     def test_get(self):
         """Getting info from the TestTable"""
@@ -68,12 +68,12 @@ class TestDBDriver(unittest.TestCase):
 
     def test_delete(self):
         """Deleting data from TestTable"""
-        countRowBefore = self.testdb.mysql_do('SELECT * FROM TestTable')
+        count_before = self.testdb.mysql_do('SELECT * FROM TestTable')
         self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Gora")')
         self.testdb.mysql_do('INSERT INTO `TestTable`(`Name`) VALUES("Alex")')
         self.testdb.delete('TestTable', "id = 1")
-        countRowAfter = self.testdb.mysql_do('SELECT * FROM TestTable')
-        self.assertFalse(countRowBefore == countRowAfter)
+        count_after = self.testdb.mysql_do('SELECT * FROM TestTable')
+        self.assertFalse(count_before == count_after)
 
     def test_extract_tuple_int(self):
         """Check if _extract_tuple returns tuple with elements of TestTable"""
