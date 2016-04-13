@@ -10,6 +10,7 @@ from app.controllers.controller import AdminController
 from db import credentials
 
 
+
 class TestAdminController(unittest.TestCase):
     """ Class with methods, for testing AdminController class """
 
@@ -62,8 +63,7 @@ class TestAdminController(unittest.TestCase):
                               self.arg_dict_users['role_id'],
                               self.arg_dict_users['login'],
                               self.arg_dict_users['email'],
-                              self.arg_dict_users['password']
-        ))
+                              self.arg_dict_users['password']))
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
