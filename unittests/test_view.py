@@ -14,6 +14,7 @@ class TestView(unittest.TestCase):
         """ Prepare the initial data for tests """
         self.controller = AdminController()
         self.view = View()
+        self.view.render_confirm_delete = lambda name: "confirm_delete.html"
         self.appt = app.test_client()
         self.appt.testing = True
         self.appt.debug = True
@@ -69,9 +70,8 @@ class TestView(unittest.TestCase):
 
     def test_render_confirm_delete(self, name=''):
         """ Test if function returns confirm delete page """
-        response = self.appt.get('/confirm_delete')
-        self.assertEqual(response.status_code, 200)
-        self.assertIn('Видалити | SMS', response.data)
+        self.assertEqual(self.view.render_confirm_delete('user'),
+                         "confirm_delete.html")
 
     def test_remove_user_form_success(self, name=''):
         """ Test the url redirection when user was deleted successfully """
