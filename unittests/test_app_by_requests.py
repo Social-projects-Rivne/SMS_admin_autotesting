@@ -87,6 +87,8 @@ class TestApp(unittest.TestCase):
         self.orm.mysql_do("DELETE FROM {0}.Schools WHERE "
                           "id = {1}".format(self.db,
                                             self.test_school['id']))
+        self.orm.close()
+        self.dbh.close()
 
     def test_login_correct(self):
         """Test white login (with correct login data)"""
@@ -130,6 +132,7 @@ class TestApp(unittest.TestCase):
                         response.headers['location'] == self.client.url_login)
 
     def test_add_user_as_logged_in_with_correct_data(self):
+        """Trying to add new user with correct data"""
         users_in_db_before = self.orm.mysql_do("SELECT * FROM {0}.teachers".
                                                format(self.db))
         response = self.client.add_user(self.test_user)
@@ -148,6 +151,7 @@ class TestApp(unittest.TestCase):
                 302, "Application doesn't add new user with correct data")
 
     def test_add_user_as_logged_in_with_wrong_data(self):
+        """Check correct validation on user update"""
         users_in_db_before = self.orm.mysql_do(
             "SELECT * FROM {0}.teachers".format(self.db))
         # change our test user so he'd have 2 wrong fields
@@ -167,6 +171,7 @@ class TestApp(unittest.TestCase):
                 "Application doesn't add new user with correct data")
 
     def test_add_user_as_logged_out(self):
+        """Check whether the application let unauthorisez users to add user"""
         users_in_db_before = self.orm.mysql_do(
             "SELECT * FROM {0}.teachers".format(self.db))
         response = self.client.add_user(self.test_user, as_logged_in=False)
