@@ -1,5 +1,6 @@
-""" A couple of tests for testing module controller """
 # -*- coding: utf-8 -*-
+""" A couple of tests for testing module controller """
+
 import unittest
 
 from app import app, DBDriver
@@ -8,7 +9,6 @@ from app.models.subjects_model_with_entity import ExtendedSubjectsModel
 from app.models.teachers_model_with_entity import ExtendedTeachersModel
 from app.controllers.controller import AdminController
 from db import credentials
-
 
 
 class TestAdminController(unittest.TestCase):
@@ -21,70 +21,6 @@ class TestAdminController(unittest.TestCase):
         self.admin.view.render_login = lambda error: "login.html"
         self.admin.view.render_index = lambda: "index.html"
         self.admin.view.render_error = lambda: "page_not_found.html"
-
-        self.app_t_client = app.test_client()
-        self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
-        self.arg_dict_subj_negative = {'name': 'TestingSubject'}
-        self.arg_dict_school = {'name': 'ШкОлАдЛяТеСтУвАнНя',
-                                'address': 'АдРеСаШкОлИ'}
-        self.arg_dict_school_negative = {'name': 'TestSchoolName',
-                                         'address': 'TestSchoolAddr'}
-        self.arg_dict_users = {'name': 'Тест Тестович',
-                               'login': 'testlogin',
-                               'password': 'TestPassword',
-                               'email': 'testmail@domain.com',
-                               'role_id': 1,
-                               'user_role': 1,
-                               'delete_button': True}
-        self.arg_dict_users_negative = {'name': 'Тест Тестович',
-                                        'login': 'Логін',
-                                        'password': 'TestPassword',
-                                        'email': 'chdomain.com',
-                                        'role_id': 1,
-                                        'user_role': 1,
-                                        'delete_button': True}
-
-        self.host = credentials[0]
-        self.username = credentials[1]
-        self.password = credentials[2]
-        self.db = credentials[3]
-
-        self.orm = DBDriver()
-        self.orm.connect(self.host, self.username, self.password, self.db)
-        self.orm.insert('Schools', ('name', 'address'),
-                        (self.arg_dict_school['name'],
-                         self.arg_dict_school['address']))
-        self.orm.insert('Subjects', ('name',),
-                        (self.arg_dict_subj['name'],))
-        self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
-                          `login`, `email`, `password`) \
-                          VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
-                              self.arg_dict_users['name'],
-                              self.arg_dict_users['role_id'],
-                              self.arg_dict_users['login'],
-                              self.arg_dict_users['email'],
-                              self.arg_dict_users['password']))
-
-    def tearDown(self):
-        """ Fixture that deletes all preparation for tests """
-        try:
-            self.orm.delete('Subjects',
-                            'name = "{}"'.format(self.arg_dict_subj['name']))
-            self.orm.delete('Subjects', 'name = "{}{}"'.format(
-                self.arg_dict_subj['name'], "ЗмІнЕнИй"))
-
-            self.orm.delete('Schools',
-                            'name = "{}"'.format(self.arg_dict_school['name']))
-            self.orm.delete('Schools', 'name = "{}{}"'.format(
-                self.arg_dict_school['name'], "ЗмІнЕнИй"))
-
-            self.orm.delete('Teachers',
-                            'name = "{}"'.format(self.arg_dict_users['name']))
-            # pass
-        except Exception as error:
-            print(error)
-        finally:
-            self.orm.close()
 
     def test_get_index(self):
         """ Test method return page get_index() """
@@ -103,13 +39,66 @@ class TestAdminController(unittest.TestCase):
     # Testing teacher CRUD
     # ---------------------------------------------
 
+class TestAdminController_teacher(unittest.TestCase):
+    """ Class with methods, for testing AdminController class, teacher CRUD """
+
+    def setUp(self):
+        """ Fixture that creates a initial data and records for tests """
+
+        self.admin = AdminController()
+
+        self.app_t_client = app.test_client()
+        self.nonexistent_id = 777777777777777
+        self.arg_dict_users = {'name': 'Тест Тестович',
+                               'login': 'testlogin',
+                               'password': 'TestPassword',
+                               'email': 'testmail@domain.com',
+                               'role_id': 1,
+                               'user_role': 1,
+                               'delete_button': True}
+        self.arg_dict_users_negative = {'name': 'Тест Тестович',
+                                        'login': 'Логін',
+                                        'password': 'TestPassword',
+                                        'email': 'chdomain.com',
+                                        'role_id': 1,
+                                        'user_role': 1,
+                                        'delete_button': True}
+
+        self.host = credentials[0]
+        self.username = credentials[1]
+        self.password = credentials[2]
+        self.database = credentials[3]
+
+        self.orm = DBDriver()
+        self.orm.connect(self.host, self.username,
+                         self.password, self.database)
+        self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
+                          `login`, `email`, `password`) \
+                          VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
+                              self.arg_dict_users['name'],
+                              self.arg_dict_users['role_id'],
+                              self.arg_dict_users['login'],
+                              self.arg_dict_users['email'],
+                              self.arg_dict_users['password']))
+
+    def tearDown(self):
+        """ Fixture that deletes all preparation for tests """
+        try:
+            self.orm.delete('Teachers',
+                            'name = "{}"'.format(self.arg_dict_users['name']))
+
+        except Exception as error:
+            print(error)
+        finally:
+            self.orm.close()
+
     def test_list_all_users_get_content(self):
         """ Test method list_all_users, method "GET",
         check whether content is HTML """
         with app.test_request_context(path='/users_list',
                                       method="GET",
                                       data=self.arg_dict_users):
-            response = repr(self.admin.list_all_users())
+            response = self.admin.list_all_users()
             self.assertIn(u'SMS</title>', response)
 
     def test_add_user_get_content(self):
@@ -119,10 +108,10 @@ class TestAdminController(unittest.TestCase):
         with app.test_request_context(path='/user_add',
                                       method="GET",
                                       data=self.arg_dict_users):
-            response = repr(self.admin.add_user())
+            response = self.admin.add_user()
             self.assertIn(u'SMS</title>', response)
 
-    def test_add_user_results(self):
+    def test_add_user_db_results(self):
         """ Test method add_user, method "POST",
         check changes in DB - whether object is created """
 
@@ -152,7 +141,7 @@ class TestAdminController(unittest.TestCase):
 
     def test_update_user_response_status(self):
         """ Test method update_user, method "POST",
-        chec k whether content is HTML """
+        check whether content is HTML """
 
         results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
         test_id = results_before[0]['id']
@@ -199,7 +188,7 @@ class TestAdminController(unittest.TestCase):
             results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
             self.assertTrue(response.status_code == 302)
 
-    def test_remove_user_response(self):
+    def test_remove_user_db_result(self):
         """ Test method remove_user, method "POST",
         check changes in DB - whether object is removed """
 
@@ -236,9 +225,49 @@ class TestAdminController(unittest.TestCase):
             response = self.admin.update_user(test_id)
             self.assertIn('Некоректно введно емейл'.decode('utf-8'),
                           response)
+
     # --------------------------------------------------
     # Testing school CRUD
     # ---------------------------------------------------
+
+class TestAdminController_school(unittest.TestCase):
+    """ Class with methods, for testing AdminController class, school CRUD """
+
+    def setUp(self):
+        """ Fixture that creates a initial data and records for tests """
+        self.admin = AdminController()
+
+        self.app_t_client = app.test_client()
+        self.nonexistent_id = 777777777777777
+        self.arg_dict_school = {'name': 'ШкОлАдЛяТеСтУвАнНя',
+                                'address': 'АдРеСаШкОлИ'}
+        self.arg_dict_school_negative = {'name': 'TestSchoolName',
+                                         'address': 'TestSchoolAddr'}
+
+        self.host = credentials[0]
+        self.username = credentials[1]
+        self.password = credentials[2]
+        self.database = credentials[3]
+
+        self.orm = DBDriver()
+        self.orm.connect(self.host, self.username,
+                         self.password, self.database)
+        self.orm.insert('Schools', ('name', 'address'),
+                        (self.arg_dict_school['name'],
+                         self.arg_dict_school['address']))
+
+    def tearDown(self):
+        """ Fixture that deletes all preparation for tests """
+        try:
+            self.orm.delete('Schools',
+                            'name = "{}"'.format(self.arg_dict_school['name']))
+            self.orm.delete('Schools', 'name = "{}{}"'.format(
+                self.arg_dict_school['name'], "ЗмІнЕнИй"))
+
+        except Exception as error:
+            print(error)
+        finally:
+            self.orm.close()
 
     def test_list_all_schools_get_content(self):
         """ Test method list_all_schools, method "GET",
@@ -345,7 +374,8 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=self.arg_dict_school):
             response = self.admin.update_school(test_id)
-            self.assertTrue(response.find("</html>") >= 0)
+            self.assertTrue(response.find("</html>") >= 0 and
+                            response.find("<!DOCTYPE html>") >= 0)
 
     def test_update_school_content_wrong_name(self):
         """ Test method update_school, method "GET",
@@ -418,7 +448,7 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=self.arg_dict_school):
             try:
-                response = self.admin.remove_school(777777777777777)
+                response = self.admin.remove_school(self.nonexistent_id)
             except Exception as error:
                 print(error)
                 self.assertTrue(False)
@@ -434,7 +464,8 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=self.arg_dict_school):
             response = self.admin.remove_school(test_id)
-            self.assertTrue(response.find("</html>") >= 0)
+            self.assertTrue(response.find("</html>") >= 0 and
+                            response.find("<!DOCTYPE html>") >= 0)
 
     def test_remove_school_db_results(self):
         """ Test method remove_school, method "POST",
@@ -456,6 +487,43 @@ class TestAdminController(unittest.TestCase):
     # ---------------------------------------------
     # Testing subject CRUD
     # ---------------------------------------------
+
+class TestAdminController_subject(unittest.TestCase):
+    """ Class with methods, for testing AdminController class, subject CRUD """
+
+    def setUp(self):
+        """ Fixture that creates a initial data and records for tests """
+
+        self.admin = AdminController()
+
+        self.app_t_client = app.test_client()
+        self.nonexistent_id = 777777777777777
+        self.arg_dict_subj = {'name': 'ПрЕдМеТдЛяТеСтУвАнНя'}
+        self.arg_dict_subj_negative = {'name': 'TestingSubject'}
+
+        self.host = credentials[0]
+        self.username = credentials[1]
+        self.password = credentials[2]
+        self.database = credentials[3]
+
+        self.orm = DBDriver()
+        self.orm.connect(self.host, self.username,
+                         self.password, self.database)
+        self.orm.insert('Subjects', ('name',), (self.arg_dict_subj['name'],))
+
+    def tearDown(self):
+        """ Fixture that deletes all preparation for tests """
+
+        try:
+            self.orm.delete('Subjects',
+                            'name = "{}"'.format(self.arg_dict_subj['name']))
+            self.orm.delete('Subjects',
+                            'name = "{}{}"'.format(self.arg_dict_subj['name'],
+                                                   "ЗмІнЕнИй"))
+        except Exception as error:
+            print(error)
+        finally:
+            self.orm.close()
 
     def _test_list_all_subjects_get_response(self):
         """ Test method list_all_subjects, method "GET", check status-code """
@@ -600,7 +668,8 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=dict_subj_changed):
             response = self.admin.update_subject(test_id)
-            self.assertTrue(response.find("</html>") >= 0)
+            self.assertTrue(response.find("</html>") >= 0 and
+                            response.find("<!DOCTYPE html>") >= 0)
 
     def test_update_subject_db_result(self):
         """ Test method update_subject, method "POST",
@@ -642,7 +711,7 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=self.arg_dict_subj_negative):
             try:
-                response = self.admin.remove_subject(777777777777777)
+                response = self.admin.remove_subject(self.nonexistent_id)
             except Exception as error:
                 print(error)
                 self.assertTrue(False)
@@ -659,7 +728,8 @@ class TestAdminController(unittest.TestCase):
                                       method="GET",
                                       data=self.arg_dict_subj):
             response = self.admin.remove_subject(test_id)
-            self.assertTrue(response.find("</html>") >= 0)
+            self.assertTrue(response.find("</html>") >= 0 and
+                            response.find("<!DOCTYPE html>") >= 0)
 
     def test_remove_subject_db_results(self):
         """ Test method remove_subject, method "POST",
@@ -677,7 +747,6 @@ class TestAdminController(unittest.TestCase):
                 ExtendedSubjectsModel.select_subjects_query +
                 ' where name = "{}"'.format(self.arg_dict_subj['name']))
             self.assertTrue(len(results_before) == len(results_after) + 1)
-
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -1,5 +1,5 @@
-""" A couple of tests for testing module school_model_with_entity """
 # -*- coding: utf-8 -*-
+""" A couple of tests for testing module schools_model_with_entity """
 
 import unittest
 from app.utils.dbdriver import DBDriver
@@ -23,6 +23,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
 
+        self.test_school_id = 77777777777
         self.test_school_name = "testSchoolName"
         self.test_school_address = "testSchoolAddress"
         self.school_model = e_s_m()
@@ -32,19 +33,18 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         self.password = credentials[2]
         self.database = credentials[3]
 
-        self.school_to_test = School(1,
-                                     self.test_school_name,
-                                     self.test_school_address)
+        self.test_school = School(self.test_school_id+1,
+                                  self.test_school_name,
+                                  self.test_school_address)
         self.school_to_test_ids = []
 
         self.orm = DBDriver()
         self.orm.connect(self.host, self.username, self.password, self.database)
         self.orm.insert('Schools', ('name', 'address'),
-                        (
-                        self.school_to_test.name, self.school_to_test.address))
+                        (self.test_school.name, self.test_school.address))
         results = self.orm.mysql_do(
             e_s_m.select_schools_query +
-            ' where name = "{}"'.format(self.school_to_test.name))
+            ' where name = "{}"'.format(self.test_school.name))
         for row in results:
             self.school_to_test_ids.append(row['id'])
 
@@ -101,8 +101,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
         for school_id in self.school_to_test_ids:
             school = self.school_model.get_school_by_id(school_id)
-            self.assertTrue((school[0].name == self.school_to_test.name) and
-                            (school[0].address == self.school_to_test.address))
+            self.assertTrue((school[0].name == self.test_school.name) and
+                            (school[0].address == self.test_school.address))
 
     def test_update_school_by_id(self):
         """ Test method update_school_by_id """
@@ -138,9 +138,9 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
         schools_count_before = \
             len(self.school_model.get_school_by_id(self.school_to_test_ids[0]))
-        self.school_model.insert_school(School(777,
-                                               "SchoolNameToInsert",
-                                               "SchoolAddressToInsert"))
+        self.school_model.insert_school(School(self.test_school_id,
+                                               self.test_school_name,
+                                               self.test_school_address))
         schools_count_after = \
             len(self.school_model.get_school_by_id(self.school_to_test_ids[0]))
         self.assertTrue(schools_count_before == schools_count_after - 1)
