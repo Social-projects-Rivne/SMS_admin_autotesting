@@ -70,8 +70,8 @@ class TestView(unittest.TestCase):
 
     def test_render_confirm_delete(self, name=''):
         """ Test if function returns confirm delete page """
-        self.assertEqual(self.view.render_confirm_delete('user'),
-                         "confirm_delete.html")
+        self.assertEqual(self.view.render_confirm_delete('user'), 
+        	             "confirm_delete.html")
 
     def test_remove_user_form_success(self, name=''):
         """ Test the url redirection when user was deleted successfully """
