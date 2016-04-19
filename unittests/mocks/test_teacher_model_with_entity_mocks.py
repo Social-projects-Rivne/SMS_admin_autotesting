@@ -1,7 +1,8 @@
 """Test Teachers model with entity"""
 
 import unittest
-import mockcd
+import mock
+
 import app.models.teachers_model_with_entity
 from db import credentials
 
@@ -10,8 +11,14 @@ class TestTeachers(unittest.TestCase):
 
     def test_creation_of_teacher(self):
         """Object teacher is created"""
-        teacher = app.models.teachers_model_with_entity.Teacher(1, "name", "login", "password", "email", "role_id",
-                          "role_name", "school_id", "school_name")
+        teacher = app.models.teachers_model_with_entity.Teacher(1, "name",
+                                                                "login",
+                                                                "password",
+                                                                "email",
+                                                                "role_id",
+                                                                "role_name",
+                                                                "school_id",
+                                                                "school_name")
         self.assertIsNotNone(teacher)
 
 
@@ -27,11 +34,14 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         self.test_teacher_school_id = 1
         self.test_teacher_role_name = u"testTeacherRoleName"
         self.test_teacher_school_name = u"testTeacherSchoolName"
-        self.teacher_model = app.models.teachers_model_with_entity.ExtendedTeachersModel()
+        self.teacher_model = \
+            app.models.teachers_model_with_entity.ExtendedTeachersModel()
 
         self.test_list = [
-            {'id': 1, 'name': u'testTeacherName', 'login': u'testTeacherLogin', 'email': u'testTeacherEmail',
-             'password': u'testTeacherPassword', 'role_id': 1, 'school_id': 1, 'role_name': u'testTeacherRoleName',
+            {'id': 1, 'name': u'testTeacherName', 'login': u'testTeacherLogin',
+             'email': u'testTeacherEmail',
+             'password': u'testTeacherPassword', 'role_id': 1, 'school_id': 1,
+             'role_name': u'testTeacherRoleName',
              'school_name': u'testTeacherSchoolName'}]
 
         self.host = credentials[0]
@@ -39,14 +49,16 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         self.password = credentials[2]
         self.database = credentials[3]
 
-        self.teacher = app.models.teachers_model_with_entity.Teacher(1, self.test_teacher_name,
-                                                                    self.test_teacher_login,
-                                                                    self.test_teacher_email,
-                                                                    self.test_teacher_password,
-                                                                    self.test_teacher_role_id,
-                                                                    self.test_teacher_school_id,
-                                                                    self.test_teacher_role_name,
-                                                                    self.test_teacher_school_name)
+        self.teacher = app.models.teachers_model_with_entity.\
+            Teacher(1,
+                    self.test_teacher_name,
+                    self.test_teacher_login,
+                    self.test_teacher_email,
+                    self.test_teacher_password,
+                    self.test_teacher_role_id,
+                    self.test_teacher_school_id,
+                    self.test_teacher_role_name,
+                    self.test_teacher_school_name)
 
     def test_creation_of_ExtendedTeachersModel(self):
         """Basic smoke test: object ExtendedTeacherModel is created"""
@@ -88,14 +100,22 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         for teacher_object in result:
             for teacher_dict in self.test_list:
                 if teacher_dict['id'] == teacher_object.id_ \
-                        and teacher_dict['name'] == teacher_object.name \
-                        and teacher_dict['login'] == teacher_object.address \
-                        and teacher_dict['email'] == teacher_object.address \
-                        and teacher_dict['password'] == teacher_object.address \
-                        and teacher_dict['role_id'] == teacher_object.address \
-                        and teacher_dict['school_id'] == teacher_object.address \
-                        and teacher_dict['role_name'] == teacher_object.address \
-                        and teacher_dict['school_name'] == teacher_object.address:
+                        and teacher_dict['name'] == \
+                                teacher_object.name \
+                        and teacher_dict['login'] == \
+                                teacher_object.address \
+                        and teacher_dict['email'] == \
+                                teacher_object.address \
+                        and teacher_dict['password'] == \
+                                teacher_object.address \
+                        and teacher_dict['role_id'] == \
+                                teacher_object.address \
+                        and teacher_dict['school_id'] == \
+                                teacher_object.address \
+                        and teacher_dict['role_name'] == \
+                                teacher_object.address \
+                        and teacher_dict['school_name'] == \
+                                teacher_object.address:
                     self.test_list.remove(teacher_dict)
         self.assertEqual(len(self.test_list), 0)
 
@@ -124,14 +144,22 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         for teacher_object in result:
             for teacher_dict in test_list_single:
                 if teacher_dict['id'] == teacher_object.id_ \
-                        and teacher_dict['name'] == teacher_object.name \
-                        and teacher_dict['login'] == teacher_object.address \
-                        and teacher_dict['email'] == teacher_object.address \
-                        and teacher_dict['password'] == teacher_object.address \
-                        and teacher_dict['role_id'] == teacher_object.address \
-                        and teacher_dict['school_id'] == teacher_object.address \
-                        and teacher_dict['role_name'] == teacher_object.address \
-                        and teacher_dict['school_name'] == teacher_object.address:
+                        and teacher_dict['name'] == \
+                                teacher_object.name \
+                        and teacher_dict['login'] == \
+                                teacher_object.address \
+                        and teacher_dict['email'] == \
+                                teacher_object.address \
+                        and teacher_dict['password'] == \
+                                teacher_object.address \
+                        and teacher_dict['role_id'] == \
+                                teacher_object.address \
+                        and teacher_dict['school_id'] == \
+                                teacher_object.address \
+                        and teacher_dict['role_name'] == \
+                                teacher_object.address \
+                        and teacher_dict['school_name'] == \
+                                teacher_object.address:
                     test_list_single.remove(teacher_dict)
         self.assertEqual(len(test_list_single), 0)
 
@@ -145,9 +173,11 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         test_list_single = [self.test_list[0], ]
 
         test_teacher = app.models.teachers_model_with_entity.Teacher(
-            test_list_single[0]['id'], test_list_single[0]['name'], test_list_single[0]['login'],
-            test_list_single[0]['email'], test_list_single[0]['password'], test_list_single[0]['role_id'],
-            test_list_single[0]['school_id'], test_list_single[0]['role_name'], test_list_single[0]['school_name'])
+            test_list_single[0]['id'], test_list_single[0]['name'],
+            test_list_single[0]['login'], test_list_single[0]['email'],
+            test_list_single[0]['password'], test_list_single[0]['role_id'],
+            test_list_single[0]['school_id'], test_list_single[0]['role_name'],
+            test_list_single[0]['school_name'])
 
         mock_dbdriver.return_value = dbdriver_execute_mock
         result = app.models.teachers_model_with_entity. \
@@ -157,10 +187,15 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         call = 'Teacher', \
                ("name", "login", "password", "email", "role_id",
                 "role_name", "school_id", "school_name"), \
-               (test_list_single[0]['id'], test_list_single[0]['name'], test_list_single[0]['login'],
-                test_list_single[0]['email'], test_list_single[0]['password'], test_list_single[0]['role_id'],
-                test_list_single[0]['school_id'], test_list_single[0]['role_name'], test_list_single[0]['school_name'],
-                1)
+               (test_list_single[0]['id'],
+                test_list_single[0]['name'],
+                test_list_single[0]['login'],
+                test_list_single[0]['email'],
+                test_list_single[0]['password'],
+                test_list_single[0]['role_id'],
+                test_list_single[0]['school_id'],
+                test_list_single[0]['role_name'],
+                test_list_single[0]['school_name'], 1)
 
         dbdriver_execute_mock.insert.assert_called_with(*call)
         self.assertIsNone(result)
@@ -195,9 +230,11 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         test_list_single = [self.test_list[0], ]
 
         test_teacher = app.models.teachers_model_with_entity.Teacher(
-            test_list_single[0]['id'], test_list_single[0]['name'], test_list_single[0]['login'],
-            test_list_single[0]['email'], test_list_single[0]['password'], test_list_single[0]['role_id'],
-            test_list_single[0]['school_id'], test_list_single[0]['role_name'], test_list_single[0]['school_name'])
+            test_list_single[0]['id'], test_list_single[0]['name'],
+            test_list_single[0]['login'], test_list_single[0]['email'],
+            test_list_single[0]['password'], test_list_single[0]['role_id'],
+            test_list_single[0]['school_id'], test_list_single[0]['role_name'],
+            test_list_single[0]['school_name'])
 
         mock_dbdriver.return_value = dbdriver_execute_mock
         result = app.models.teachers_model_with_entity. \
