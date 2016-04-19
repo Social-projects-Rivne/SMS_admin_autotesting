@@ -74,7 +74,7 @@ class TestTeachersModelWithEntity(unittest.TestCase):
 
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_initORM(self, mock_dbdriver):
-        """ Testing method initORM, check correct call of dbdriver """
+        """Testing method initORM, check correct call of dbdriver"""
         dbdriver_execute_mock = mock.Mock()
         mock_dbdriver.return_value = dbdriver_execute_mock
         app.models.teachers_model_with_entity.ExtendedTeachersModel.initORM(
@@ -85,79 +85,49 @@ class TestTeachersModelWithEntity(unittest.TestCase):
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_get_all_teacher(self, mock_dbdriver):
         """Testing method get_all_teacher, check correct method call
-            and whether the results is equal with given in test"""
+        and whether the results is equal with given in test
+
+        """
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'sql_results'
-        # та фігня, яка закриває собою базу           те, що мок поверне, коли його викличуть
         dbdriver_execute_mock.mysql_do.return_value = self.test_list
-        #                     mysql_do - це метод з ОРМ. саме він і закривається
         mock_dbdriver.return_value = dbdriver_execute_mock
-        # другий рядок пихає це ще кудись в мок
         result = app.models.teachers_model_with_entity. \
             ExtendedTeachersModel.get_all_teachers(self.teacher_model)
-        call_sql = app.models.teachers_model_with_entity.ExtendedTeachersModel.select_teachers_query + ' '
+        call_sql = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.select_teachers_query + ' '
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
         self.assertEqual(len(self.test_list), len(result))
-        # for teacher_object in result:
-        #     for teacher_dict in self.test_list:
-        #         if teacher_dict['id'] == teacher_object.id_ \
-        #                 and teacher_dict['name'] == teacher_object.name:
-        #             self.test_list.remove(teacher_dict)
-        # self.assertEqual(len(self.test_list), 0)
 
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_get_teacher_by_id(self, mock_dbdriver):
         """Testing method get_teacher_by_id, check correct method call
-        and whether the results is equal with given in test"""
+        and whether the results is equal with given in test
 
+        """
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'sql_results'
         test_list_single = [self.test_list[0], ]
-
         dbdriver_execute_mock.mysql_do.return_value = test_list_single
         mock_dbdriver.return_value = dbdriver_execute_mock
         result = app.models.teachers_model_with_entity. \
             ExtendedTeachersModel.get_teacher_by_id(
-            self.teacher_model, test_list_single[0]['id'])
-
+             self.teacher_model, test_list_single[0]['id'])
         call_sql = app.models.teachers_model_with_entity. \
-                       ExtendedTeachersModel.select_teachers_query + \
-                   ' WHERE t.id=' + str(test_list_single[0]['id'])
-
+            ExtendedTeachersModel.select_teachers_query + \
+            ' WHERE t.id=' + str(test_list_single[0]['id'])
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
-
         self.assertEqual(len(test_list_single), len(result))
-        # for teacher_object in result:
-        #     for teacher_dict in test_list_single:
-        #         if teacher_dict['id'] == teacher_object.id_ \
-        #                 and teacher_dict['name'] == \
-        #                         teacher_object.name \
-        #                 and teacher_dict['login'] == \
-        #                         teacher_object.login \
-        #                 and teacher_dict['email'] == \
-        #                         teacher_object.email \
-        #                 and teacher_dict['password'] == \
-        #                         teacher_object.password \
-        #                 and teacher_dict['role_id'] == \
-        #                         teacher_object.role_id \
-        #                 and teacher_dict['school_id'] == \
-        #                         teacher_object.school_id \
-        #                 and teacher_dict['role_name'] == \
-        #                         teacher_object.role_name \
-        #                 and teacher_dict['school_name'] == \
-        #                         teacher_object.school_name:
-        #             test_list_single.remove(teacher_dict)
-        # self.assertEqual(len(test_list_single), 0)
 
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_insert_teacher(self, mock_dbdriver):
         """Testing method insert_teacher, check correct method call
-        and whether the results is None """
+        and whether the results is None
 
+        """
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'sql_results'
         test_list_single = [self.test_list[0], ]
-        # actual
         test_teacher = app.models.teachers_model_with_entity.Teacher(
             test_list_single[0]['id'], test_list_single[0]['name'],
             test_list_single[0]['login'], test_list_single[0]['email'],
@@ -167,11 +137,10 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         mock_dbdriver.return_value = dbdriver_execute_mock
         result = app.models.teachers_model_with_entity. \
             ExtendedTeachersModel.insert_teacher(
-            self.teacher_model, test_teacher)
+             self.teacher_model, test_teacher)
 
-        # expected
         call = 'Teachers', \
-               ("name", "login", "email", "password", "role_id"), \
+               ("name", "login", "email", "password", "role_id", "state"), \
                (test_list_single[0]['name'],
                 test_list_single[0]['login'],
                 test_list_single[0]['password'],
@@ -184,8 +153,9 @@ class TestTeachersModelWithEntity(unittest.TestCase):
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_delete_teacher_by_id(self, mock_dbdriver):
         """ Testing method delete_teacher_by_id, check correct method call
-        and whether the results is None """
+        and whether the results is None
 
+        """
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'sql_results'
         test_list_single = [self.test_list[0], ]
@@ -193,7 +163,7 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         mock_dbdriver.return_value = dbdriver_execute_mock
         result = app.models.teachers_model_with_entity. \
             ExtendedTeachersModel.delete_teacher_by_id(
-            self.teacher_model, test_list_single[0]['id'])
+             self.teacher_model, test_list_single[0]['id'])
 
         call = 'Teachers', 'id = ' + str(test_list_single[0]['id'])
 
@@ -203,8 +173,9 @@ class TestTeachersModelWithEntity(unittest.TestCase):
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_update_teacher_by_id(self, mock_dbdriver):
         """ Testing method update_teacher_by_id, check correct method call
-        and whether the results is None """
+        and whether the results is None
 
+        """
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'sql_results'
 
@@ -220,13 +191,14 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         mock_dbdriver.return_value = dbdriver_execute_mock
         result = app.models.teachers_model_with_entity. \
             ExtendedTeachersModel.update_teacher_by_id(
-            self.teacher_model, test_teacher)
+             self.teacher_model, test_teacher)
 
         call = 'Teachers', \
                'name="' + test_list_single[0]['name'] + \
                '", login="' + test_list_single[0]['login'] + \
                '", email="' + test_list_single[0]['email'] + \
-               '",                     password="' + test_list_single[0]['password'] + \
+               '",                     password="' + \
+               test_list_single[0]['password'] + \
                '", role_id=' + str(test_list_single[0]['role_id']) + \
                '', 'id=' + str(test_list_single[0]['id'])
 
