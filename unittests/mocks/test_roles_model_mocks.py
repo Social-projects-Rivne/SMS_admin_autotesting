@@ -1,5 +1,5 @@
-#!/usr/bin/env python
-#-*-coding:utf-8-*-
+# !/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import unittest
 import mock
@@ -49,10 +49,11 @@ class TestRolesModel(unittest.TestCase):
         orm = self.roles.initORM()
         self.assertIsInstance(orm, DBDriver)
 
-    def test_get_all_roles(self):
+    def test_get_all_roles_mock(self):
         """ Test, that checks, whether get_all_roles
         return an object """
-        self.roles.get_all_roles = mock.Mock(return_value=({'id':1}, {'id':2, 'role_name':u'Завуч'},))
+        self.roles.get_all_roles = mock.Mock(return_value=({'id':1}, {'id':2,
+                                            'role_name':u'Завуч'},))
         all_roles = self.roles.get_all_roles()
         self.assertEqual(all_roles[0]['id'], 1)
         self.assertEqual(all_roles[1]['role_name'], u'Завуч')
@@ -76,17 +77,12 @@ class TestRolesModel(unittest.TestCase):
         result = app.models.roles_model.RolesModel.get_all_roles(
             self.roles)
 
-        call_sql = app.models.roles_model.RolesModel.select_roles_query + ' '
+        call_sql = app.models.roles_model.RolesModel.select_roles_query + ''
 
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
+        self.assertEqual(self.test_roles, result)
 
-        self.assertEqual(len(self.test_roles), len(result))
-        for roles_object in result:
-            for roles_dict in self.test_roles:
-                if roles_dict['id'] == roles_object.id_ \
-                        and roles_dict['role_name'] == roles_object.role_name:
-                    self.test_roles.remove(roles_dict)
-        self.assertEqual(len(self.test_roles), 0)
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
