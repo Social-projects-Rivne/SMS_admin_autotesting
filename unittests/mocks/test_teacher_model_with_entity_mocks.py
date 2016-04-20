@@ -120,6 +120,40 @@ class TestTeachersModelWithEntity(unittest.TestCase):
         self.assertEqual(len(test_list_single), len(result))
 
     @mock.patch('app.models.teachers_model_with_entity.DBDriver')
+    def test_get_all_teacher_by_role(self, mock_dbdriver):
+        """Testing method get all teachers by given role id"""
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+        test_list_single = [self.test_list[0], ]
+        dbdriver_execute_mock.mysql_do.return_value = test_list_single
+        mock_dbdriver.return_value = dbdriver_execute_mock
+        result = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.get_all_teachers_by_role(
+             self.teacher_model, test_list_single[0]['role_id'])
+        call_sql = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.select_teachers_query + \
+            ' WHERE role_id=' + str(test_list_single[0]['role_id'])
+        dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
+        self.assertEqual(len(test_list_single), len(result))
+
+    @mock.patch('app.models.teachers_model_with_entity.DBDriver')
+    def test_get_all_teachers_by_school(self, mock_dbdriver):
+        """Testing method get all teachers by given school_id"""
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+        test_list_single = [self.test_list[0], ]
+        dbdriver_execute_mock.mysql_do.return_value = test_list_single
+        mock_dbdriver.return_value = dbdriver_execute_mock
+        result = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.get_all_teachers_by_school(
+             self.teacher_model, test_list_single[0]['school_id'])
+        call_sql = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.select_teachers_query + \
+            ' WHERE school_id=' + str(test_list_single[0]['school_id'])
+        dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
+        self.assertEqual(len(test_list_single), len(result))
+
+    @mock.patch('app.models.teachers_model_with_entity.DBDriver')
     def test_insert_teacher(self, mock_dbdriver):
         """Testing method insert_teacher, check correct method call
         and whether the results is None
@@ -200,6 +234,65 @@ class TestTeachersModelWithEntity(unittest.TestCase):
                '",                     password="' + \
                test_list_single[0]['password'] + \
                '", role_id=' + str(test_list_single[0]['role_id']) + \
+               '', 'id=' + str(test_list_single[0]['id'])
+
+        dbdriver_execute_mock.update.assert_called_with(*call)
+        self.assertIsNone(result)
+
+    @mock.patch('app.models.teachers_model_with_entity.DBDriver')
+    def test_set_role_id_to_teacher_by_id(self, mock_dbdriver):
+        """ Testing method set_role_id_to_teacher_by_id"""
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+
+        test_list_single = [self.test_list[0], ]
+
+        mock_dbdriver.return_value = dbdriver_execute_mock
+        result = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.set_role_id_to_teacher_by_id(
+             self.teacher_model, self.test_teacher_role_id, 1)
+
+        call = 'Teachers', \
+               'role_id=' + str(test_list_single[0]['role_id']) + \
+               '', 'id=' + str(test_list_single[0]['id'])
+
+        dbdriver_execute_mock.update.assert_called_with(*call)
+        self.assertIsNone(result)
+
+    @mock.patch('app.models.teachers_model_with_entity.DBDriver')
+    def test_set_school_id_to_teacher_by_id(self, mock_dbdriver):
+        """ Testing method set_role_id_to_teacher_by_id"""
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+
+        test_list_single = [self.test_list[0], ]
+
+        mock_dbdriver.return_value = dbdriver_execute_mock
+        result = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.set_school_id_to_teacher_by_id(
+             self.teacher_model, self.test_teacher_school_id, 1)
+
+        call = 'Teachers', \
+               'school_id=' + str(test_list_single[0]['school_id']) + \
+               '', 'id=' + str(test_list_single[0]['id'])
+
+        dbdriver_execute_mock.update.assert_called_with(*call)
+        self.assertIsNone(result)
+
+    @mock.patch('app.models.teachers_model_with_entity.DBDriver')
+    def test_set_password_to_teacher_by_id(self, mock_dbdriver):
+        """ Testing method set_role_id_to_teacher_by_id"""
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+
+        test_list_single = [self.test_list[0], ]
+        mock_dbdriver.return_value = dbdriver_execute_mock
+        result = app.models.teachers_model_with_entity. \
+            ExtendedTeachersModel.set_password_to_teacher_by_id(
+             self.teacher_model, 1, self.test_teacher_password)
+
+        call = 'Teachers', \
+               'password=' + str('"testTeacherPassword"') + \
                '', 'id=' + str(test_list_single[0]['id'])
 
         dbdriver_execute_mock.update.assert_called_with(*call)
