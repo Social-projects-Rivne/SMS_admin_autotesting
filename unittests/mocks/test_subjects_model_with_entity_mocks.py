@@ -48,27 +48,27 @@ class TestExtendedSubjectsModel(unittest.TestCase):
             .ExtendedSubjectsModel()
         self.wrong_id = 9999999999999999
 
-        patcher = mock._patch_object(DBDriver, 'connect')
+        patcher = mock.patch.object(DBDriver, 'connect')
         self.addCleanup(patcher.stop)
         self.mock_dbdriver_connect = patcher.start()
 
-        patcher = mock._patch_object(DBDriver, 'mysql_do')
+        patcher = mock.patch.object(DBDriver, 'mysql_do')
         self.addCleanup(patcher.stop)
         self.mock_dbdriver_mysql_do = patcher.start()
 
-        patcher = mock._patch_object(DBDriver, 'update')
+        patcher = mock.patch.object(DBDriver, 'update')
         self.addCleanup(patcher.stop)
         self.mock_dbdriver_update = patcher.start()
 
-        patcher = mock._patch_object(DBDriver, 'insert')
+        patcher = mock.patch.object(DBDriver, 'insert')
         self.addCleanup(patcher.stop)
         self.mock_dbdriver_insert = patcher.start()
 
-        patcher = mock._patch_object(DBDriver, 'delete')
+        patcher = mock.patch.object(DBDriver, 'delete')
         self.addCleanup(patcher.stop)
         self.mock_dbdriver_delete = patcher.start()
 
-        patcher = mock._patch_object(DBDriver, 'close')
+        patcher = mock.patch.object(DBDriver, 'close')
         self.addCleanup(patcher.stop)
         self.mock_dbdriver_close = patcher.start()
 
