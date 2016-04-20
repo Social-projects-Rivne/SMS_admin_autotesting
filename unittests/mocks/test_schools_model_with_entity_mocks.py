@@ -41,8 +41,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
         self.school = app.models.schools_model_with_entity.\
             School(1,
-                  self.test_school_name,
-                  self.test_school_address)
+                   self.test_school_name,
+                   self.test_school_address)
 
     def test_creation_of_ExtendedSchoolsModel(self):
         """ Basic smoke test: object ExtendedSchoolsModel is created """
@@ -84,7 +84,6 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
 
-        self.assertEqual(len(self.test_list), len(result))
         for school_object in result:
             for school_dict in self.test_list:
                 if school_dict['id'] == school_object.id_ \
@@ -114,7 +113,6 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
 
-        self.assertEqual(len(test_list_single), len(result))
         for school_object in result:
             for school_dict in test_list_single:
                 if school_dict['id'] == school_object.id_ \
