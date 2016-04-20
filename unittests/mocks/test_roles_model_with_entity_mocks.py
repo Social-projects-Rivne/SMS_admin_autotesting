@@ -31,9 +31,9 @@ class TestExtendedRolesModel(unittest.TestCase):
         self.database = credentials[3]
 
         self.test_list = [
-            {'id': 1, 'name': u'Директор'},
-            {'id': 2, 'name': u'Завуч'},
-            {'id': 3, 'name': u'Викладач'}, ]
+            {'id': 1, 'role_name': u'Директор'},
+            {'id': 2, 'role_name': u'Завуч'},
+            {'id': 3, 'role_name': u'Викладач'}, ]
 
         self.roles = app.models.roles_model_with_entity.\
             Role(self.test_role_id,
@@ -55,30 +55,42 @@ class TestExtendedRolesModel(unittest.TestCase):
         """ Test to check whether get_all_roles \
         returns list of roles"""
 
-        self.roles_model.get_all_roles = \
-        mock.Mock(return_value=({'id':1, 'role_name': u'Викладач'}, \
-        {'id':2, 'role_name':u'Завуч'},))
-        all_roles = self.roles_model.get_all_roles()
-        self.assertEqual(all_roles[0]['id'], 1)
-        self.assertEqual(all_roles[1]['role_name'], u'Завуч')
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+        dbdriver_execute_mock.mysql_do.return_value = self.test_list
+        mock_dbdriver.return_value = dbdriver_execute_mock
+
+        result = app.models.roles_model_with_entity.\
+            ExtendedRolesModel.get_all_roles(
+                self.roles_model)
+
+        call_sql = app.models.roles_model_with_entity.\
+                       ExtendedRolesModel.select_roles_query + ' '
+
+        dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
+        self.assertEqual(len(self.test_list), len(result))
     @mock.patch('app.models.roles_model_with_entity.DBDriver')
     def test_get_role_by_id(self, mock_dbdriver):
         """ Test to check whether get_role_by_id \
         returns object with id that set"""
 
-        self.roles_model.get_role_by_id = \
-        mock.Mock(return_value=self.test_list)
-        role_by_id = self.roles_model.get_role_by_id()
-        self.assertEqual(role_by_id[0]['id'], 1)
-    @mock.patch('app.models.roles_model_with_entity.DBDriver')
-    def test_create_list_from_dbresult(self, mock_dbdriver):
-        """ Test to check whether create_list_from_dbresult \
-        returns list with objects """
+        dbdriver_execute_mock = mock.Mock()
+        dbdriver_execute_mock.name = 'sql_results'
+        test_list_single = [self.test_list[0], ]
 
-        self.roles_model._create_list_from_dbresult = \
-        mock.Mock(return_value=self.test_list)
-        list_of_roles = self.roles_model._create_list_from_dbresult()
-        self.assertEqual(list_of_roles[0]['id'], 1)
+        dbdriver_execute_mock.mysql_do.return_value = test_list_single
+        mock_dbdriver.return_value = dbdriver_execute_mock
+        result = app.models.roles_model_with_entity.\
+            ExtendedRolesModel.get_role_by_id(
+                self.roles_model, test_list_single[0]['id'])
+
+        call_sql = app.models.roles_model_with_entity.\
+                       ExtendedRolesModel.select_roles_query + \
+                        ' WHERE id=' + str(test_list_single[0]['id'])
+
+        dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
+
+        self.assertEqual(len(test_list_single), len(result))
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 
