@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+""" File to test roles_model_with_entity """
 import unittest
 from app.utils.dbdriver import DBDriver
 
@@ -57,7 +58,7 @@ class TestExtendedRolesModel(unittest.TestCase):
         returns list with objects """
         role = \
         self.erm._get_roles('WHERE id=%d' % (self.test_role_id))
-        self.assertIsInstance(role[0], Role)
+        self.assertIsInstance(role, list)
 
 
 if __name__ == "__main__":
