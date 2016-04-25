@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-""" A couple of tests for testing module controller """
+""" A couple of integration tests for testing module controller """
 
 import unittest
 
@@ -40,6 +40,7 @@ class TestAdminController(unittest.TestCase):
     # ---------------------------------------------
 
 class TestAdminController_teacher(unittest.TestCase):
+
     """ Class with methods, for testing AdminController class, teacher CRUD """
 
     def setUp(self):
@@ -55,11 +56,11 @@ class TestAdminController_teacher(unittest.TestCase):
                                'role_id': 1,
                                'user_role': 1,
                                'delete_button': True}
-        self.arg_dict_users_negative = {'name': 'Тест Тестович',
+        self.arg_dict_users_negative = {'name': '',
                                         'login': 'Логін',
-                                        'password': 'TestPassword',
+                                        'password': '',
                                         'email': 'chdomain.com',
-                                        'role_id': 1,
+                                        'role_id': -1,
                                         'user_role': 1,
                                         'delete_button': True}
 
@@ -71,7 +72,7 @@ class TestAdminController_teacher(unittest.TestCase):
         self.orm = DBDriver()
         self.orm.connect(self.host, self.username,
                          self.password, self.database)
-        self.orm.mysql_do("INSERT INTO `Teachers`(`name`, `role_id`, \
+        self.orm.mysql_do("INSERT INTO Teachers(`name`, `role_id`, \
                           `login`, `email`, `password`) \
                           VALUES ('{0}', {1},'{2}', '{3}','{4}')".format(
                               self.arg_dict_users['name'],
@@ -85,7 +86,6 @@ class TestAdminController_teacher(unittest.TestCase):
         try:
             self.orm.delete('Teachers',
                             'name = "{}"'.format(self.arg_dict_users['name']))
-
         except Exception as error:
             print(error)
         finally:
@@ -112,13 +112,16 @@ class TestAdminController_teacher(unittest.TestCase):
     def test_add_user_db_results(self):
         """ Test method add_user, method "POST",
         check changes in DB - whether object is created """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        results_before = self.orm.mysql_do(
+            'SELECT * FROM Teachers where login = "{}"'.format(
+                self.arg_dict_users['login']))
         with app.test_request_context(path='/user_add',
                                       method="POST",
                                       data=self.arg_dict_users):
             response = self.admin.add_user()
-            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
-
+            results_after = self.orm.mysql_do(
+                'SELECT * FROM Teachers where login = "{}"'.format(
+                    self.arg_dict_users['login']))
             self.assertNotEqual(results_after,
                                 results_before)  # BUG! Nothing changed!
             self.assertEqual(results_after[0]['login'],
@@ -127,18 +130,16 @@ class TestAdminController_teacher(unittest.TestCase):
     def test_add_user_content(self):
         """ Test method add_user, method "POST",
         check whether content is HTML """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
         with app.test_request_context(path='/user_add',
                                       method="POST",
                                       data=self.arg_dict_users):
             response = self.admin.add_user()
-            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
             self.assertIn(u'<a href="/users_list">', response.data)
 
     def test_update_user_response_status(self):
         """ Test method update_user, method "POST",
         check whether content is HTML """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        results_before = self.orm.mysql_do('SELECT * FROM Teachers')
         test_id = results_before[0]['id']
         dict_user_update = {
             'name': self.arg_dict_users['name'] + "Апдейт",
@@ -150,13 +151,13 @@ class TestAdminController_teacher(unittest.TestCase):
                                       method="POST",
                                       data=dict_user_update):
             response = self.admin.update_user(test_id)
-            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
+            results_after = self.orm.mysql_do("SELECT * FROM Teachers")
             self.assertIn(u'SMS</title>', response)
 
     def test_update_user_response(self):
         """ Test method update_user, method "POST",
         whether user is updated """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        results_before = self.orm.mysql_do('SELECT * FROM Teachers')
         test_id = results_before[0]['id']
         dict_user_update = {
             'name': self.arg_dict_users['name'] + "Апдейт",
@@ -168,36 +169,53 @@ class TestAdminController_teacher(unittest.TestCase):
                                       method="POST",
                                       data=dict_user_update):
             response = self.admin.update_user(test_id)
-            results_after = self.orm.mysql_do("SELECT * FROM `Teachers`")
+            results_after = self.orm.mysql_do("SELECT * FROM Teachers")
             self.assertEqual(results_before, results_after)
 
     def test_remove_user_status(self):
         """ Test method remove_user, method "POST", check status code"""
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        results_before = self.orm.mysql_do('SELECT * FROM Teachers')
         test_id = results_before[0]['id']
         with app.test_request_context(path='/user_remove',
                                       method="POST",
                                       data=self.arg_dict_users):
             response = self.admin.remove_user(test_id)
-            results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
+            results_after = self.orm.mysql_do('SELECT * FROM Teachers')
             self.assertTrue(response.status_code == 302)
 
     def test_remove_user_db_result(self):
         """ Test method remove_user, method "POST",
         check changes in DB - whether object is removed """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        results_before = self.orm.mysql_do(
+            'SELECT * FROM Teachers where name = "{}"'.format(
+                self.arg_dict_users['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/user_remove',
                                       method="POST",
                                       data=self.arg_dict_users):
             response = self.admin.remove_user(test_id)
-            results_after = self.orm.mysql_do('SELECT * FROM `Teachers`')
+            results_after = self.orm.mysql_do(
+                'SELECT * FROM  Teachers where name = "{}"'.format(
+                    self.arg_dict_users['name']))
             self.assertNotEqual(results_before, results_after)
             self.assertTrue(results_after < results_before)
 
+    def test_update_user_response_negative_name(self):
+        """ Test method update_user, method "POST", wrong name """
+        results_before = self.orm.mysql_do('SELECT * FROM Teachers where name = "{}"'.format(self.arg_dict_users['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data=self.arg_dict_users_negative):
+            response = self.admin.update_user(test_id)
+            self.assertIn('Некоректно введно ім'.decode('utf-8'),
+                          response)
+
     def test_update_user_response_negative_login(self):
         """ Test method update_user, method "POST", wrong login """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+        results_before = self.orm.mysql_do(
+            'SELECT * FROM Teachers where name = "{}"'.format(
+                self.arg_dict_users['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/user_update',
                                       method="POST",
@@ -206,14 +224,31 @@ class TestAdminController_teacher(unittest.TestCase):
             self.assertIn('Некоректно введно логін'.decode('utf-8'),
                           response)
 
-    def test_update_user_response_negative_email(self):
-        """ Test method update_user, method "POST", wrong email """
-        results_before = self.orm.mysql_do('SELECT * FROM `Teachers`')
+
+    def _test_update_user_response_negative_role(self):
+        """ Test method update_user, method "POST", empty role """
+        results_before = self.orm.mysql_do(
+            'SELECT * FROM Teachers where name = "{}"'.format(
+                self.arg_dict_users['name']))
         test_id = results_before[0]['id']
         with app.test_request_context(path='/user_update',
                                       method="POST",
                                       data=self.arg_dict_users_negative):
             response = self.admin.update_user(test_id)
+            self.assertIn('Виберіть роль'.decode('utf-8'),
+                          response)
+
+    def test_update_user_response_negative_email(self):
+        """ Test method update_user, method "POST", wrong email """
+        results_before = self.orm.mysql_do(
+            'SELECT * FROM Teachers where name = "{}"'.format(
+                self.arg_dict_users['name']))
+        test_id = results_before[0]['id']
+        with app.test_request_context(path='/user_update',
+                                      method="POST",
+                                      data=self.arg_dict_users_negative):
+            response = self.admin.update_user(test_id)
+
             self.assertIn('Некоректно введно емейл'.decode('utf-8'),
                           response)
 

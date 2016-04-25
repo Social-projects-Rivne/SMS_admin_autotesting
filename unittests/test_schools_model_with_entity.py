@@ -128,13 +128,11 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_insert_school(self):
         """ Test method insert_school """
-        schools_count_before = \
-            len(self.school_model.get_school_by_id(self.school_to_test_ids[0]))
+        schools_count_before = len(self.school_model.get_all_schools())
         self.school_model.insert_school(School(self.test_school_id,
                                                self.test_school_name,
                                                self.test_school_address))
-        schools_count_after = \
-            len(self.school_model.get_school_by_id(self.school_to_test_ids[0]))
+        schools_count_after = len(self.school_model.get_all_schools())
         self.assertTrue(schools_count_before == schools_count_after - 1)
 
 
