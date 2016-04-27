@@ -1,16 +1,18 @@
 # !/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import unittest
 import mock
+import unittest
 
 import app.models.roles_model
+
 from app.models.roles_model import RolesModel
 from app.utils.dbdriver import DBDriver
 from db import credentials
 
 
 class TestRolesModel(unittest.TestCase):
+
     """ Class with methods for testing RolesModel class """
 
     def setUp(self):
@@ -27,7 +29,6 @@ class TestRolesModel(unittest.TestCase):
     @mock.patch('app.models.roles_model.DBDriver')
     def test_initORM(self, mock_dbdriver):
         """ Testing method initORM, check correct call of dbdriver """
-
         dbdriver_execute_mock = mock.Mock()
         #mock_dbdriver = mock.Mock(return_value=dbdriver_execute_mock)
 
@@ -40,7 +41,6 @@ class TestRolesModel(unittest.TestCase):
 
     def test_initORM_content(self):
         """ Check that function is not empty """
-
         self.roles.initORM = mock.Mock(return_value='I am mock')
         self.assertEqual(self.roles.initORM(), 'I am mock')
 
@@ -60,7 +60,6 @@ class TestRolesModel(unittest.TestCase):
 
     def test_select_roles_query(self):
         """ Test, that checks select_roles_query """
-
         self.assertEqual(RolesModel.select_roles_query, \
                          "SELECT id, role_name FROM Roles")
 
@@ -68,7 +67,6 @@ class TestRolesModel(unittest.TestCase):
     def test_get_all_roles(self, mock_dbdriver):
         """ Testing method get_all_roles, check correct method call
         and whether the results is equal with given in test """
-
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'sql_results'
         dbdriver_execute_mock.mysql_do.return_value = self.test_roles
