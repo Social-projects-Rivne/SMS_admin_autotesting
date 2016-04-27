@@ -1,6 +1,6 @@
 *** Settings ***
 Library       Selenium2Library
- 
+
 Suite Teardown  Close Browser
 Test Teardown   Close Browser
 
