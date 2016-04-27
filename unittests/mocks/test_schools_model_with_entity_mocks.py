@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """ A couple of unit-tests for testing module schools_model_with_entity """
 
-import unittest
 import mock
+import unittest
 
 import app.models.schools_model_with_entity
 from db import credentials
 
 
 class TestSchool(unittest.TestCase):
+
     """ Class with methods, for testing School class """
 
     def test_creation_of_school(self):
@@ -20,11 +21,11 @@ class TestSchool(unittest.TestCase):
 
 
 class TestExtendedSchoolsModel(unittest.TestCase):
+
     """ Class with methods, for testing ExtendedSchoolModel class """
 
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
-
         self.test_school_name = u"testSchoolName"
         self.test_school_address = u"testSchoolAddress"
         self.school_model = \
@@ -46,7 +47,6 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_creation_of_ExtendedSchoolsModel(self):
         """ Basic smoke test: object ExtendedSchoolsModel is created """
-
         school_model = app.models.schools_model_with_entity.\
             ExtendedSchoolsModel()
 
@@ -55,7 +55,6 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_initORM(self, mock_dbdriver):
         """ Testing method initORM, check correct call of dbdriver """
-
         dbdriver_execute_mock = mock.Mock()
 
         mock_dbdriver.return_value = dbdriver_execute_mock
@@ -69,9 +68,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def test_get_all_schools(self, mock_dbdriver):
         """ Testing method get_all_schools, check correct method call
         and whether the results is equal with given in test """
-
         dbdriver_execute_mock = mock.Mock()
-        dbdriver_execute_mock.name = 'sql_results'
+        dbdriver_execute_mock.name = 'results'
         dbdriver_execute_mock.mysql_do.return_value = self.test_list
         mock_dbdriver.return_value = dbdriver_execute_mock
 
@@ -96,9 +94,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def test_get_school_by_id(self, mock_dbdriver):
         """ Testing method get_school_by_id, check correct method call
         and whether the results is equal with given in test """
-
         dbdriver_execute_mock = mock.Mock()
-        dbdriver_execute_mock.name = 'sql_results'
+        dbdriver_execute_mock.name = 'results'
         test_list_single = [self.test_list[0], ]
 
         dbdriver_execute_mock.mysql_do.return_value = test_list_single
@@ -125,9 +122,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def test_insert_school(self, mock_dbdriver):
         """ Testing method insert_school, check correct method call
         and whether the results is None """
-
         dbdriver_execute_mock = mock.Mock()
-        dbdriver_execute_mock.name = 'sql_results'
+        dbdriver_execute_mock.name = 'results'
         test_list_single = [self.test_list[0], ]
 
         test_school = app.models.schools_model_with_entity.School(
@@ -151,9 +147,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def test_delete_school_by_id(self, mock_dbdriver):
         """ Testing method delete_school_by_id, check correct method call
         and whether the results is None """
-
         dbdriver_execute_mock = mock.Mock()
-        dbdriver_execute_mock.name = 'sql_results'
+        dbdriver_execute_mock.name = 'results'
         test_list_single = [self.test_list[0], ]
 
         mock_dbdriver.return_value = dbdriver_execute_mock
@@ -170,9 +165,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def test_update_school_by_id(self, mock_dbdriver):
         """ Testing method update_school_by_id, check correct method call
         and whether the results is None """
-
         dbdriver_execute_mock = mock.Mock()
-        dbdriver_execute_mock.name = 'sql_results'
+        dbdriver_execute_mock.name = 'results'
 
         test_list_single = [self.test_list[0], ]
 
