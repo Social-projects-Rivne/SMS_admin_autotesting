@@ -1,0 +1,39 @@
+*** Settings ***
+Library       Selenium2Library
+ 
+Suite Teardown  Close Browser
+Test Teardown   Close Browser
+
+*** Testcases ***
+Logout Should Succeed for main teacher 
+  Open Browser  http://127.0.0.1:8000/
+  Maximize Browser Window
+  Input Text  inputUsername  semuschenko
+  Input Text  inputPassword  pDk7jf
+  Click Button  tag=button
+  Click Button  id=logout
+  Page Should Contain  Увійти
+
+*** Testcases ***
+Logout Should Succeed for head teacher
+  Open Browser  http://127.0.0.1:8000/
+  Maximize Browser Window
+  Input Text  inputUsername  zoshch
+  Input Text  inputPassword  df5sFdf
+  Click Button  tag=button
+  Click Button  id=logout
+  Page Should Contain  Увійти
+
+*** Testcases ***
+Logout Should Succeed for teacher
+  Open Browser  http://127.0.0.1:8000/
+  Maximize Browser Window
+  Input Text  inputUsername  maximus
+  Input Text  inputPassword  LKuJf3y
+  Click Button  tag=button
+  Click Button  id=logout
+  Page Should Contain  Увійти
+  Close Browser
+
+
+
