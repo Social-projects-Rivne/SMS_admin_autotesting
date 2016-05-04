@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """ Unit tests for roles_model_with_entity on mock """
+
 import unittest
 import mock
 
@@ -9,7 +10,9 @@ from db import credentials
 
 
 class TestRole(unittest.TestCase):
+    
     """ Class to test class Role """
+    
     def test_creation_of_role(self):
         """ Basic smoke test: object role is created """
         my_test_role = Role(2, u'Завуч')
@@ -17,7 +20,9 @@ class TestRole(unittest.TestCase):
 
 
 class TestExtendedRolesModel(unittest.TestCase):
+
     """ Class to test ExtendedRolesModel class """
+
     def setUp(self):
         """ Preparation """
         self.test_role_name = u"Завуч"
@@ -38,6 +43,7 @@ class TestExtendedRolesModel(unittest.TestCase):
         self.roles = app.models.roles_model_with_entity.\
             Role(self.test_role_id,
                   self.test_role_name)
+    
     @mock.patch('app.models.roles_model_with_entity.DBDriver')
     def test_init_orm(self, mock_dbdriver):
         """ Testing method initORM, check correct call of dbdriver """
@@ -50,6 +56,7 @@ class TestExtendedRolesModel(unittest.TestCase):
 
         call = self.host, self.username, self.password, self.database
         dbdriver_execute_mock.connect.assert_called_with(*call)
+    
     @mock.patch('app.models.roles_model_with_entity.DBDriver')
     def test_get_all_roles(self, mock_dbdriver):
         """ Test to check whether get_all_roles \
@@ -68,7 +75,9 @@ class TestExtendedRolesModel(unittest.TestCase):
                        ExtendedRolesModel.select_roles_query + ' '
 
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
-        self.assertEqual(len(self.test_list), len(result))
+        self.assertEqual(self.test_list[0]['id'], result[0].id_)
+        self.assertEqual(self.test_list[1]['id'], result[1].id_)
+    
     @mock.patch('app.models.roles_model_with_entity.DBDriver')
     def test_get_role_by_id(self, mock_dbdriver):
         """ Test to check whether get_role_by_id \
@@ -90,7 +99,8 @@ class TestExtendedRolesModel(unittest.TestCase):
 
         dbdriver_execute_mock.mysql_do.assert_called_with(call_sql)
 
-        self.assertEqual(len(test_list_single), len(result))
+        self.assertEqual(self.test_list[0]['id'], result[0].id_)
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
 
