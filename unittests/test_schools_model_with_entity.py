@@ -15,7 +15,7 @@ class TestSchool(unittest.TestCase):
 
     def test_creation_of_school(self):
         """ Basic smoke test: object school is created """
-        school = School(1, "name", "address")
+        school = School(1, 'name', 'address')
         self.assertIsNotNone(school)
 
 
@@ -26,8 +26,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
         self.test_school_id = 77777777777
-        self.test_school_name = "testSchoolName"
-        self.test_school_address = "testSchoolAddress"
+        self.test_school_name = 'testSchoolName'
+        self.test_school_address = 'testSchoolAddress'
         self.school_model = e_s_m()
 
         self.host = credentials[0]

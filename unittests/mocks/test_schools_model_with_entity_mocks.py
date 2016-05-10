@@ -15,8 +15,8 @@ class TestSchool(unittest.TestCase):
     def test_creation_of_school(self):
         """ Basic smoke test: object school is created """
         school = app.models.schools_model_with_entity.School(1,
-                                                             "name",
-                                                             "address")
+                                                             'name',
+                                                             'address')
         self.assertIsNotNone(school)
 
 
