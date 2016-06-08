@@ -15,6 +15,7 @@ class TestSchool(unittest.TestCase):
 
     def test_creation_of_school(self):
         """ Basic smoke test: object school is created """
+
         school = School(1, 'name', 'address')
         self.assertIsNotNone(school)
 
@@ -25,6 +26,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def setUp(self):
         """ Fixture that creates a initial data and records for tests """
+
         self.test_school_id = 77777777777
         self.test_school_name = 'testSchoolName'
         self.test_school_address = 'testSchoolAddress'
@@ -41,7 +43,8 @@ class TestExtendedSchoolsModel(unittest.TestCase):
         self.school_to_test_ids = []
 
         self.orm = DBDriver()
-        self.orm.connect(self.host, self.username, self.password, self.database)
+        self.orm.connect(self.host, self.username,
+                         self.password, self.database)
         self.orm.insert('Schools', ('name', 'address'),
                         (self.test_school.name, self.test_school.address))
         results = self.orm.mysql_do(
@@ -52,6 +55,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def tearDown(self):
         """ Fixture that deletes all preparation for tests """
+
         try:
             self.orm.delete('Schools',
                             'name = "{0}" and address = "{1}"'
@@ -68,32 +72,39 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_creation_of_ExtendedSchoolsModel(self):
         """ Basic smoke test: object ExtendedSchoolsModel is created """
+
         school_model = e_s_m()
         self.assertIsNotNone(school_model)
 
     def test_initORM(self):
         """ Basic smoke test: ORM is initialized """
+
         self.assertIsNotNone(self.school_model.initORM())
 
     def test_get_all_schools_exists(self):
         """ Test, that checks, whether get_all_schools returns an object """
+
         schools = self.school_model.get_all_schools()
         self.assertIsNotNone(schools)
 
     def test_get_all_schools_has_content(self):
-        """ Test, that checks, whether get_all_schools is not empty """
+        """ Test, that checks, whether get_all_schools returns not
+        empty result """
+
         schools = self.school_model.get_all_schools()
         self.assertTrue(len(schools) > 0)
 
     def test_get_all_schools_return_school_objects(self):
         """  Test, that checks, whether get_all_schools returns an
         object in type of School """
+
         schools = self.school_model.get_all_schools()
         for school in schools:
             self.assertTrue(isinstance(school, School))
 
     def test_get_school_by_id(self):
         """ Tests,that method get_school_by_id returns apropriate object """
+
         for school_id in self.school_to_test_ids:
             school = self.school_model.get_school_by_id(school_id)
             self.assertTrue((school[0].name == self.test_school.name) and
@@ -101,6 +112,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_update_school_by_id(self):
         """ Test method update_school_by_id """
+
         school_to_update = School(self.school_to_test_ids[0],
                                   self.test_school_name + 'Updated',
                                   self.test_school_address + 'Updated')
@@ -116,6 +128,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_delete_school_by_id(self):
         """ Test method delete_school_by_id """
+
         schools_count_before = \
             len(self.school_model.get_school_by_id(self.school_to_test_ids[0]))
 
@@ -128,6 +141,7 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     def test_insert_school(self):
         """ Test method insert_school """
+
         schools_count_before = len(self.school_model.get_all_schools())
         self.school_model.insert_school(School(self.test_school_id,
                                                self.test_school_name,
