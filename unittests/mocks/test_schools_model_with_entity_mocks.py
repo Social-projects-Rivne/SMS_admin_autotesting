@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-""" A couple of unit-tests for testing module schools_model_with_entity """
+"""
+A couple of unit-tests for testing module schools_model_with_entity
+"""
 
 import mock
 import unittest
@@ -10,10 +12,14 @@ from db import credentials
 
 class TestSchool(unittest.TestCase):
 
-    """ Class with methods, for testing School class """
+    """
+    Class with methods for testing School class
+    """
 
     def test_creation_of_school(self):
-        """ Basic smoke test: object school is created """
+        """
+        Basic smoke test: object school is created
+        """
 
         school = app.models.schools_model_with_entity.School(1,
                                                              'name',
@@ -23,10 +29,14 @@ class TestSchool(unittest.TestCase):
 
 class TestExtendedSchoolsModel(unittest.TestCase):
 
-    """ Class with methods, for testing ExtendedSchoolModel class """
+    """
+    Class with methods for testing ExtendedSchoolModel class
+    """
 
     def setUp(self):
-        """ Fixture that creates a initial data and records for tests """
+        """
+        Fixture that creates a initial data and records for tests
+        """
 
         self.test_school_name = u"testSchoolName"
         self.test_school_address = u"testSchoolAddress"
@@ -48,7 +58,9 @@ class TestExtendedSchoolsModel(unittest.TestCase):
                    self.test_school_address)
 
     def test_creation_of_ExtendedSchoolsModel(self):
-        """ Basic smoke test: object ExtendedSchoolsModel is created """
+        """
+        Basic smoke test: object ExtendedSchoolsModel is created
+        """
 
         school_model = app.models.schools_model_with_entity.\
             ExtendedSchoolsModel()
@@ -57,7 +69,9 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_initORM(self, mock_dbdriver):
-        """ Testing method initORM, check correct call of dbdriver """
+        """
+        Testing method initORM, check correct call of dbdriver
+        """
 
         dbdriver_execute_mock = mock.Mock()
 
@@ -70,8 +84,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_get_all_schools(self, mock_dbdriver):
-        """ Testing method get_all_schools, check correct method call
-        and whether the results is equal with given in test """
+        """
+        Testing method get_all_schools, check correct method call
+        and whether the results is equal with given in test
+        """
 
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'results'
@@ -97,8 +113,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_get_school_by_id(self, mock_dbdriver):
-        """ Testing method get_school_by_id, check correct method call
-        and whether the results is equal with given in test """
+        """
+        Testing method get_school_by_id, check correct method call
+        and whether the results is equal with given in test
+        """
 
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'results'
@@ -126,8 +144,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_insert_school(self, mock_dbdriver):
-        """ Testing method insert_school, check correct method call
-        and whether the results is None """
+        """
+        Testing method insert_school, check correct method call
+        and whether the results is None
+        """
 
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'results'
@@ -152,8 +172,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_delete_school_by_id(self, mock_dbdriver):
-        """ Testing method delete_school_by_id, check correct method call
-        and whether the results is None """
+        """
+        Testing method delete_school_by_id, check correct method call
+        and whether the results is None
+        """
 
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'results'
@@ -171,8 +193,10 @@ class TestExtendedSchoolsModel(unittest.TestCase):
 
     @mock.patch('app.models.schools_model_with_entity.DBDriver')
     def test_update_school_by_id(self, mock_dbdriver):
-        """ Testing method update_school_by_id, check correct method call
-        and whether the results is None """
+        """
+        Testing method update_school_by_id, check correct method call
+        and whether the results is None
+        """
 
         dbdriver_execute_mock = mock.Mock()
         dbdriver_execute_mock.name = 'results'
