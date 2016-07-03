@@ -154,7 +154,7 @@ class TestAdminControllerTeacher(unittest.TestCase):
             self.assertTrue(response.find('</html>') >= 0 and
                             response.find('<!DOCTYPE html>') >= 0)
 
-    def test_add_user_content_wrong(self):
+    def test_add_user_content_negative(self):
         """
         Testing method add_user, method 'POST',
         check whether content is HTML
@@ -485,7 +485,7 @@ class TestAdminControllerSchool(unittest.TestCase):
             response = self.admin.add_school()
             self.assertTrue(response.status_code == 302)
 
-    def test_add_school_content_wrong_name(self):
+    def test_add_school_content_negative_name(self):
         """
         Testing method add_school, method 'POST', wrong school name
         check whether response has a warning
@@ -498,7 +498,7 @@ class TestAdminControllerSchool(unittest.TestCase):
             self.assertIn('Некоректно введено назву'.decode('utf-8'),
                           response)
 
-    def test_add_school_content_wrong_address(self):
+    def test_add_school_content_negative_address(self):
         """
         Testing method add_school, method 'POST', wrong school address
         check whether response has a warning
@@ -561,7 +561,7 @@ class TestAdminControllerSchool(unittest.TestCase):
             self.assertTrue(response.find('</html>') >= 0 and
                             response.find('<!DOCTYPE html>') >= 0)
 
-    def test_update_school_content_wrong_name(self):
+    def test_update_school_content_negative_name(self):
         """
         Testing method update_school, method 'GET',
         check whether response has warning
@@ -578,7 +578,7 @@ class TestAdminControllerSchool(unittest.TestCase):
             self.assertIn('Некоректно введено назву'.decode('utf-8'),
                           response)
 
-    def test_update_school_content_wrong_address(self):
+    def test_update_school_content_negative_address(self):
         """
         Testing method update_school, method 'GET',
         check whether response has warning
@@ -819,7 +819,7 @@ class TestAdminControllerSubject(unittest.TestCase):
             self.assertTrue(response.find('</html>') >= 0 and
                             response.find('<!DOCTYPE html>') >= 0)
 
-    def test_add_subject_content_wrong_subject(self):
+    def test_add_subject_content_negative_subject(self):
         """
         Testing method add_subject, method 'POST', check whether
         returned content has warning
@@ -865,7 +865,7 @@ class TestAdminControllerSubject(unittest.TestCase):
             response = self.admin.update_subject(test_id)
             self.assertTrue(response.status_code == 302)
 
-    def test_update_subject_content_wrong_data(self):
+    def test_update_subject_content_negative_data(self):
         """
         Testing method update_subject, method 'POST', wrong school name,
         check whether response has a warning
