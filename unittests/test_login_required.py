@@ -1,20 +1,30 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-""" A couple of tests for testing decorator in file login_required.py """
+
+"""
+Tests for testing decorator in file login_required.py
+"""
 
 import unittest
+
 import app.urls
 
 from flask import session
-from app.controllers.controller import AdminController
+
 from app import app
+from app.controllers.controller import AdminController
 
 
 class TestLoginRequired(unittest.TestCase):
-    """ Class with methods for testing decorator in login_required.py """
+
+    """
+    Class with methods for testing decorator in login_required.py
+    """
 
     def setUp(self):
-        """ Prepare the initial data for tests """
+        """
+        Prepare the initial data for tests
+        """
         self.controller = AdminController()
         self.appt = app.test_client()
         self.appt.testing = True
@@ -25,34 +35,39 @@ class TestLoginRequired(unittest.TestCase):
                           'password': 'password'}
 
     def teardown(self):
-        """ Delete the preparation data for tests """
+        """
+        Delete the preparation data for tests
+        """
         try:
             session.pop('login', None)
         except Exception as error:
-            print(error)
+            print error
         finally:
             session.close()
 
     def test_login_required_True_response(self):
-        """ Test the path redirection when user is logged in using
-        test_client() """
-        with self.appt:
-            with self.appt.session_transaction() as sess:
-                sess['id'] = 1
-                sess['username'] = 'username'
-                sess['password'] = 'password'
-                sess['logged_in'] = True
-            response = self.appt.get(path='/index',
-                                     method="POST",
-                                     data=self.dict_user)
+        """
+        Test the path redirection when user is logged in using
+        test_client
+        """
+        with self.appt.session_transaction() as sess:
+            sess['id'] = 1
+            sess['username'] = 'username'
+            sess['password'] = 'password'
+            sess['logged_in'] = True
+        response = self.appt.get(path='/index',
+                                 method="POST",
+                                 data=self.dict_user)
 
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('Головна сторінка | SMS'.decode('utf-8'),
-                          response.data.decode('utf-8'))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Головна сторінка | SMS'.decode('utf-8'),
+                      response.data.decode('utf-8'))
 
     def test_login_required_True_context(self):
-        """ Test the path redirection when user is logged in using
-        test_request_context() """
+        """
+        Test the path redirection when user is logged in using
+        test_request_context()
+        """
         with app.test_request_context(path='/index',
                                       method="POST",
                                       data=self.dict_user):
@@ -66,23 +81,26 @@ class TestLoginRequired(unittest.TestCase):
             self.assertIn('Головна сторінка | SMS'.decode('utf-8'), response)
 
     def test_login_required_False_response(self):
-        """ Test the path redirection when user is not logged in using
-        test_client() """
-        with self.appt:
-            with self.appt.session_transaction() as sess:
-                sess['id'] = 1
-                sess['username'] = 'username'
-                sess['password'] = 'password'
-                sess['logged_in'] = False
-            response = self.appt.get(path='/login',
-                                     method="POST",
-                                     data=self.dict_user)
-            self.assertEqual(response.status_code, 200)
-            self.assertIn('Password', response.data)
+        """
+        Test the path redirection when user is not logged in using
+        test_client()
+        """
+        with self.appt.session_transaction() as sess:
+            sess['id'] = 1
+            sess['username'] = 'username'
+            sess['password'] = 'password'
+            sess['logged_in'] = False
+        response = self.appt.get(path='/login',
+                                 method="POST",
+                                 data=self.dict_user)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('Password', response.data)
 
     def test_login_required_False_context(self):
-        """ Test the path redirection when user is not logged in using
-        test_request_context() """
+        """
+        Test the path redirection when user is not logged in using
+        test_request_context()
+        """
         with app.test_request_context(path='/login',
                                       method="POST",
                                       data=self.dict_user):
