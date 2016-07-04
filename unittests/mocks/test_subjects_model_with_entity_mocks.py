@@ -1,13 +1,13 @@
+"""
+This code implements unittests for
+subject model of the application with mocks
+"""
+
 import unittest
 import mock
 
-# import sys
-# import os
-# sys.path.insert(0,
-#                 os.path.dirname(os.path.dirname
-#                                 (os.path.abspath
-#                                  (__file__))))
 import app.models.subjects_model_with_entity
+
 from app.utils.dbdriver import DBDriver
 from db import credentials
 
